@@ -47,10 +47,6 @@
 		<script src="<?php echo $imagePath; ?>js/validation.js"></script>
 		<script src="<?php echo $imagePath; ?>js/script.js"></script>
 		<script src="<?php echo $imagePath; ?>js/media.js"></script>
-
-<!-- 		for CK Editor -->
-	    <script type="text/javascript" src="<?php echo $imagePath; ?>js/ckeditor/ckeditor.js"></script>
-	    <script type="text/javascript" src="<?php echo $imagePath; ?>js/ckeditor/adapters/jquery.js"></script>
 	    
 <!-- 		for Cropping Image -->
 		<link rel="stylesheet" href="<?php echo $imagePath; ?>css/jquery.jcrop.css" type="text/css" />	

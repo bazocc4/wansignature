@@ -1,0 +1,38 @@
+div.loading {width: 32px; height: 150px; overflow: hidden; background: transparent url('../img/lightbox-ico-loading.gif') 0 0 no-repeat; margin: 170px auto 0;}
+
+/*general class*/
+.fr{ float; right; }
+.fl{ float: left; }
+
+.transparent{ opacity: 0; }
+.opaque{ opacity: 1; }
+
+.frame{ overflow: hidden; }
+.clickable{ cursor: pointer; }
+
+.black{ color: #000; }
+
+.bg-black{ background: #000; }
+.bg-white{ background: #fff !important; }
+
+.line{	background: #75767c; }
+
+.hide{ display: none;}
+.show{ display: block;}
+
+.no-bg{ background: none !important; -webkit-box-shadow: none !important;-moz-box-shadow: none !important;box-shadow: none !important; }
+
+#mcs_container .dragger, .have_mcs .dragger{
+	background: #e78b08;
+}
+
+#mcs_container .dragger_container{ height: 100% !important; }
+
+#mcs_container .customScrollBox .content, .have_mcs .customScrollBox .content{ padding-right: 10px; }
+
+.extra-bg-black{
+	background: #000;
+	opacity: 0.7;
+	width: 100%;
+	position: absolute;
+}

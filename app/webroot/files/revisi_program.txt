@@ -1,0 +1,43 @@
+pergantian nomer module (auto increment):
+berdasarkan:
+*) Project Category.
+*) Tahun.
+
+- Nama Project (bukan project category).
+
+- Nama PIC...
+
+- Email PIC ...
+
+- Nama PM ...
+
+- Email PM...
+
+- file status dari client : deal / drop.
+
+- Rule penamaan file : (lihat di papan pengumuman produksi)
+
+// ========================================== >>>
+// nambah field browse Quotation di module OC ...
+
+// sent notification email ...
+- every time update status...
+- every time upload new file...
+- every time update client response status (just admin to be notified)
+
+- Quotation : 
+status client : deal / drop
+
+- OC : 
+status client : deal / void ...
+
+- nambah field : 
+termin pembayaran : multiple date input ...
+* sent email notif 7 days before ... berisi reminder buat bayar aja (tidak ada hubungan untuk update program).
+
+
+// nambah email admin di global settings...
+
+// NB:
+OC tidak selalu tergantung Quotation (masih memungkinkan adanya OC tanpa Quotation).
+Invoice 100% tergantung sama OC (tidak mungkin ada invoice tanpa OC).

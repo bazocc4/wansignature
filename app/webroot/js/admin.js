@@ -76,8 +76,6 @@ var jcrop_api = new Array();
 					
 					// change form title
 					$('h2#form-title-entry').html(url.indexOf('lang=') >= 0? 'TRANSLATE ('+entry_title+')' : entry_title);
-					// refresh ckeditor...
-					$.fn.refresh_ckeditor();
 					// refresh cover image...
 					$('img#mySelectCoverAlbum').attr('src',site+'img/upload/thumb/'+entry_image_id+'.'+entry_image_type);
 					if(entry_image_id == 0)

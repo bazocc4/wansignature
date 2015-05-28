@@ -204,21 +204,7 @@ function openRequestedSinglePopup(strUrl , targetName)
     }
 
     $.fn.refresh_ckeditor = function(){
-    	if($('textarea.ckeditor').length > 0)
-    	{
-    		// delete old instance first !!
-			var instances = CKEDITOR.instances;
-			for (var z in instances) 
-			{
-				if(CKEDITOR.instances[z])
-				{				
-					delete CKEDITOR.instances[z];
-				}
-			}
-			
-			// transform textarea to be ckeditor again !!
-			$('textarea.ckeditor').ckeditor();
-    	}
+    	return false;
 	}
 	
 	$.fn.slug = function(src){
@@ -323,24 +309,6 @@ function openRequestedSinglePopup(strUrl , targetName)
 			// update total pictures...
 			$('div#'+fullkey).prevAll('.galleryCount:first').find('span').html( $('div#'+fullkey).find('div.photo').length );
 		}
-		// for CK Editor
-		else if($('input#mycaller').val() == 'ckeditor')
-		{
-			var imgsrc = linkpath+'img/upload/'+imgId+'.'+imgType;			
-			window.opener.CKEDITOR.tools.callFunction( $('input#CKEditorFuncNum').val() , imgsrc , function(){
-			  // Get the reference to a dialog window.
-			  var element, dialog = this.getDialog();
-			  // Check if this is the Image dialog window.
-			  if (dialog.getName() == 'image') {
-			    // Get the reference to a text field that holds the "alt" attribute.
-			    element = dialog.getContentElement( 'info', 'txtAlt' );
-			    // Assign the new value.
-			    if ( element )
-			      element.setValue( imgName );
-			  }
-			});
-			window.close();
-		}
 
 		$.colorbox.close();
 		$("a#upload").removeClass("active");
@@ -359,32 +327,7 @@ function openRequestedSinglePopup(strUrl , targetName)
 	}
 	
 	$.fn.my_ckeditor = function (){
-		// inject media URL to ckeditor config >>
-		var mediaURL = site+'entries/media_popup_single/1/ckeditor/'+$('input#myTypeSlug').val();
-		CKEDITOR.config.filebrowserBrowseUrl = mediaURL;
-		CKEDITOR.config.filebrowserUploadUrl = mediaURL;
-		CKEDITOR.config.filebrowserImageBrowseUrl = mediaURL;
-		CKEDITOR.config.filebrowserImageUploadUrl = mediaURL;
-
-		CKEDITOR.on('instanceReady', function (event) {		
-			// update sidebar line css, if ckeditor existed ...
-			var content_height = $('.content').height();
-			var sidebar_height = $('.sidebar').height();
-			if(sidebar_height < content_height){
-				$('.sidebar').css('height', content_height-180);
-			}
-
-			// give warning from leaving page accidentally
-			var instances = CKEDITOR.instances;
-			for (var z in instances) {
-				CKEDITOR.instances[z].on('saveSnapshot', function(){
-					window.onbeforeunload=function()
-					{
-			             return 'You have unsaved changes. Are you sure you want to leave this page?';
-			        };
-				});
-			}
-		});
+		return false;
 	}
 	
 	$.fn.del_param_lang = function(src){
@@ -552,12 +495,6 @@ function openRequestedSinglePopup(strUrl , targetName)
 				}	
             });
 		});
-		
-		// call CK editor script...
-		if($('textarea.ckeditor').length > 0)
-		{			
-			$.fn.my_ckeditor();
-		}
 		
 		// disable link for NOW breadcrumb
 		$('div.breadcrumbs p > a:last').attr('href' , 'javascript:void(0)');

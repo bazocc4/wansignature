@@ -54,7 +54,6 @@ $controllers = array(
 	'user_metas',
 	'users',
 	'admin',
-	'instant_payment_notifications',
 );
 
 $requestUri = $_SERVER['REQUEST_URI'];
@@ -74,12 +73,10 @@ else // -------------- THIS IS FOR ONLINE HOSTING ------------------------------
 
 $domainSet = explode('.', $server);
 
-// ---------------------------- PAYPAL API CALLBACK ---------------------------------------- //
-Router::connect('/paypal_ipn/process', array('controller' => 'instant_payment_notifications', 'action' => 'process'));
-// ---------------------------- LOGIN ROUTING ---------------------------------------------- //
-Router::connect('/admin', array('controller' => 'accounts', 'action' => 'redirect_login'));
-Router::connect(($controller == "admin"?'/admin':'').'/login', array('controller' => 'accounts', 'action' => 'login'));
-Router::connect(($controller == "admin"?'/admin':'').'/forget', array('controller' => 'accounts', 'action' => 'forget'));
+// ---------------------------- LOGIN ROUTING (backend only) ------------------------------- //
+Router::connect( ($controller == "admin"?'/admin':'/') , array('controller' => 'accounts', 'action' => 'redirect_login'));
+Router::connect('/admin/login', array('controller' => 'accounts', 'action' => 'login'));
+Router::connect('/admin/forget', array('controller' => 'accounts', 'action' => 'forget'));
 // ------------------------- END OF LOGIN ROUTING ------------------------------------------ //
 
 // ---------------------------- BACKUP DATABASE ---------------------------------------------- //
@@ -114,22 +111,7 @@ if(in_array($controller, $controllers))
 }
 else
 {
-	// --------------------------  SHOPPING CART ---------------------------- //
-	Router::connect('/shoppingcart/:step', array('controller' => 'instant_payment_notifications', 'action' => 'shoppingcart'));
-	
-	// ---------------------------- STAGGING ROUTING ---------------------------------------------- //
-	Router::connect('/:type/add', array('controller' => 'entries', 'action' => 'index_add'));
-	Router::connect((strlen($controller) == 2?'/:lang/:type':'/:type/:entry').'/add', array('controller' => 'entries', 'action' => 'index_add'));
-	Router::connect('/:lang/:type/:entry/add', array('controller' => 'entries', 'action' => 'index_add'));
-	
-	Router::connect('/:type/edit/:entry', array('controller' => 'entries', 'action' => 'index_edit'));
-	Router::connect((strlen($controller) == 2?'/:lang/:type':'/:type/:entry_parent').'/edit/:entry', array('controller' => 'entries', 'action' => 'index_edit'));
-	Router::connect('/:lang/:type/:entry_parent/edit/:entry', array('controller' => 'entries', 'action' => 'index_edit'));
-	// ------------------------ END OF STAGGING ROUTING ---------------------------------------------- //
-	
-	// LAST DECISION !!
-	Router::connect('/*', array('controller' => 'entries', 'action' => 'index'));
-	// Router::connect('/*', array('controller' => 'settings', 'action' => 'error404'));
+	Router::connect('/*', array('controller' => 'settings', 'action' => 'error404'));
 }
 
 /**

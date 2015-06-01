@@ -1,0 +1,5 @@
+.:Diamond:.
+===========
+- Code barang auto generate, tapi textbox masih bisa diedit.
+- Diamond Desc. => Carat 1 , Carat 2 , Carat 3, Carat 4 (masing-masing jadikan textbox)
+- Type of Payment: Credit Card != Cicilan Bank.

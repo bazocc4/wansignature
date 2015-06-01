@@ -273,7 +273,7 @@ class AccountsController extends AppController {
 		}
 		else 
 		{
-			$this->redirect('/admin/login');
+			$this->redirect('/');
 		}
 	}
     
@@ -298,29 +298,14 @@ class AccountsController extends AppController {
             $this->clearLogs();
 			
             // prepare going inside the dashboard !!
-			$pecahurl = explode('/' , $this->request->url);
-			if(strtolower($pecahurl[0]) == 'admin')
-			{
-				if(!empty($this->request->query['resource']))
-				{
-					$this->redirect('/admin'.$this->request->query['resource']);
-				}
-				else // default landing page after login !!
-				{
-					$this->redirect(array('controller'=>'settings','action'=>'index','admin'=>true));
-				}
-			}
-			else // at frontend !!
-			{
-				if(!empty($this->request->query['resource']))
-				{
-					$this->redirect($this->request->query['resource']);
-				}
-				else // default landing page after login !!
-				{
-					$this->redirect('/');
-				}
-			}
+			if(!empty($this->request->query['resource']))
+            {
+                $this->redirect('/admin'.$this->request->query['resource']);
+            }
+            else // default landing page after login !!
+            {
+                $this->redirect(array('controller'=>'settings','action'=>'index','admin'=>true));
+            }
 		}
 		else
 		{
@@ -332,16 +317,8 @@ class AccountsController extends AppController {
 		}
 
 		$this->setTitle('Login');
-		if(substr($this->request->url, 0,5) == 'admin')
-		{
-			$this->layout = 'login_default';
-			$this->set('is_admin' , 1);
-		}
-		else
-		{
-			$this->layout = 'frontend';
-			$this->render('/FrontEnds/login');
-		}
+		$this->layout = 'login_default';
+        $this->set('is_admin' , 1);
     }
 	
 	/**
@@ -360,47 +337,24 @@ class AccountsController extends AppController {
 	{
 		$this->Session->destroy();
 		$this->Session->setFlash('You have been logout.','forget_success');
-		$this->redirect('/admin/login');
+		$this->redirect('/');
 	}
 	
 	function forget()
     {
     	if($this->Auth->login())
 		{
-			if(substr($this->request->url, 0,5) == 'admin')
-			{
-				$this->redirect(array('controller'=>'settings','action'=>'index','admin'=>true));
-			}
-			else
-			{
-				$this->redirect('/');
-			}
+			$this->redirect(array('controller'=>'settings','action'=>'index','admin'=>true));
 		}
 		
-		$is_admin = 0;
-		$this->setTitle('Forget Password');
-		if(substr($this->request->url, 0,5) == 'admin')
-		{
-			$this->layout = 'login_default';
-			$is_admin = 1;
-		}
-		else
-		{
-			$this->layout = 'frontend';
-		}
+		$this->setTitle('Forget Password');		
+        $this->layout = 'login_default';
+        $is_admin = 1;
 		$this->set('is_admin' , $is_admin);
 		
         if(!empty($this->request->data))
         {
-        	$row = array();
-        	if($is_admin == 1)
-			{
-				$row = $this->Account->findAllByRoleId(array(1,2));
-			}
-			else
-			{
-				$row = $this->Account->findAllByEmail($this->request->data['Account']['email']);
-			}
+        	$row = $this->Account->findAllByEmail($this->request->data['Account']['email']);
 			
 			$success = -1;
 			foreach ($row as $key => $value) 
@@ -429,7 +383,7 @@ class AccountsController extends AppController {
 							$this->Account->id = $value['Account']['id'];
 							$this->Account->saveField('password' , Security::hash($newpassword,null,true));
 							$this->Session->setFlash('New password has been sent to your inbox!','forget_success');
-							$this->redirect((empty($is_admin)?'':'/admin').'/login');
+							$this->redirect('/');
 						}
 						else // Failure, without any exceptions
 						{
@@ -450,11 +404,6 @@ class AccountsController extends AppController {
 				$this->Session->setFlash('Input email is incorrect!','forget_failure');
 			}
         }
-
-		if($is_admin == 0)
-		{
-			$this->render('/FrontEnds/forget');
-		}
     }	
 
 	function send_email()

@@ -74,8 +74,10 @@ else // -------------- THIS IS FOR ONLINE HOSTING ------------------------------
 $domainSet = explode('.', $server);
 
 // ---------------------------- LOGIN ROUTING (backend only) ------------------------------- //
-Router::connect( ($controller == "admin"?'/admin':'/') , array('controller' => 'accounts', 'action' => 'redirect_login'));
-Router::connect('/admin/login', array('controller' => 'accounts', 'action' => 'login'));
+Router::connect('/admin', array('controller' => 'accounts', 'action' => 'redirect_login'));
+Router::connect('/admin/login', array('controller' => 'accounts', 'action' => 'redirect_login'));
+Router::connect('/', array('controller' => 'accounts', 'action' => 'login'));
+
 Router::connect('/admin/forget', array('controller' => 'accounts', 'action' => 'forget'));
 // ------------------------- END OF LOGIN ROUTING ------------------------------------------ //
 

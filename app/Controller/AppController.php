@@ -192,19 +192,13 @@ class AppController extends Controller {
 		$this->_setInitLayout();
         $this->_convertEntrySlug();
 
-		// url redirection for login kicked out !!
+		// url redirection for admin login kicked out !!
 		$urlext = "";
-		$is_admin = false;
 		if($this->request->url != '/')
 		{
-			$myurl = explode('/' , $this->request->url);
-
-			if(strtolower($myurl[0]) == 'admin')
-			{
-				array_shift($myurl);
-				$is_admin = true;
-			}
-
+            $myurl = explode('/' , $this->request->url);
+            array_shift($myurl); // ignore admin params ...
+            
 			if(!empty($myurl[0]) && strtolower($myurl[0]) != 'login')
 			{
 				$urlext = "?resource=%2F".implode("%2F" , $myurl);
@@ -225,8 +219,7 @@ class AppController extends Controller {
 		);
 		$this->Auth->authError= 'Authorized access is required.';
 		$this->Auth->autoRedirect = false;
-		$this->Auth->logoutRedirect = array('controller'=>'login','admin'=>$is_admin);
-		$this->Auth->loginAction = array('controller'=>'login'.$urlext,'admin'=>$is_admin);
+		$this->Auth->logoutRedirect = $this->Auth->loginAction = '/'.$urlext;
 
 		// update $this->user variable with $this->Auth->user() if existed.
 		$this->user = $this->Auth->user();
@@ -238,13 +231,10 @@ class AppController extends Controller {
 		}
         
 		// check role if admin or not...
-		if( isset($this->request->params['admin']) && $this->request->params['admin'] == 1)
+		if( isset($this->request->params['admin']) && $this->request->params['admin'] == 1 && !empty($this->user) && $this->user['role_id'] > 2 )
 		{
-            if(empty($this->user) || $this->user['role_id'] > 2 )
-			{   
-				$this->Session->setFlash(__('Authorized access is required.'),'default',array() , 'auth');
-				$this->redirect($this->Auth->logout());
-			}
+            $this->Session->setFlash(__('Authorized access is required.'),'default',array() , 'auth');
+            $this->redirect($this->Auth->logout());
 		}
 		$temp = $this->Setting->findByKey("custom-pagination");
 		$this->countListPerPage = (empty($temp['Setting']['value'])?10:$temp['Setting']['value']);

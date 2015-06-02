@@ -214,7 +214,7 @@
                 		?>
                 			<div class="photo">
                                 <div class="image">
-                                    <?php echo $this->Html->image('upload/thumb/'.$myImage['Entry']['id'].'.'.$myImageTypeList[$myImage['Entry']['id']], array('width'=>150,'alt'=>$myImage['Entry']['title'],'title'=>$myImage['Entry']['title'])); ?>
+                                    <?php echo $this->Html->image('upload/'.$myImage['Entry']['id'].'.'.$myImageTypeList[$myImage['Entry']['id']], array('width'=>150,'alt'=>$myImage['Entry']['title'],'title'=>$myImage['Entry']['title'])); ?>
                                 </div>
                                 <div class="description">
                                     <p><?php echo $myImage['Entry']['title']; ?></p>
@@ -235,7 +235,7 @@
                             ?>
                                 <div class="photo">
                                     <div class="image">
-                                        <?php echo $this->Html->image('upload/thumb/'.$findDetail['main_image'].'.'.$myImageTypeList[$findDetail['main_image']], array('width'=>150,'alt'=>$findDetail['title'],'title'=>$findDetail['title'])); ?>
+                                        <?php echo $this->Html->image('upload/'.$findDetail['main_image'].'.'.$myImageTypeList[$findDetail['main_image']], array('width'=>150,'alt'=>$findDetail['title'],'title'=>$findDetail['title'])); ?>
                                     </div>
                                     <div class="description">
                                         <p><?php echo $findDetail['title']; ?></p>

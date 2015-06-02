@@ -165,7 +165,7 @@
 			</div>
 		</div>
 		
-		<div class="control-group">            
+		<div class="control-group hide">            
 			<label class="control-label">Thumbnail Size</label>
 			<div class="controls dimension">
 				<input name="data[TypeMeta][<?php echo $counter+4; ?>][value]" type="text" class="small" value="<?php echo $myType['TypeMeta']['thumb_width'][0]; ?>" placeholder="Width" /> <span>x</span>
@@ -178,7 +178,7 @@
 			</div>
 		</div>
 		
-		<div class="control-group">
+		<div class="control-group hide">
 			<label class="control-label">Thumbnail Crop</label>
 			<div class="controls radio" style="position: relative; top:5px;">
 				<input <?php echo (empty($myType['TypeMeta']['thumb_crop'][0])?'CHECKED':''); ?> type="radio" value="0" name="data[TypeMeta][<?php echo $counter+6; ?>][value]"/><label>None</label>				

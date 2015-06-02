@@ -137,7 +137,9 @@
 			$value['model'] = 'Setting';			
 			$value['input_type'] = 'textarea';
             $value['p'] = 'Tagline for improving website SEO (Search Engine Optimization).';
+            $value['display'] = 'none';
 			echo $this->element('input_'.$value['input_type'] , $value);
+            unset($value['display']);
 			
 			// Description...
 			$value['counter'] = 2;
@@ -247,7 +249,9 @@
 			$value['value'] = $mySetting[$value['counter']]['Setting']['value'];
 			$value['model'] = 'Setting';			
 			$value['input_type'] = 'text';
+            $value['display'] = 'none';
 			echo $this->element('input_'.$value['input_type'] , $value);
+            unset($value['display']);
 			
 			// Table View Format...
 			$value['counter'] = 16;
@@ -265,9 +269,9 @@
 			unset($value['list']);
 			unset($value['p']);
 		?>
-		<div class="alert alert-info full fl">
+		<div class="alert alert-info full fl hide">
 			<strong>Page Inserts</strong>
-		</div>
+		
 		<?php
 			// HEADER ...
 			$value['counter'] = 5;
@@ -302,6 +306,7 @@
 			echo $this->element('input_'.$value['input_type'] , $value);
 			unset($value['p']);
 		?>
+		</div>
 		
 		<div class="alert alert-info full fl">
 			<strong>Media Settings</strong>
@@ -322,7 +327,7 @@
 			</div>
 		</div>
 		
-		<div class="control-group">            
+		<div class="control-group hide">
 			<label style="color: red;" class="control-label">Thumbnail Image</label>
 			<div class="controls dimension">
 				<input REQUIRED name="data[Setting][12][value]" type="text" class="small" value="<?php echo $mySetting[12]['Setting']['value']; ?>" placeholder="Width" /> <span>x</span>

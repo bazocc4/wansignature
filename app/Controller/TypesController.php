@@ -341,8 +341,7 @@ class TypesController extends AppController {
 				$this->TypeMeta->deleteAll(array('TypeMeta.type_id' => $this->Type->id , 
 					'OR' => array(
 						array('TypeMeta.key LIKE' => 'form%'),
-						array('TypeMeta.key LIKE' => 'thumb%'),
-						array('TypeMeta.key LIKE' => 'display%')
+						array('TypeMeta.key LIKE' => 'display%'),
 					)
 				));
 				

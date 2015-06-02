@@ -240,7 +240,7 @@ function openRequestedSinglePopup(strUrl , targetName)
 		// for remove cover image embedded in title area...
 		if(myImageId == null)
 		{
-			$('img#mySelectCoverAlbum').attr('src' , site+'img/upload/thumb/0.jpg');
+			$('img#mySelectCoverAlbum').attr('src' , site+'img/upload/0.jpg');
 			$('input[type=hidden]'+($('input[type=hidden]#mySelectCoverId').length > 0?'#':'.')+'mySelectCoverId').attr('value','0');
 			$('.select').html('Select Cover').show();
 			$('.remove').hide();
@@ -254,7 +254,7 @@ function openRequestedSinglePopup(strUrl , targetName)
 			}
 			else
 			{
-				$('img#myEditCoverImage_'+myImageId).attr('src' , site+'img/upload/thumb/0.jpg');
+				$('img#myEditCoverImage_'+myImageId).attr('src' , site+'img/upload/0.jpg');
 			}
 			$('input[type=hidden]#myEditCoverId_'+myImageId).attr('value' , '0');
 		}
@@ -274,14 +274,14 @@ function openRequestedSinglePopup(strUrl , targetName)
 			}
 			else
 			{
-				$('img#myEditCoverImage_'+myImageId).attr('src',site+'img/upload/thumb/'+imgId+'.'+imgType);
+				$('img#myEditCoverImage_'+myImageId).attr('src',site+'img/upload/'+imgId+'.'+imgType);
 			}
 			$('input#myEditCoverId_'+myImageId).attr('value',imgId);
 		}
 		// for cover image embedded in title area...
 		else if($('input#mycaller').val() == 'mySelectCoverAlbum')
 		{
-			$('img#mySelectCoverAlbum').attr('src',site+'img/upload/thumb/'+imgId+'.'+imgType);
+			$('img#mySelectCoverAlbum').attr('src',site+'img/upload/'+imgId+'.'+imgType);
 			$('input[type=hidden]'+($('input[type=hidden]#mySelectCoverId').length > 0?'#':'.')+'mySelectCoverId').attr('value',imgId);
 			
 			var tes = $('.select').html();
@@ -298,12 +298,12 @@ function openRequestedSinglePopup(strUrl , targetName)
 			if($('input#mycaller').val() == 'myPictureWrapper')
 			{
 				fullkey = $('input#mycaller').val();
-				$('div#'+fullkey).prepend('<div class="photo"><div class="image"><img style="width:150px" title="'+imgName+'" alt="'+imgName+'" src="'+site+'img/upload/thumb/'+imgId+'.'+imgType+'" /></div><div class="description"><p>'+imgName+'</p><a href="javascript:void(0)" onclick="deleteChildPic(this);" class="icon-remove icon-white"></a></div><input type="hidden" value="'+imgId+'" name="data[Entry][image][]" /></div>');
+				$('div#'+fullkey).prepend('<div class="photo"><div class="image"><img style="width:150px" title="'+imgName+'" alt="'+imgName+'" src="'+site+'img/upload/'+imgId+'.'+imgType+'" /></div><div class="description"><p>'+imgName+'</p><a href="javascript:void(0)" onclick="deleteChildPic(this);" class="icon-remove icon-white"></a></div><input type="hidden" value="'+imgId+'" name="data[Entry][image][]" /></div>');
 			}
 			else // input type gallery...
 			{
 				fullkey = $('input#mediaTypeSlug').val();
-				$('div#'+fullkey).prepend('<div class="photo"><div class="image"><img style="width:150px" title="'+imgName+'" alt="'+imgName+'" src="'+site+'img/upload/thumb/'+imgId+'.'+imgType+'" /></div><div class="description"><p>'+imgName+'</p><a href="javascript:void(0)" onclick="deleteChildPic(this);" class="icon-remove icon-white"></a></div><input type="hidden" value="'+imgId+'" name="data[Entry][fieldimage]['+fullkey+'][]" /></div>');
+				$('div#'+fullkey).prepend('<div class="photo"><div class="image"><img style="width:150px" title="'+imgName+'" alt="'+imgName+'" src="'+site+'img/upload/'+imgId+'.'+imgType+'" /></div><div class="description"><p>'+imgName+'</p><a href="javascript:void(0)" onclick="deleteChildPic(this);" class="icon-remove icon-white"></a></div><input type="hidden" value="'+imgId+'" name="data[Entry][fieldimage]['+fullkey+'][]" /></div>');
 			}
 
 			// update total pictures...

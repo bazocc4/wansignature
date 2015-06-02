@@ -31,7 +31,7 @@
 			}
 			if(!empty($p))
 			{
-				echo '<p class="help-block">'.$p.'</p>';
+				echo '<p style="color:red;" class="help-block">'.$p.'</p>';
 			}
 		?>
 	</div>

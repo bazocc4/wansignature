@@ -63,7 +63,7 @@
 		?>
 <div class="photo" alt="<?php echo $p['Entry']['id']; ?>">
 	<div class="image">
-		<?php echo $this->Html->image('upload/thumb/'.$p['Entry']['id'].'.'.$myImageTypeList[$p['Entry']['id']], array('alt' => $p['Entry']['title'],'title' => $p['Entry']['title'],'width'=>150)); ?>
+		<?php echo $this->Html->image('upload/'.$p['Entry']['id'].'.'.$myImageTypeList[$p['Entry']['id']], array('alt' => $p['Entry']['title'],'title' => $p['Entry']['title'],'width'=>150)); ?>
 	</div>
 	<div class="description">
 		<p><?php echo $p['Entry']['title']; ?></p>

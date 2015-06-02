@@ -41,7 +41,7 @@
 	?>
 	<div class="thumbs">
 		<?php
-			echo $this->Html->image('upload/thumb/'.(isset($_POST['data']['Entry'][2]['value'])?$_POST['data']['Entry'][2]['value'].'.'.$myImageTypeList[$_POST['data']['Entry'][2]['value']]:(empty($myEntry)?'0.jpg':$myEntry['Entry']['main_image'].'.'.$myImageTypeList[$myEntry['Entry']['main_image']])),array('id'=>'mySelectCoverAlbum'));
+			echo $this->Html->image('upload/'.(isset($_POST['data']['Entry'][2]['value'])?$_POST['data']['Entry'][2]['value'].'.'.$myImageTypeList[$_POST['data']['Entry'][2]['value']]:(empty($myEntry)?'0.jpg':$myEntry['Entry']['main_image'].'.'.$myImageTypeList[$myEntry['Entry']['main_image']])),array('id'=>'mySelectCoverAlbum'));
 		?>			
 	</div>
 	<div class="title">

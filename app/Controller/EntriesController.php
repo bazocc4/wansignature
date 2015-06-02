@@ -1346,7 +1346,6 @@ class EntriesController extends AppController {
 
 				// REMOVE OLD IMAGE FILE !!
 				unlink(WWW_ROOT.'img'.DS.'upload'.DS.$myid.'.'.$mytype);
-				unlink(WWW_ROOT.'img'.DS.'upload'.DS.'thumb'.DS.$myid.'.'.$mytype);
 
 				// DELETE ENTRY METAS TOO !!
 				$this->EntryMeta->deleteAll(array('EntryMeta.entry_id' => $myid));
@@ -1386,9 +1385,6 @@ class EntriesController extends AppController {
 			$this->request->data['EntryMeta']['value'] = $this->Entry->createDisplay($myid , $mytype , $myMediaSettings);
 			$this->EntryMeta->create();
 			$this->EntryMeta->save($this->request->data);
-			
-			//Resize original file for thumb...
-			$this->Entry->createThumb($myid , $mytype , $myMediaSettings);
 			
 			// REMOVE ORIGINAL IMAGE FILE !!
 			unlink(WWW_ROOT.'img'.DS.'upload'.DS.'original'.DS.$myid.'.'.$mytype);

@@ -51,7 +51,7 @@
 			?>			
 				<div style="cursor: pointer" class="photo" onclick="javascript : $.fn.updateChildPic('<?php echo $value['Entry']['id']; ?>','<?php echo $imageType; ?>','<?php echo $value['Entry']['title']; ?>',$('input[type=hidden]#updateChildPicCrop').val());">
 					<div class="image">
-						<?php echo $this->Html->image('upload/thumb/'.$value['Entry']['id'].'.'.$imageType, array('width'=>150,'alt'=>$value['Entry']['title'],'title' => $value['Entry']['title'])) ?>
+						<?php echo $this->Html->image('upload/'.$value['Entry']['id'].'.'.$imageType, array('width'=>150,'alt'=>$value['Entry']['title'],'title' => $value['Entry']['title'])) ?>
 					</div>
 					<div class="description">
 						<p><?php echo $value['Entry']['title']; ?></p>

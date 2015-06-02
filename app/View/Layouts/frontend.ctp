@@ -37,7 +37,7 @@
 	            
 	            if(!empty($myEntry['Entry']['main_image']))
 	            {
-	                echo '<meta property="og:image" content="'.$this->Get->host_name().'img/upload/thumb/'.$myEntry['Entry']['main_image'].'.'.$myImageTypeList[$myEntry['Entry']['main_image']].'" />';
+	                echo '<meta property="og:image" content="'.$this->Get->host_name().'img/upload/'.$myEntry['Entry']['main_image'].'.'.$myImageTypeList[$myEntry['Entry']['main_image']].'" />';
 	            }
             }
         ?>

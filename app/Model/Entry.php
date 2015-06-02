@@ -654,11 +654,9 @@ class Entry extends AppModel {
 			
 			// Delete File from directory first
 			$destDisplay=sprintf('%simg'.DS.'upload'.DS.'%s',WWW_ROOT,$file);
-			$destThumb=sprintf('%simg'.DS.'upload'.DS.'thumb'.DS.'%s',WWW_ROOT,$file);
 			$destThumbnails=sprintf('%simg'.DS.'upload'.DS.'thumbnails'.DS.'%s.%s',WWW_ROOT,$row['Entry']['title'],$imageType);
 			
 			// Delete file
-			unlink($destThumb);
 			unlink($destDisplay);
 			unlink($destThumbnails);
 			
@@ -716,9 +714,6 @@ class Entry extends AppModel {
 		$this->EntryMeta->create();
 		$this->EntryMeta->save($input);
 		
-		$myMediaSettings = $this->getMediaSettings($myType);
-		$this->createChildThumb($myid , $parentImage['EntryMeta']['image_type'] , $myMediaSettings);
-		
 		// SAVE OTHER ATTRIBUTE OF NEW CROPPED IMAGES !!
 		if(is_numeric($data['x1']) && is_numeric($data['y1']) && is_numeric($data['w']) && is_numeric($data['h']))
 		{
@@ -740,28 +735,6 @@ class Entry extends AppModel {
 			$this->EntryMeta->save($input);
 		}
 		return $myid;
-	}
-
-	/**
-	 * create a thumbnail image
-	 * @param integer $myid contains id of the image entry
-	 * @param string $mytype contains extension type of the image (like .jpg, .png, etc)
-	 * @param string $myMediaSettings contains array of media settings want to be used
-	 * @return true
-	 * @public
-	 **/
-	public function createThumb($myid , $mytype , $myMediaSettings)
-	{		
-		$src = WWW_ROOT.'img'.DS.'upload'.DS.'original'.DS.$myid.'.'.$mytype;
-		$dest = WWW_ROOT.'img'.DS.'upload'.DS.'thumb'.DS.$myid.'.'.$mytype;
-		return $this->Resize->thumb_resize($src, $dest, $myMediaSettings['thumb_width'], $myMediaSettings['thumb_height'] , $myMediaSettings['thumb_crop']);
-	}
-
-	public function createChildThumb($myid , $mytype , $myMediaSettings)
-	{		
-		$src = WWW_ROOT.'img'.DS.'upload'.DS.$myid.'.'.$mytype;
-		$dest = WWW_ROOT.'img'.DS.'upload'.DS.'thumb'.DS.$myid.'.'.$mytype;
-		return $this->Resize->thumb_resize($src, $dest, $myMediaSettings['thumb_width'], $myMediaSettings['thumb_height'] , $myMediaSettings['thumb_crop']);
 	}
 
 	/**
@@ -988,9 +961,6 @@ class Entry extends AppModel {
 		$input['EntryMeta']['value'] = $this->createDisplay($myid , $mytype , $myMediaSettings);
 		$this->EntryMeta->create();
 		$this->EntryMeta->save($input);
-		
-		//Resize original file for thumb...
-		$this->createThumb($myid , $mytype , $myMediaSettings);
 		
 		// REMOVE ORIGINAL IMAGE FILE !!
 		unlink(WWW_ROOT.'img'.DS.'upload'.DS.'original'.DS.$myid.'.'.$mytype);

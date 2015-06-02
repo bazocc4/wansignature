@@ -95,7 +95,7 @@
     </label>
 	<div class="controls">
 		<?php
-			echo $this->Html->image('upload/'.($crop==2?'':'thumb/').$value.'.'.(empty($value)?'jpg':$myImageTypeList[$value]),array('id'=>'myEditCoverImage_'.$counter));
+			echo $this->Html->image('upload/'.$value.'.'.(empty($value)?'jpg':$myImageTypeList[$value]),array('id'=>'myEditCoverImage_'.$counter));
 		?>
 	</div>
 	<div class="controls" style="margin-top:10px">

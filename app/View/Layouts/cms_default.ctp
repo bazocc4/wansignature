@@ -49,10 +49,6 @@
 		<script src="<?php echo $imagePath; ?>js/media.js"></script>
 		<script src="<?php echo $imagePath; ?>js/livedate.js"></script>
 	    
-<!-- 		for Cropping Image -->
-		<link rel="stylesheet" href="<?php echo $imagePath; ?>css/jquery.jcrop.css" type="text/css" />	
-		<script type="text/javascript" src="<?php echo $imagePath; ?>js/jquery.jcrop.js"></script>	    
-	    
 <!-- 		for jquery uploading file -->
 		<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
 		<script src="<?php echo $imagePath; ?>js/uploadfile/vendor/jquery.ui.widget.js"></script>

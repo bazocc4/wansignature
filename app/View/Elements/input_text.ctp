@@ -53,7 +53,7 @@
 		$inputsize = 'input-xlarge';
 	}
 	
-	if($shortkey == 'discount' || $shortkey == 'weight' || $shortkey == 'qty')
+	if($shortkey == 'discount' || $shortkey == 'weight' || $shortkey == 'qty' || $shortkey == 'Bunga Cek')
 	{
 		$inputsize = 'input-mini';
 	}
@@ -74,7 +74,7 @@
 				echo 'Rp.';
 			}
 		?>
-		<input <?php echo ($maxchar > 0?'maxlength="'.$maxchar.'"':''); ?> <?php echo ($detail_type=='number'?'min="1"':''); ?> <?php echo (!empty($readonly)?'readonly="true"':''); ?> <?php echo $required; ?> class="<?php echo $inputsize.' '.$shortkey.' '.$classtitle; ?>" type="<?php echo $detail_type; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo (isset($_POST['data'][$model][$counter]['value'])?$_POST['data'][$model][$counter]['value']:$value); ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value]"/>
+		<input <?php echo ($maxchar > 0?'maxlength="'.$maxchar.'"':''); ?> <?php echo ($detail_type=='number'?'step="any" min="0"':''); ?> <?php echo (!empty($readonly)?'readonly="true"':''); ?> <?php echo $required; ?> class="<?php echo $inputsize.' '.$shortkey.' '.$classtitle; ?>" type="<?php echo $detail_type; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo (isset($_POST['data'][$model][$counter]['value'])?$_POST['data'][$model][$counter]['value']:$value); ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value]"/>
 		<?php
             // footer string !!
 			if($shortkey == 'discount')
@@ -92,6 +92,10 @@
 			else if($shortkey == 'qty')
 			{
 				echo 'unit(s)';
+			}
+            else if($shortkey == 'Bunga Cek')
+			{
+				echo '% / month';
 			}
 		?>
 		<p class="help-block">

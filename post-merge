@@ -1,2 +1,2 @@
 #!/bin/bash
-mysql -u root -p wansignature < /D/xampp/htdocs/wansignature/wansignature.sql
+mysql -u root wansignature < /D/xampp/htdocs/wansignature/wansignature.sql

@@ -291,7 +291,7 @@
 					if($descriptionUsed == 1 && !empty($value['Entry']['description']))
 					{
 						$description = strip_tags($value['Entry']['description']);
-						echo (strlen($description) > 30? substr($description,0,30)."..." : $description);
+						echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$value['Entry']['description'].'">'.substr($description,0,30).'...</a>' : $description);
 					}
 				?>
 			</p>
@@ -339,7 +339,7 @@
                         		{
                         			$queryURL['type'] = $myChildType['Type']['slug'];
                         		}
-                        		echo '<span class="badge badge-info">'.(empty($popup)?$this->Html->link($value['EntryMeta']['count-'.$value10['key']].' <i class="icon-picture icon-white"></i>',array('action'=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']) , 'edit' , $value['Entry']['slug'] , '?' => $queryURL ), array('escape'=>false,'title' => 'Click to see all images.')):$value['EntryMeta']['count-'.$value10['key']].' <i class="icon-picture icon-white"></i>').'</span>';
+                        		echo '<span class="badge badge-info">'.(empty($popup)?$this->Html->link($value['EntryMeta']['count-'.$value10['key']].' <i class="icon-picture icon-white"></i>',array('action'=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']) , 'edit' , $value['Entry']['slug'] , '?' => $queryURL ), array('escape'=>false, 'data-toggle'=>'tooltip','title' => 'Click to see all images.')):$value['EntryMeta']['count-'.$value10['key']].' <i class="icon-picture icon-white"></i>').'</span>';
                         	}
                         	else
                         	{
@@ -407,7 +407,7 @@
                                 else
                                 {
                                     $description = strip_tags($entrydetail['Entry']['description']);
-                            	    echo (strlen($description) > 30 ? substr($description,0,30)."..." : $description);
+                            	    echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$entrydetail['Entry']['description'].'">'.substr($description,0,30).'...</a>' : $description);
                                 }                                
                                 echo '</p>';
 							}

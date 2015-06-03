@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.3.11
+-- version 4.2.11
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 02, 2015 at 07:50 PM
--- Server version: 5.6.24
--- PHP Version: 5.6.8
+-- Generation Time: Jun 03, 2015 at 11:06 AM
+-- Server version: 5.6.21
+-- PHP Version: 5.6.3
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -27,7 +27,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE IF NOT EXISTS `cms_accounts` (
-  `id` int(11) NOT NULL,
+`id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `role_id` tinyint(4) NOT NULL,
   `username` varchar(500) DEFAULT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `cms_accounts` (
 --
 
 INSERT INTO `cms_accounts` (`id`, `user_id`, `role_id`, `username`, `email`, `password`, `last_login`, `created`, `created_by`, `modified`, `modified_by`) VALUES
-(1, 1, 1, 'admin', 'admin@yahoo.com', '169e781bd52860b584879cbe117085da596238f3', '2015-06-03 00:35:40', '2013-01-04 00:00:00', 1, '2013-01-04 00:00:00', 1),
+(1, 1, 1, 'admin', 'admin@yahoo.com', '169e781bd52860b584879cbe117085da596238f3', '2015-06-03 10:14:53', '2013-01-04 00:00:00', 1, '2014-05-05 15:15:38', 1),
 (2, 2, 2, 'Andy Basuki', 'andybasuki88@gmail.com', 'd82dff1679e0137a0bab60cc67cc6a2ad36f10a0', '2015-06-02 20:20:02', '2015-06-02 20:19:53', 1, '2015-06-02 20:19:53', 1);
 
 -- --------------------------------------------------------
@@ -55,7 +55,7 @@ INSERT INTO `cms_accounts` (`id`, `user_id`, `role_id`, `username`, `email`, `pa
 --
 
 CREATE TABLE IF NOT EXISTS `cms_entries` (
-  `id` int(11) NOT NULL,
+`id` int(11) NOT NULL,
   `entry_type` varchar(500) NOT NULL,
   `title` varchar(500) NOT NULL,
   `slug` varchar(500) NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `cms_entries` (
   `modified_by` int(11) unsigned NOT NULL DEFAULT '1',
   `sort_order` int(11) NOT NULL DEFAULT '0',
   `lang_code` varchar(10) NOT NULL
-) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `cms_entries`
@@ -82,7 +82,10 @@ INSERT INTO `cms_entries` (`id`, `entry_type`, `title`, `slug`, `description`, `
 (4, 'media', 'logo-bank-mandiri', 'logo-bank-mandiri', NULL, 0, 0, 1, 0, '2015-06-03 00:44:38', 1, '2015-06-03 00:44:38', 1, 4, 'en-4'),
 (5, 'bank', 'Mandiri', 'mandiri', '[info here]', 4, 0, 1, 0, '2015-06-03 00:45:20', 1, '2015-06-03 00:45:20', 1, 5, 'en-5'),
 (7, 'bank', 'HSBC', 'hsbc-1', '[info here]', 8, 0, 1, 0, '2015-06-03 00:47:51', 1, '2015-06-03 00:49:13', 1, 7, 'en-7'),
-(8, 'media', 'hsbc', 'hsbc-2', NULL, 0, 0, 1, 0, '2015-06-03 00:49:07', 1, '2015-06-03 00:49:07', 1, 8, 'en-8');
+(8, 'media', 'hsbc', 'hsbc-2', NULL, 0, 0, 1, 0, '2015-06-03 00:49:07', 1, '2015-06-03 00:49:07', 1, 8, 'en-8'),
+(9, 'usd-rate', 'IDR', 'idr', 'Indonesian Rupiah.', 0, 0, 1, 0, '2015-06-03 15:58:49', 1, '2015-06-03 16:04:40', 1, 9, 'en-9'),
+(10, 'usd-rate', 'HKD', 'hkd', 'Hongkong Dollar.', 0, 0, 1, 0, '2015-06-03 16:04:27', 1, '2015-06-03 16:04:27', 1, 10, 'en-10'),
+(11, 'usd-rate', 'CNY', 'cny', 'Chinese Yuan.', 0, 0, 1, 0, '2015-06-03 16:05:14', 1, '2015-06-03 16:05:14', 1, 11, 'en-11');
 
 -- --------------------------------------------------------
 
@@ -91,11 +94,11 @@ INSERT INTO `cms_entries` (`id`, `entry_type`, `title`, `slug`, `description`, `
 --
 
 CREATE TABLE IF NOT EXISTS `cms_entry_metas` (
-  `id` int(11) NOT NULL,
+`id` int(11) NOT NULL,
   `entry_id` int(11) NOT NULL,
   `key` varchar(500) NOT NULL,
   `value` text NOT NULL
-) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=26 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `cms_entry_metas`
@@ -113,7 +116,13 @@ INSERT INTO `cms_entry_metas` (`id`, `entry_id`, `key`, `value`) VALUES
 (15, 7, 'backup-slug', '\nhsbc-1\n'),
 (16, 8, 'backup-slug', '\nhsbc-2\n'),
 (17, 8, 'image_type', 'gif'),
-(18, 8, 'image_size', '1569');
+(18, 8, 'image_size', '1569'),
+(19, 9, 'backup-slug', '\nidr\n'),
+(23, 9, 'form-rate_value', '13230.50'),
+(21, 10, 'backup-slug', '\nhkd\n'),
+(22, 10, 'form-rate_value', '7.75'),
+(24, 11, 'backup-slug', '\ncny\n'),
+(25, 11, 'form-rate_value', '6.20');
 
 -- --------------------------------------------------------
 
@@ -122,7 +131,7 @@ INSERT INTO `cms_entry_metas` (`id`, `entry_id`, `key`, `value`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `cms_roles` (
-  `id` int(11) NOT NULL,
+`id` int(11) NOT NULL,
   `name` varchar(500) NOT NULL,
   `description` text,
   `count` int(11) DEFAULT NULL
@@ -144,7 +153,7 @@ INSERT INTO `cms_roles` (`id`, `name`, `description`, `count`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `cms_settings` (
-  `id` int(11) NOT NULL,
+`id` int(11) NOT NULL,
   `key` varchar(500) NOT NULL,
   `value` text NOT NULL
 ) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
@@ -184,7 +193,7 @@ INSERT INTO `cms_settings` (`id`, `key`, `value`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `cms_types` (
-  `id` int(11) NOT NULL,
+`id` int(11) NOT NULL,
   `name` varchar(500) NOT NULL,
   `slug` varchar(500) NOT NULL,
   `description` text,
@@ -194,7 +203,7 @@ CREATE TABLE IF NOT EXISTS `cms_types` (
   `created_by` int(11) unsigned NOT NULL DEFAULT '1',
   `modified` datetime NOT NULL,
   `modified_by` int(11) unsigned NOT NULL DEFAULT '1'
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `cms_types`
@@ -204,7 +213,9 @@ INSERT INTO `cms_types` (`id`, `name`, `slug`, `description`, `parent_id`, `coun
 (1, 'Media Library', 'media', 'All media image is stored here.', 0, 0, '2013-01-15 03:35:14', 1, '2013-01-15 03:35:14', 1),
 (4, 'Client', 'client', 'Daftar pelanggan WAN Signature, baik berupa Toko maupun End User.', 0, 0, '2015-06-02 22:37:24', 1, '2015-06-02 22:37:24', 1),
 (5, 'Vendor', 'vendor', 'Daftar vendor WAN Signature.', 0, 0, '2015-06-02 23:23:54', 1, '2015-06-02 23:23:54', 1),
-(6, 'Bank', 'bank', 'Daftar bank yang bekerja sama dengan WAN Signature.', 0, 0, '2015-06-02 23:42:49', 1, '2015-06-02 23:42:49', 1);
+(6, 'Bank', 'bank', 'Daftar bank yang bekerja sama dengan WAN Signature.', 0, 0, '2015-06-02 23:42:49', 1, '2015-06-02 23:42:49', 1),
+(7, 'Salesman', 'salesman', 'Sales(wo)man yang bertugas melayani client WAN Signature.', 0, 0, '2015-06-03 10:55:24', 1, '2015-06-03 10:55:24', 1),
+(8, 'USD Rate', 'usd-rate', 'Live Exchange Rate (terhadap $ USD)', 0, 0, '2015-06-03 15:39:44', 1, '2015-06-03 15:39:44', 1);
 
 -- --------------------------------------------------------
 
@@ -213,14 +224,14 @@ INSERT INTO `cms_types` (`id`, `name`, `slug`, `description`, `parent_id`, `coun
 --
 
 CREATE TABLE IF NOT EXISTS `cms_type_metas` (
-  `id` int(11) NOT NULL,
+`id` int(11) NOT NULL,
   `type_id` int(11) NOT NULL,
   `key` varchar(500) NOT NULL,
   `value` text,
   `input_type` varchar(500) DEFAULT NULL,
   `validation` text,
   `instruction` varchar(300) DEFAULT NULL
-) ENGINE=MyISAM AUTO_INCREMENT=27 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=36 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `cms_type_metas`
@@ -234,7 +245,7 @@ INSERT INTO `cms_type_metas` (`id`, `type_id`, `key`, `value`, `input_type`, `va
 (8, 4, 'form-alamat', '', 'textarea', '', 'Alamat pribadi / toko pelanggan.'),
 (9, 4, 'form-telepon', '', 'text', '', 'Nomer Telp / HP yang dapat dihubungi.'),
 (10, 4, 'form-email', '', 'text', 'is_email|', 'Alamat E-mail yang dapat dihubungi.'),
-(11, 4, 'form-salesman', '', 'browse', '', 'Sales(wo)man yang menghandle client ini.'),
+(11, 4, 'form-salesman', '', 'browse', '', 'Sales(wo)man yang melayani client ini.'),
 (12, 4, 'form-warehouse', '', 'multibrowse', '', 'Client pernah ambil produk dari WH mana saja.'),
 (13, 4, 'form-exhibition', '', 'multibrowse', '', 'Client pernah ambil produk dari pameran mana saja.'),
 (14, 4, 'form-diamond_sell_x', '', 'text', 'is_numeric|', 'Nilai Sell X untuk produk diamond.'),
@@ -249,7 +260,16 @@ INSERT INTO `cms_type_metas` (`id`, `type_id`, `key`, `value`, `input_type`, `va
 (23, 5, 'form-telepon', '', 'text', '', 'Nomer Telp / HP yang dapat dihubungi.'),
 (24, 5, 'form-email', '', 'text', 'is_email|', 'Alamat E-mail yang dapat dihubungi.'),
 (25, 5, 'form-capital_x', '', 'text', 'is_numeric|', 'Nilai Capital X untuk produk diamond.'),
-(26, 6, 'category', 'master', NULL, NULL, NULL);
+(26, 6, 'category', 'master', NULL, NULL, NULL),
+(27, 7, 'category', 'master', NULL, NULL, NULL),
+(28, 7, 'title_key', 'Nama Lengkap', NULL, NULL, NULL),
+(29, 7, 'form-alamat', '', 'textarea', '', 'Alamat lengkap tempat tinggal.'),
+(30, 7, 'form-telepon', '', 'text', '', 'Nomer Telp / HP yang dapat dihubungi.'),
+(31, 7, 'form-email', '', 'text', 'is_email|', 'Alamat E-mail yang dapat dihubungi.'),
+(32, 7, 'form-tgl_join', '', 'datepicker', '', 'First time working date at WAN Signature.'),
+(33, 8, 'category', 'master', NULL, NULL, NULL),
+(34, 8, 'title_key', 'Currency', NULL, NULL, NULL),
+(35, 8, 'form-rate_value', '', 'text', 'not_empty|is_numeric|', 'Harga nominal kurs per $1 USD.');
 
 -- --------------------------------------------------------
 
@@ -258,7 +278,7 @@ INSERT INTO `cms_type_metas` (`id`, `type_id`, `key`, `value`, `input_type`, `va
 --
 
 CREATE TABLE IF NOT EXISTS `cms_users` (
-  `id` int(11) NOT NULL,
+`id` int(11) NOT NULL,
   `firstname` varchar(500) NOT NULL,
   `lastname` varchar(500) DEFAULT NULL,
   `created` datetime NOT NULL,
@@ -283,7 +303,7 @@ INSERT INTO `cms_users` (`id`, `firstname`, `lastname`, `created`, `created_by`,
 --
 
 CREATE TABLE IF NOT EXISTS `cms_user_metas` (
-  `id` int(11) NOT NULL,
+`id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `key` varchar(500) NOT NULL,
   `value` text NOT NULL
@@ -322,55 +342,55 @@ INSERT INTO `cms_user_metas` (`id`, `user_id`, `key`, `value`) VALUES
 -- Indexes for table `cms_accounts`
 --
 ALTER TABLE `cms_accounts`
-  ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `email` (`email`), ADD UNIQUE KEY `username` (`username`);
+ ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `email` (`email`), ADD UNIQUE KEY `username` (`username`);
 
 --
 -- Indexes for table `cms_entries`
 --
 ALTER TABLE `cms_entries`
-  ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `slug` (`slug`);
+ ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `slug` (`slug`);
 
 --
 -- Indexes for table `cms_entry_metas`
 --
 ALTER TABLE `cms_entry_metas`
-  ADD PRIMARY KEY (`id`);
+ ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `cms_roles`
 --
 ALTER TABLE `cms_roles`
-  ADD PRIMARY KEY (`id`);
+ ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `cms_settings`
 --
 ALTER TABLE `cms_settings`
-  ADD PRIMARY KEY (`id`);
+ ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `cms_types`
 --
 ALTER TABLE `cms_types`
-  ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `slug` (`slug`);
+ ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `slug` (`slug`);
 
 --
 -- Indexes for table `cms_type_metas`
 --
 ALTER TABLE `cms_type_metas`
-  ADD PRIMARY KEY (`id`);
+ ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `cms_users`
 --
 ALTER TABLE `cms_users`
-  ADD PRIMARY KEY (`id`);
+ ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `cms_user_metas`
 --
 ALTER TABLE `cms_user_metas`
-  ADD PRIMARY KEY (`id`);
+ ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -380,47 +400,47 @@ ALTER TABLE `cms_user_metas`
 -- AUTO_INCREMENT for table `cms_accounts`
 --
 ALTER TABLE `cms_accounts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `cms_entries`
 --
 ALTER TABLE `cms_entries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=9;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=12;
 --
 -- AUTO_INCREMENT for table `cms_entry_metas`
 --
 ALTER TABLE `cms_entry_metas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=19;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=26;
 --
 -- AUTO_INCREMENT for table `cms_roles`
 --
 ALTER TABLE `cms_roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT for table `cms_settings`
 --
 ALTER TABLE `cms_settings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=23;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=23;
 --
 -- AUTO_INCREMENT for table `cms_types`
 --
 ALTER TABLE `cms_types`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=9;
 --
 -- AUTO_INCREMENT for table `cms_type_metas`
 --
 ALTER TABLE `cms_type_metas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=27;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=36;
 --
 -- AUTO_INCREMENT for table `cms_users`
 --
 ALTER TABLE `cms_users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `cms_user_metas`
 --
 ALTER TABLE `cms_user_metas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=20;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=20;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

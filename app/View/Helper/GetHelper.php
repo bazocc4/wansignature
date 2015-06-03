@@ -579,7 +579,7 @@ class GetHelper extends AppHelper
 		switch ($inputType) 
 		{
 			case 'file':
-				$result = "<a title='CLICK TO DOWNLOAD FILE' href='".$this->get_linkpath()."files/".$value."'>".str_replace('_',' ',$value)."</a>";
+				$result = "<p><a data-toggle='tooltip' title='CLICK TO DOWNLOAD FILE' href='".$this->get_linkpath()."files/".$value."'>".str_replace('_',' ',$value)."</a></p>";
 				break;
 			case 'ckeditor':
 			case 'textarea':
@@ -603,7 +603,7 @@ class GetHelper extends AppHelper
 				// set $maxLength !!
 				if(strlen($result) > $maxLength)
 				{
-					$result = substr($result,0,$maxLength)."...";
+					$result = '<p><a href="#" data-toggle="tooltip" title="'.$result.'">'.substr($result,0,$maxLength).'...</a></p>';
 				}
 				$result = nl2br($result);
 				break;
@@ -659,6 +659,10 @@ class GetHelper extends AppHelper
             case 'harga_beli':
             case 'harga_jual':
                 $echothis = 'Rp.'.str_replace(',', '.', toMoney($result  , true , true) ).',-';
+                $echothis .= '<input type="hidden" value="'.$result.'">';
+                break;
+            case 'rate_value':
+                $echothis = '<strong>'.toMoney($result  , true , true).'</strong>';
                 $echothis .= '<input type="hidden" value="'.$result.'">';
                 break;
             case 'weight':

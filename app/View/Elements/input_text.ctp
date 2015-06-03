@@ -57,7 +57,7 @@
 	{
 		$inputsize = 'input-mini';
 	}
-	else if($shortkey == "price")
+	else if($shortkey == "price" || $shortkey == "rate_value")
 	{
 		$inputsize = 'input-small';
 	}
@@ -96,6 +96,19 @@
             else if($shortkey == 'Bunga Cek')
 			{
 				echo '% / month';
+			}
+            else if($shortkey == 'rate_value')
+			{
+				echo '<span id="currency_duplicator"></span> = $1 USD.';
+                ?>
+<script>
+	$(document).ready(function(){
+		$('input.Currency.Title').keyup(function(){
+            $('#currency_duplicator').text( $(this).val() );
+        }).trigger('keyup');
+	});
+</script>                
+                <?php
 			}
 		?>
 		<p class="help-block">

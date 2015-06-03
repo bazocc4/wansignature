@@ -226,8 +226,10 @@
 				$("div.sidebar.span2 ul").css("padding-bottom" , (122 + parseInt($("div.container-fluid").height()) - parseInt($("div.sidebar.span2 ul").height())) + "px");
                 
                 // initialize bootstrap tooltip !!
-                $('[data-toggle=tooltip]').tooltip();
-                $('[data-toggle=tooltip]').each(function(){
+                $('[data-toggle=tooltip]').tooltip({
+                    container: 'body',
+                    html: true,
+                }).each(function(){
                     $(this).attr('title' , $(this).attr('alt') );
                 });
 		  	});

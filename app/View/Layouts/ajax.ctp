@@ -18,3 +18,14 @@
  */
 ?>
 <?php echo $content_for_layout; ?>
+<script>
+    $(document).ready(function(){
+        // initialize bootstrap tooltip !!
+        $('[data-toggle=tooltip]').not('[data-original-title]').tooltip({
+            container: 'body',
+            html: true,
+        }).each(function(){
+            $(this).attr('title' , $(this).attr('alt') );
+        });
+    });
+</script>

@@ -26,6 +26,7 @@ img{
 /* TOOLS */
 .clear {clear:both !important;}
 .sort-symbol {color: red;}
+.tooltip-inner { text-align:left; }
 
 /* ABAS CSS */
 .normal-checkbox{float:left; position: relative; top: 10px}

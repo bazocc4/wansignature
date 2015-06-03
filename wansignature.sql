@@ -46,7 +46,7 @@ CREATE TABLE `cms_accounts` (
 
 LOCK TABLES `cms_accounts` WRITE;
 /*!40000 ALTER TABLE `cms_accounts` DISABLE KEYS */;
-INSERT INTO `cms_accounts` VALUES (1,1,1,'admin','admin@yahoo.com','169e781bd52860b584879cbe117085da596238f3','2015-06-03 21:11:29','2013-01-04 00:00:00',1,'2013-01-04 00:00:00',1);
+INSERT INTO `cms_accounts` VALUES (1,1,1,'admin','admin@yahoo.com','169e781bd52860b584879cbe117085da596238f3','2015-06-03 21:47:10','2013-01-04 00:00:00',1,'2013-01-04 00:00:00',1);
 INSERT INTO `cms_accounts` VALUES (2,2,2,'Andy Basuki','andybasuki88@gmail.com','d82dff1679e0137a0bab60cc67cc6a2ad36f10a0','2015-06-02 20:20:02','2015-06-02 20:19:53',1,'2015-06-02 20:19:53',1);
 /*!40000 ALTER TABLE `cms_accounts` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -76,7 +76,7 @@ CREATE TABLE `cms_entries` (
   `lang_code` varchar(10) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `slug` (`slug`)
-) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -95,6 +95,17 @@ INSERT INTO `cms_entries` VALUES (9,'usd-rate','IDR','idr','Indonesian Rupiah.',
 INSERT INTO `cms_entries` VALUES (10,'usd-rate','HKD','hkd','Hongkong Dollar.',0,0,1,0,'2015-06-03 16:04:27',1,'2015-06-03 16:04:27',1,10,'en-10');
 INSERT INTO `cms_entries` VALUES (11,'usd-rate','CNY','cny','Chinese Yuan.',0,0,1,0,'2015-06-03 16:05:14',1,'2015-06-03 16:05:14',1,11,'en-11');
 INSERT INTO `cms_entries` VALUES (12,'usd-rate','Euro','euro','',0,0,1,0,'2015-06-03 21:13:08',1,'2015-06-03 21:13:08',1,12,'en-12');
+INSERT INTO `cms_entries` VALUES (13,'usd-rate','Gold Bar (gr)','gold-bar-gr','',0,0,1,0,'2015-06-03 21:52:59',1,'2015-06-03 21:52:59',1,13,'en-13');
+INSERT INTO `cms_entries` VALUES (14,'warehouse','Atom WH','atom-wh','',0,0,1,0,'2015-06-03 22:41:50',1,'2015-06-03 22:41:50',1,14,'en-14');
+INSERT INTO `cms_entries` VALUES (15,'warehouse','Tunjungan Plaza WH','tunjungan-plaza-wh','',0,0,1,0,'2015-06-03 22:42:27',1,'2015-06-03 22:42:27',1,15,'en-15');
+INSERT INTO `cms_entries` VALUES (16,'product-type','DPF','dpf','Diamond Pendants Finish',0,0,1,0,'2015-06-03 23:22:58',1,'2015-06-03 23:24:31',1,16,'en-16');
+INSERT INTO `cms_entries` VALUES (17,'product-type','DRF','drf','Diamond Rings Finish',0,0,1,0,'2015-06-03 23:23:16',1,'2015-06-03 23:24:24',1,17,'en-17');
+INSERT INTO `cms_entries` VALUES (18,'product-type','DEF','def','Diamond Earrings Finish',0,0,1,0,'2015-06-03 23:24:13',1,'2015-06-03 23:24:13',1,18,'en-18');
+INSERT INTO `cms_entries` VALUES (19,'product-type','Pipe Necklace','pipe-necklace','',0,0,1,0,'2015-06-03 23:25:33',1,'2015-06-03 23:25:33',1,19,'en-19');
+INSERT INTO `cms_entries` VALUES (20,'product-type','Pipe Bracelet','pipe-bracelet','',0,0,1,0,'2015-06-03 23:25:53',1,'2015-06-03 23:25:53',1,20,'en-20');
+INSERT INTO `cms_entries` VALUES (21,'product-brand','BVLGARI','bvlgari','',0,0,1,0,'2015-06-03 23:31:03',1,'2015-06-03 23:31:03',1,21,'en-21');
+INSERT INTO `cms_entries` VALUES (22,'product-brand','VAN CLEEF','van-cleef','',0,0,1,0,'2015-06-03 23:31:14',1,'2015-06-03 23:31:14',1,22,'en-22');
+INSERT INTO `cms_entries` VALUES (23,'product-brand','HERMES','hermes','',0,0,1,0,'2015-06-03 23:31:27',1,'2015-06-03 23:31:27',1,23,'en-23');
 /*!40000 ALTER TABLE `cms_entries` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -111,7 +122,7 @@ CREATE TABLE `cms_entry_metas` (
   `key` varchar(500) NOT NULL,
   `value` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=28 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=42 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -140,6 +151,20 @@ INSERT INTO `cms_entry_metas` VALUES (24,11,'backup-slug','\ncny\n');
 INSERT INTO `cms_entry_metas` VALUES (25,11,'form-rate_value','6.20');
 INSERT INTO `cms_entry_metas` VALUES (26,12,'backup-slug','\neuro\n');
 INSERT INTO `cms_entry_metas` VALUES (27,12,'form-rate_value','0.89');
+INSERT INTO `cms_entry_metas` VALUES (28,13,'backup-slug','\ngold-bar-gr\n');
+INSERT INTO `cms_entry_metas` VALUES (29,13,'form-rate_value','38.29');
+INSERT INTO `cms_entry_metas` VALUES (30,14,'backup-slug','\natom-wh\n');
+INSERT INTO `cms_entry_metas` VALUES (31,14,'form-warehouse_employee','');
+INSERT INTO `cms_entry_metas` VALUES (32,15,'backup-slug','\ntunjungan-plaza-wh\n');
+INSERT INTO `cms_entry_metas` VALUES (33,15,'form-warehouse_employee','');
+INSERT INTO `cms_entry_metas` VALUES (34,16,'backup-slug','\ndpf\n');
+INSERT INTO `cms_entry_metas` VALUES (35,17,'backup-slug','\ndrf\n');
+INSERT INTO `cms_entry_metas` VALUES (36,18,'backup-slug','\ndef\n');
+INSERT INTO `cms_entry_metas` VALUES (37,19,'backup-slug','\npipe-necklace\n');
+INSERT INTO `cms_entry_metas` VALUES (38,20,'backup-slug','\npipe-bracelet\n');
+INSERT INTO `cms_entry_metas` VALUES (39,21,'backup-slug','\nbvlgari\n');
+INSERT INTO `cms_entry_metas` VALUES (40,22,'backup-slug','\nvan-cleef\n');
+INSERT INTO `cms_entry_metas` VALUES (41,23,'backup-slug','\nhermes\n');
 /*!40000 ALTER TABLE `cms_entry_metas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -233,7 +258,7 @@ CREATE TABLE `cms_type_metas` (
   `validation` text,
   `instruction` varchar(300) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=36 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=45 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -243,7 +268,7 @@ CREATE TABLE `cms_type_metas` (
 LOCK TABLES `cms_type_metas` WRITE;
 /*!40000 ALTER TABLE `cms_type_metas` DISABLE KEYS */;
 INSERT INTO `cms_type_metas` VALUES (5,4,'title_key','Nama Lengkap',NULL,NULL,NULL);
-INSERT INTO `cms_type_metas` VALUES (4,4,'category','master',NULL,NULL,NULL);
+INSERT INTO `cms_type_metas` VALUES (4,4,'category','partners',NULL,NULL,NULL);
 INSERT INTO `cms_type_metas` VALUES (6,4,'form-kode_pelanggan','','text','','Kode singkat unik pelanggan.');
 INSERT INTO `cms_type_metas` VALUES (7,4,'form-kategori','End User\r\nRetailer\r\nWholesaler','radio','not_empty|','Tingkatan kategori pelanggan.');
 INSERT INTO `cms_type_metas` VALUES (8,4,'form-alamat','','textarea','','Alamat pribadi / toko pelanggan.');
@@ -257,23 +282,32 @@ INSERT INTO `cms_type_metas` VALUES (15,4,'form-italy_sell_x','','text','is_nume
 INSERT INTO `cms_type_metas` VALUES (16,4,'form-korea_sell_x','','text','is_numeric|','Nilai Sell X untuk produk COR Korea (1.00)');
 INSERT INTO `cms_type_metas` VALUES (17,4,'form-cor_999_simple_x','','text','is_numeric|','Nilai Sell X untuk produk COR 999 Simple (1.10)');
 INSERT INTO `cms_type_metas` VALUES (18,4,'form-cor_999_3d_x','','text','is_numeric|','Nilai Sell X untuk produk COR 999 3D (1.15)');
-INSERT INTO `cms_type_metas` VALUES (19,5,'category','master',NULL,NULL,NULL);
+INSERT INTO `cms_type_metas` VALUES (19,5,'category','partners',NULL,NULL,NULL);
 INSERT INTO `cms_type_metas` VALUES (20,5,'title_key','Nama Lengkap',NULL,NULL,NULL);
 INSERT INTO `cms_type_metas` VALUES (21,5,'form-kode_vendor','','text','','Kode singkat unik vendor.');
 INSERT INTO `cms_type_metas` VALUES (22,5,'form-alamat','','textarea','','Alamat perusahaan vendor.');
 INSERT INTO `cms_type_metas` VALUES (23,5,'form-telepon','','text','','Nomer Telp / HP yang dapat dihubungi.');
 INSERT INTO `cms_type_metas` VALUES (24,5,'form-email','','text','is_email|','Alamat E-mail yang dapat dihubungi.');
 INSERT INTO `cms_type_metas` VALUES (25,5,'form-capital_x','','text','is_numeric|','Nilai Capital X untuk produk diamond.');
-INSERT INTO `cms_type_metas` VALUES (26,6,'category','master',NULL,NULL,NULL);
-INSERT INTO `cms_type_metas` VALUES (27,7,'category','master',NULL,NULL,NULL);
+INSERT INTO `cms_type_metas` VALUES (26,6,'category','partners',NULL,NULL,NULL);
+INSERT INTO `cms_type_metas` VALUES (27,7,'category','partners',NULL,NULL,NULL);
 INSERT INTO `cms_type_metas` VALUES (28,7,'title_key','Nama Lengkap',NULL,NULL,NULL);
 INSERT INTO `cms_type_metas` VALUES (29,7,'form-alamat','','textarea','','Alamat lengkap tempat tinggal.');
 INSERT INTO `cms_type_metas` VALUES (30,7,'form-telepon','','text','','Nomer Telp / HP yang dapat dihubungi.');
 INSERT INTO `cms_type_metas` VALUES (31,7,'form-email','','text','is_email|','Alamat E-mail yang dapat dihubungi.');
 INSERT INTO `cms_type_metas` VALUES (32,7,'form-tgl_join','','datepicker','','First time working date at WAN Signature.');
-INSERT INTO `cms_type_metas` VALUES (33,8,'category','master',NULL,NULL,NULL);
+INSERT INTO `cms_type_metas` VALUES (33,8,'category','inventory',NULL,NULL,NULL);
 INSERT INTO `cms_type_metas` VALUES (34,8,'title_key','Currency',NULL,NULL,NULL);
 INSERT INTO `cms_type_metas` VALUES (35,8,'form-rate_value','','text','not_empty|is_numeric|','Harga nominal kurs per $1 USD.');
+INSERT INTO `cms_type_metas` VALUES (36,9,'category','inventory',NULL,NULL,NULL);
+INSERT INTO `cms_type_metas` VALUES (37,9,'title_key','Nama',NULL,NULL,NULL);
+INSERT INTO `cms_type_metas` VALUES (38,9,'form-alamat','','textarea','','Alamat lengkap posisi WH berada.');
+INSERT INTO `cms_type_metas` VALUES (39,9,'form-telepon','','text','','Nomer Telp WH yang dapat dihubungi.');
+INSERT INTO `cms_type_metas` VALUES (40,9,'form-warehouse_employee','','multibrowse','','Pegawai yg bertanggung jawab untuk WH ini.');
+INSERT INTO `cms_type_metas` VALUES (41,10,'category','inventory',NULL,NULL,NULL);
+INSERT INTO `cms_type_metas` VALUES (42,11,'category','inventory',NULL,NULL,NULL);
+INSERT INTO `cms_type_metas` VALUES (43,12,'category','inventory',NULL,NULL,NULL);
+INSERT INTO `cms_type_metas` VALUES (44,13,'category','inventory',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `cms_type_metas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -297,7 +331,7 @@ CREATE TABLE `cms_types` (
   `modified_by` int(11) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `slug` (`slug`)
-) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -312,6 +346,11 @@ INSERT INTO `cms_types` VALUES (5,'Vendor','vendor','Daftar vendor WAN Signature
 INSERT INTO `cms_types` VALUES (6,'Bank','bank','Daftar bank yang bekerja sama dengan WAN Signature.',0,0,'2015-06-02 23:42:49',1,'2015-06-02 23:42:49',1);
 INSERT INTO `cms_types` VALUES (7,'Salesman','salesman','Sales(wo)man yang bertugas melayani client WAN Signature.',0,0,'2015-06-03 10:55:24',1,'2015-06-03 10:55:24',1);
 INSERT INTO `cms_types` VALUES (8,'USD Rate','usd-rate','Live Exchange Rate (terhadap $ USD)',0,0,'2015-06-03 15:39:44',1,'2015-06-03 15:39:44',1);
+INSERT INTO `cms_types` VALUES (9,'Warehouse','warehouse','Daftar Gudang tempat penyimpanan produk WAN Signature beserta barang Logistic / Pelengkap.',0,2,'2015-06-03 22:26:59',1,'2015-06-03 22:38:14',1);
+INSERT INTO `cms_types` VALUES (10,'History Masuk','history-masuk','Seluruh pencatatan history barang yg masuk ke warehouse ini.',9,0,'2015-06-03 22:36:32',1,'2015-06-03 22:36:32',1);
+INSERT INTO `cms_types` VALUES (11,'History Keluar','history-keluar','Seluruh pencatatan history barang yg keluar dari warehouse ini.',9,0,'2015-06-03 22:38:14',1,'2015-06-03 22:38:14',1);
+INSERT INTO `cms_types` VALUES (12,'Product Type','product-type','Berbagai macam tipe produk WAN Signature.',0,0,'2015-06-03 23:22:25',1,'2015-06-03 23:22:25',1);
+INSERT INTO `cms_types` VALUES (13,'Product Brand','product-brand','Berbagai macam merk produk WAN Signature.',0,0,'2015-06-03 23:30:45',1,'2015-06-03 23:30:45',1);
 /*!40000 ALTER TABLE `cms_types` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -399,4 +438,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-03 21:14:00
+-- Dump completed on 2015-06-03 23:36:54

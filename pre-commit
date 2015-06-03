@@ -1,0 +1,4 @@
+#!/bin/bash
+mysqldump -u root -p --skip-extended-insert wansignature > /D/xampp/htdocs/wansignature/wansignature.sql
+cd /D/xampp/htdocs/wansignature
+git add wansignature.sql

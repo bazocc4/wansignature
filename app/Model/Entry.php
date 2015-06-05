@@ -876,7 +876,14 @@ class Entry extends AppModel {
 		}
         if(!is_null($ordering))
         {
-            $options['order'] = array('Entry.sort_order '.$ordering);
+            if(substr($ordering , 0 , 6) == 'Entry.')
+            {
+                $options['order'] = array($ordering);
+            }
+            else
+            {
+                $options['order'] = array('Entry.sort_order '.$ordering);
+            }
         }
 		if(!is_null($lang))
 		{

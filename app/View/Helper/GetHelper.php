@@ -143,7 +143,7 @@ class GetHelper extends AppHelper
 	
 	function meta_details($slug = NULL , $entry_type = NULL , $parentId = NULL , $id = NULL , $ordering = NULL , $lang = NULL , $title = NULL)
 	{	
-		return $this->Entry->meta_details($slug , $entry_type , $parentId , $id , $ordering , $lang , $title , 1); // default is from FRONT-END called !!
+		return $this->Entry->meta_details($slug , $entry_type , $parentId , $id , $ordering , $lang , $title);
 	}
 	
 	function account_name($username = NULL, $id = NULL)

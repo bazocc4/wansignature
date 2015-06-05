@@ -276,8 +276,12 @@
         </th>
 		<th>
 		    <?php
+/*
                 $entityTitle = "status";
                 echo $this->Html->link(string_unslug($entityTitle).($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' asc'?" desc":" asc") ));
+*/
+                $entityTitle = "modified_by";
+                echo $this->Html->link('last updated by'.($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' asc'?" desc":" asc") ));
             ?>
 		</th>
 		<?php
@@ -289,6 +293,7 @@
 				<select REQUIRED name="data[action]" class="input-small">
 					<option style="font-weight: bold;" value="">Action :</option>
 					<?php
+/*
                         if($myType['Type']['slug'] != 'pages')
                         {
                             ?>
@@ -296,6 +301,7 @@
 					<option value="disable">Draft</option>                            
                             <?php
                         }
+*/
                     ?>
 					<option value="delete">Delete</option>
 				</select>
@@ -481,6 +487,7 @@
 		?>
 		<td><?php echo date_converter($value['Entry']['modified'], $mySetting['date_format'] , $mySetting['time_format']); ?></td>
 		<td style='min-width: 0px;' <?php echo (empty($popup)?'':'class="offbutt"'); ?>>
+<!--
 			<span class="label <?php echo $value['Entry']['status']==0?'label-important':'label-success'; ?>">
 				<?php
 					if($value['Entry']['status'] == 0)
@@ -489,11 +496,16 @@
 						echo "Published";
 				?>
 			</span>
+-->
+            <span class="label label-inverse">
+				<?php echo $value['AccountModifiedBy']['username']; ?>
+			</span>
 		</td>
 		<?php
 			if(empty($popup))
 			{
 				echo "<td>";
+/*
 				if($myType['Type']['slug'] != 'pages')
 				{
 					$confirm = null;
@@ -508,6 +520,7 @@
 						echo '<a href="javascript:void(0)" onclick="show_confirm(\''.$confirm.'\',\''.$targetURL.'\')" class="btn btn-warning"><i class="icon-ban-circle icon-white"></i></a>';
 					}
 				}
+*/
 				?>
             <a href="javascript:void(0)" onclick="show_confirm('Are you sure want to delete <?php echo strtoupper($value['Entry']['title']); ?> ?','entries/delete/<?php echo $value['Entry']['id']; ?>')" class="btn btn-danger"><i class="icon-trash icon-white"></i></a>
 				<?php

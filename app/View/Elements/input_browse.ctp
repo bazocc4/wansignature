@@ -55,8 +55,23 @@
 	<div class="controls">
 		
 		<input <?php echo $required; ?> <?php echo (empty($display)?'id="'.$browse_slug.'"':''); ?> class="targetID input-large" placeholder="<?php echo $placeholder; ?>" value="<?php echo $metaDetails['Entry']['title']; ?>" type="text" readonly="true"/>
-        <?php
-            echo $this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>array('popup'=>'init')),array('class'=>'btn btn-info get-from-table'));
+        <?php            
+            $popupExtensions = array('popup'=>'init');
+            if($browse_slug == 'product-type')
+            {
+                if($myType['Type']['slug'] == 'diamond')
+                {
+                    $popupExtensions['key'] = 'category';
+                    $popupExtensions['value'] = 'diamond';
+                }
+                else if($myType['Type']['slug'] == 'cor-jewelry')
+                {
+                    $popupExtensions['key'] = 'category';
+                    $popupExtensions['value'] = '!diamond';
+                }
+            }
+
+            echo $this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>$popupExtensions),array('class'=>'btn btn-info get-from-table'));
         ?>
         <input class="<?php echo $shortkey; ?>" type="hidden" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value]" value="<?php echo $metaslug; ?>"/>
         

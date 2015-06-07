@@ -39,6 +39,8 @@ class EntryMeta extends AppModel {
 	var $Type = NULL;
 	var $TypeMeta = NULL;
 	var $Entry = NULL;
+    var $EntryMeta = NULL;
+    var $Account = NULL;
 	
 	public function __construct( $id = false, $table = NULL, $ds = NULL )
 	{
@@ -48,6 +50,8 @@ class EntryMeta extends AppModel {
 		$this->Type = ClassRegistry::init('Type');
 		$this->TypeMeta = ClassRegistry::init('TypeMeta');
 		$this->Entry = ClassRegistry::init('Entry');
+        $this->EntryMeta = $this; // just as alias ...
+		$this->Account = ClassRegistry::init('Account');
 	}
 	
 	/**
@@ -71,7 +75,9 @@ class EntryMeta extends AppModel {
 		return $imgTypeList;
 	}
 	
-	// Delete files in EntryMeta when a data is to be deleted !!
+    /*
+	* Delete files in EntryMeta when a data is to be deleted !!
+    */
 	function remove_files($myType , $myEntry)
 	{
 		$haystack = array();

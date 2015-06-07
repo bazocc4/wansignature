@@ -13,10 +13,12 @@
 	if(strpos($validation, 'is_email') !== FALSE)
 	{
 		$detail_type = 'email';
+        if(empty($inputsize))   $inputsize = 'input-large';
 	}
 	else if(strpos($validation, 'is_numeric') !== FALSE)
 	{
 		$detail_type = 'number';
+        if(empty($inputsize))   $inputsize = 'input-medium';
 	}
 	else if(strpos($validation, 'is_url') !== FALSE)
 	{
@@ -87,7 +89,7 @@
 			}
 			else if($shortkey == 'weight')
 			{
-				echo 'kg';
+				echo 'gr';
 			}
 			else if($shortkey == 'qty')
 			{
@@ -109,6 +111,10 @@
 	});
 </script>                
                 <?php
+			}
+            else if(strpos($shortkey , 'stock') !== FALSE)
+			{
+				echo 'pcs';
 			}
 		?>
 		<p class="help-block">

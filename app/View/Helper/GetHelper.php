@@ -649,34 +649,34 @@ class GetHelper extends AppHelper
 		}
         
         // Second Filter !!
-        $echothis = '';
-        switch($shortkey)
+        $echothis = $result;
+        if($shortkey == 'name')
         {
-            case 'name':
-                $echothis = '<strong>'.$result.'</strong>';
-                break;
-            case 'price':
-            case 'harga_beli':
-            case 'harga_jual':
-                $echothis = 'Rp.'.str_replace(',', '.', toMoney($result  , true , true) ).',-';
-                $echothis .= '<input type="hidden" value="'.$result.'">';
-                break;
-            case 'rate_value':
-                $echothis = '<strong>'.toMoney($result  , true , true).'</strong>';
-                $echothis .= '<input type="hidden" value="'.$result.'">';
-                break;
-            case 'weight':
-                $echothis = $result.' kg';
-                break;
-            case 'discount':
-                $echothis = $result.'% OFF';
-                break;
-            case 'stock':
-                $echothis = '<h5>'.$result.'</h5>';
-                break;
-            default:
-                $echothis = $result;
+            $echothis = '<strong>'.$result.'</strong>';
         }
+        else if($shortkey == 'price' || $shortkey == 'harga_beli' || $shortkey == 'harga_jual')
+        {
+            $echothis = 'Rp.'.str_replace(',', '.', toMoney($result  , true , true) ).',-';
+            $echothis .= '<input type="hidden" value="'.$result.'">';
+        }
+        else if($shortkey == 'rate_value')
+        {
+            $echothis = '<strong>'.toMoney($result  , true , true).'</strong>';
+            $echothis .= '<input type="hidden" value="'.$result.'">';
+        }
+        else if($shortkey == 'weight')
+        {
+            $echothis = $result.' gr';
+        }
+        else if($shortkey == 'discount')
+        {
+            $echothis = $result.'% OFF';
+        }
+        else if(strpos($shortkey , 'stock') !== FALSE)    
+        {
+            $echothis = '<h5>'.$result.' pcs</h5>';
+        }
+        
 		return $echothis;
 	}
 	

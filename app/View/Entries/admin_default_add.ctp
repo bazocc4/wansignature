@@ -194,7 +194,8 @@
 			$value['list'][1]['id'] = '0';
 			$value['list'][1]['name'] = 'Draft';
             $value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['status']);
-			$value['display'] = (empty($myEntry)||empty($myType)?'none':'');
+//			$value['display'] = (empty($myEntry)||empty($myType)?'none':'');
+            $value['display'] = 'none';
 			echo $this->element('input_'.$value['input_type'] , $value);
 			
 			// is used gallery function ...
@@ -262,7 +263,7 @@
 			<?php
 				if(empty($myEntry))
 				{
-					echo '<button id="save-as-draft" type="button" class="btn btn-inverse">Save as Draft</button>';
+					echo '<button id="save-as-draft" type="button" class="btn btn-inverse hide">Save as Draft</button>';
 				}
 
                 $langUrlCancel = '';

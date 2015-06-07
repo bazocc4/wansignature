@@ -150,23 +150,14 @@
 					$("input#"+targetID).nextAll("input[type=hidden]").val( $(this).find("input[type=hidden].slug-code").val() );
 					$("input#"+targetID).change();
 
-					// Update the subcategory dropdown value, if existed !!
-					if($('select.subcategory').length > 0)
+					// Update other attribute...
+					if($('input.vendor_x').length > 0)
 					{
-						$('select.subcategory').html('');
-						
-						var catcheck = $(this).find("td.form-subcategory").html();
-						
-						if(catcheck != '-')
-						{
-							var subcat = catcheck.split('<br>');
-						
-							$.each(subcat , function(i,el){
-                                el = $.trim(el);
-								$('select.subcategory').append('<option value="'+el+'">'+el+'</option>');
-							});
-						}
-						
+						var corcat = $(this).find("td.form-category").text().substr(-5 , 3);
+                        if($.isNumeric(corcat))
+                        {
+                            $('input.vendor_x').val(corcat);
+                        }
 					}
 
 					$.colorbox.close();

@@ -319,8 +319,8 @@ class EntriesController extends AppController {
 		$str = substr(WWW_ROOT, 0 , strlen(WWW_ROOT)-1); // buang DS trakhir...
 		$str = substr($str, 0 , strripos($str, DS)+1); // buang webroot...
 		$src = $str.'View'.str_replace('/', DS, $this->backEndFolder).$myTypeSlug.'.ctp';
-		
-		if(file_exists($src))
+        
+        if(file_exists($src))
 		{
 			$this->render($this->backEndFolder.$myTypeSlug);
 		}
@@ -523,7 +523,7 @@ class EntriesController extends AppController {
             $innerFieldMeta = FALSE;
             foreach( $myAutomaticValidation as $key => $value)
             {
-                if(stripos($_SESSION['order_by'] , $value['key'] ) !== FALSE)
+                if(substr($value['key'],0,5) == 'form-' && stripos($_SESSION['order_by'] , $value['key'] ) !== FALSE)
                 {
                     $innerFieldMeta = $value['input_type'];
                     break;
@@ -596,7 +596,15 @@ class EntriesController extends AppController {
             if(!empty($myMetaValue))
             {
                 $options['conditions']['SUBSTR(EntryMeta.key , 6)'] = $myMetaKey;
-                $options['conditions']['REPLACE(REPLACE(EntryMeta.value , "-" , "_"),"_"," ") LIKE'] = '%'.string_unslug($myMetaValue).'%';
+                
+                $myMetaNot = '';
+                if(substr($myMetaValue , 0 , 1) == '!')
+                {
+                    $myMetaValue = substr($myMetaValue , 1);
+                    $myMetaNot = 'NOT';
+                }
+                
+                $options['conditions']['REPLACE(REPLACE(EntryMeta.value , "-" , "_"),"_"," ") '.$myMetaNot.' LIKE'] = '%'.string_unslug($myMetaValue).'%';
             }
             else
             {
@@ -649,14 +657,11 @@ class EntriesController extends AppController {
 		// ================================================================ >>
 		// check for description or image is used for this entry or not ??
 		// ================================================================ >>
-		$tempOpt = $options;
-		$tempOpt['conditions']['LENGTH(Entry.description) >'] = 0;
-		$checkSQL = $this->Entry->find('first' , $tempOpt);
-		$data['descriptionUsed'] = (empty($checkSQL)?0:1);
+		$data['descriptionUsed'] = 1;
 		
 		$tempOpt = $options;
 		$tempOpt['conditions']['Entry.main_image >'] = 0;
-		$checkSQL = $this->Entry->find('first' , $tempOpt);		
+		$checkSQL = $this->Entry->find('count' , $tempOpt);		
 		$data['imageUsed'] = (empty($checkSQL)?0:1);
 
 		// ========================================= >>
@@ -737,7 +742,7 @@ class EntriesController extends AppController {
 		$data['myImageTypeList'] = $this->EntryMeta->embedded_img_meta('type');
 		
 		// IS ALLOWING ORDER CHANGE OR NOT ??
-		$data['isOrderChange'] = (empty($_SESSION['order_by']) || substr($_SESSION['order_by'], 0 , 10) == 'sort_order'?1:0);
+		$data['isOrderChange'] = 0;
 		
 		// --------------------------------------------- LANGUAGE OPTION LINK ------------------------------------------ //
 		if(!empty($myEntry))
@@ -1015,6 +1020,9 @@ class EntriesController extends AppController {
 		}
 	}
     
+    /*
+    * last action before setFlash from add/update selected Entry...
+    */
     function _add_update_id_meta($myTypeSlug , $myChildTypeSlug = NULL , $myParentEntry = array() , $myEntry = array())
 	{
 		// $this->request->data['EntryMeta']['entry_id'] => not needed to be set, coz it's already set in parent function !!

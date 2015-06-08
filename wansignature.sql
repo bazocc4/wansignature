@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.21, for Win32 (x86)
+-- MySQL dump 10.13  Distrib 5.6.24, for Win32 (x86)
 --
 -- Host: localhost    Database: wansignature
 -- ------------------------------------------------------
--- Server version	5.6.21
+-- Server version	5.6.24
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -46,7 +46,7 @@ CREATE TABLE `cms_accounts` (
 
 LOCK TABLES `cms_accounts` WRITE;
 /*!40000 ALTER TABLE `cms_accounts` DISABLE KEYS */;
-INSERT INTO `cms_accounts` VALUES (1,1,1,'Admin Basuki','admin@yahoo.com','169e781bd52860b584879cbe117085da596238f3','2015-06-08 09:34:45','2013-01-04 00:00:00',1,'2014-05-05 15:15:38',1);
+INSERT INTO `cms_accounts` VALUES (1,1,1,'Admin Basuki','admin@yahoo.com','169e781bd52860b584879cbe117085da596238f3','2015-06-08 20:14:33','2013-01-04 00:00:00',1,'2014-05-05 15:15:38',1);
 INSERT INTO `cms_accounts` VALUES (2,2,2,'Andy Basuki','andybasuki88@gmail.com','d82dff1679e0137a0bab60cc67cc6a2ad36f10a0','2015-06-08 09:34:35','2015-06-02 20:19:53',1,'2015-06-02 20:19:53',1);
 /*!40000 ALTER TABLE `cms_accounts` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -410,7 +410,7 @@ CREATE TABLE `cms_type_metas` (
   `validation` text,
   `instruction` varchar(300) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=587 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=599 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -568,7 +568,7 @@ INSERT INTO `cms_type_metas` VALUES (416,21,'form-warehouse','','browse','','Gud
 INSERT INTO `cms_type_metas` VALUES (417,21,'form-total_pcs','','text','is_numeric|','Total pcs of jewelries purchased.');
 INSERT INTO `cms_type_metas` VALUES (418,22,'category','invoice',NULL,NULL,NULL);
 INSERT INTO `cms_type_metas` VALUES (419,22,'title_key','Invoice Code',NULL,NULL,NULL);
-INSERT INTO `cms_type_metas` VALUES (485,22,'form-date','','datepicker','not_empty|','Issued invoice date.');
+INSERT INTO `cms_type_metas` VALUES (589,22,'form-wholesaler','','browse','','The wholesaler of selected client.');
 INSERT INTO `cms_type_metas` VALUES (542,4,'form-wholesaler','','browse','','The wholesaler of selected client.');
 INSERT INTO `cms_type_metas` VALUES (541,4,'form-kategori','End User\r\nRetailer\r\nWholesaler','radio','not_empty|','Tingkatan kategori pelanggan.');
 INSERT INTO `cms_type_metas` VALUES (540,4,'form-kode_pelanggan','','text','','Kode singkat unik pelanggan.');
@@ -582,12 +582,21 @@ INSERT INTO `cms_type_metas` VALUES (491,14,'form-status_in_wan','','text','','C
 INSERT INTO `cms_type_metas` VALUES (490,14,'form-sell_barcode','','text','is_numeric|','Adjusted product price tag.');
 INSERT INTO `cms_type_metas` VALUES (488,14,'form-product_type','','browse','','Tipe produk berlian.');
 INSERT INTO `cms_type_metas` VALUES (489,14,'form-barcode','','text','is_numeric|','Product price tag.');
-INSERT INTO `cms_type_metas` VALUES (486,22,'form-client','','browse','not_empty|','');
-INSERT INTO `cms_type_metas` VALUES (487,22,'form-wholesaler','','browse','','The wholesaler of selected client.');
+INSERT INTO `cms_type_metas` VALUES (588,22,'form-client','','browse','not_empty|','');
+INSERT INTO `cms_type_metas` VALUES (587,22,'form-date','','datepicker','not_empty|','Issued invoice date.');
 INSERT INTO `cms_type_metas` VALUES (583,17,'form-payment_return_goods','','text','','Payment from client using return goods.');
 INSERT INTO `cms_type_metas` VALUES (584,17,'form-total_payment_24k','','text','','Total payment 24K that should be paid by client (gram).');
 INSERT INTO `cms_type_metas` VALUES (585,17,'form-client_total_balance','','text','','Total balance on this client invoice.');
 INSERT INTO `cms_type_metas` VALUES (586,17,'form-transaction_history','','textarea','','');
+INSERT INTO `cms_type_metas` VALUES (590,22,'form-payment_status','Tunggak\r\nLunas','radio','not_empty|','Status pembayaran lunas atau belum.');
+INSERT INTO `cms_type_metas` VALUES (591,22,'form-discount_adjustment','','text','is_numeric|','Special discount adjustment for this invoice (USD).');
+INSERT INTO `cms_type_metas` VALUES (592,22,'form-grand_total_price','','text','is_numeric|','Seluruh total harga penjualan produk diamond (USD).');
+INSERT INTO `cms_type_metas` VALUES (593,22,'form-additional_cost','','text','is_numeric|','Total additional cost for this invoice (USD).');
+INSERT INTO `cms_type_metas` VALUES (594,22,'form-delivery_status','Diproses\r\nTerkirim','radio','not_empty|','Status pengiriman barang selesai atau belum.');
+INSERT INTO `cms_type_metas` VALUES (595,22,'form-sale_venue','Warehouse\r\nExhibition','radio','not_empty|','Apakah penjualan terjadi dari WH atau pameran.');
+INSERT INTO `cms_type_metas` VALUES (596,22,'form-warehouse','','browse','','Gudang tempat pengiriman produk diamond kepada client.');
+INSERT INTO `cms_type_metas` VALUES (597,22,'form-exhibition','','browse','','Tempat pameran di mana produk terjual.');
+INSERT INTO `cms_type_metas` VALUES (598,22,'form-total_pcs','','text','is_numeric|','Total pcs of diamond sold.');
 /*!40000 ALTER TABLE `cms_type_metas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -639,7 +648,7 @@ INSERT INTO `cms_types` VALUES (18,'Logistic','logistic','Barang-barang pelengka
 INSERT INTO `cms_types` VALUES (19,'Logistic Warehouse','logistic-warehouse','Pencatatan stok barang logistik di gudang-gudang tertentu.',18,0,'2015-06-07 09:33:25',1,'2015-06-07 09:33:25',1);
 INSERT INTO `cms_types` VALUES (20,'Dmd Vendor Invoice','dmd-vendor-invoice','Surat pemesanan produk diamond terhadap vendor.',0,0,'2015-06-07 12:50:45',1,'2015-06-07 13:56:18',1);
 INSERT INTO `cms_types` VALUES (21,'Cor Vendor Invoice','cor-vendor-invoice','Surat pemesanan produk cor terhadap vendor.',0,0,'2015-06-07 14:19:23',1,'2015-06-07 14:19:23',1);
-INSERT INTO `cms_types` VALUES (22,'Dmd Client Invoice','dmd-client-invoice','Dokumen invoice penjualan produk diamond terhadap client.',0,0,'2015-06-07 14:34:39',1,'2015-06-08 13:23:25',1);
+INSERT INTO `cms_types` VALUES (22,'Dmd Client Invoice','dmd-client-invoice','Dokumen invoice penjualan produk diamond terhadap client.',0,0,'2015-06-07 14:34:39',1,'2015-06-09 00:06:11',1);
 /*!40000 ALTER TABLE `cms_types` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -727,4 +736,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-08 17:53:10
+-- Dump completed on 2015-06-09  0:19:52

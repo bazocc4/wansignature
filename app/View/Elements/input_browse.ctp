@@ -2,7 +2,19 @@
 	if(is_array($data)) extract($data , EXTR_SKIP);
 	$shortkey = substr($key, 5 );	
 
-	$browse_slug = get_slug($shortkey);
+	$browse_slug = '';
+    $browse_alias = get_slug($shortkey);
+    // CUSTOM BROWSE SLUG ...
+    if($shortkey == 'wholesaler')
+    {
+        $browse_slug = 'client';
+    }
+    else
+    {
+        $browse_slug = $browse_alias;
+        unset($browse_alias);
+    }
+
     $metaDetails = array();
     $metaslug = (isset($_POST['data'][$model][$counter]['value'])?$_POST['data'][$model][$counter]['value']:$value);
     if(!empty($metaslug))
@@ -33,7 +45,7 @@
 ?>
 <script type="text/javascript">
     $(document).ready(function(){
-        $('a#<?php echo $browse_slug; ?>-view-detail').click(function(e){
+        $('a#<?php echo $shortkey; ?>_view_detail').click(function(e){
             
             var nowval = $.trim($(this).closest('div.controls').find('input[type=hidden].<?php echo $shortkey; ?>').val());
             if(nowval.length > 0)
@@ -54,10 +66,21 @@
     </label>
 	<div class="controls">
 		
-		<input <?php echo $required; ?> <?php echo (empty($display)?'id="'.$browse_slug.'"':''); ?> class="targetID input-large" placeholder="<?php echo $placeholder; ?>" value="<?php echo $metaDetails['Entry']['title']; ?>" type="text" readonly="true"/>
+		<input <?php echo $required; ?> <?php echo (empty($display)?'id="'.(empty($browse_alias)?$browse_slug:$browse_alias).'"':''); ?> class="targetID input-large" placeholder="<?php echo $placeholder; ?>" value="<?php echo $metaDetails['Entry']['title']; ?>" type="text" readonly="true"/>
         <?php            
             $popupExtensions = array('popup'=>'init');
-            if($browse_slug == 'product-type')
+
+            if(!empty($browse_alias))
+            {
+                $popupExtensions['alias'] = $browse_alias;
+                if($browse_alias == 'wholesaler')
+                {
+                    $popupExtensions['key'] = 'kategori';
+                    $popupExtensions['value'] = 'Wholesaler';
+                }
+            }
+
+            if($shortkey == 'product_type')
             {
                 if($myType['Type']['slug'] == 'diamond')
                 {
@@ -79,7 +102,7 @@
             <a class="btn btn-danger removeID" href="javascript:void(0)">Clear</a>  
         <?php endif; ?>
         
-        <a target="_blank" id="<?php echo $browse_slug; ?>-view-detail" class="btn btn-primary" href="#">View Detail</a>  
+        <a target="_blank" id="<?php echo $shortkey; ?>_view_detail" class="btn btn-primary" href="#">View Detail</a>  
 		
 		<p class="help-block">
 			Want to create new one? Click <?php echo $this->Html->link('here<img alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>'entries','action'=>$browse_slug.'/add'),array("target"=>"SingleSecondaryWindowName","onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;","escape"=>false)); ?>.<br/>

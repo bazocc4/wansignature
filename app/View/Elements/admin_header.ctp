@@ -173,10 +173,25 @@
 			<input style="width: 160px;" id="searchMe" class="span2" type="text" placeholder="search item here...">
 		</div>
 
-		<?php if(!empty($popup) && !empty($stream)): ?>
-		<div style="margin:0 !important" class="clear"></div>
+		<?php
+            if(!empty($popup))
+            {
+                if(!empty($stream))
+                {
+                    ?>
+        <div style="margin:0 !important" class="clear"></div>
 		<button id="attach-checked-data" class="btn btn-primary right-btn fr disabled">Attach checked data</button>
 		<input type="hidden" id="query-stream" value="<?php echo $stream; ?>">
-		<?php endif; ?>
+                    <?php
+                }
+                
+                if(!empty($alias))
+                {
+                    ?>
+        <input type="hidden" id="query-alias" value="<?php echo $alias; ?>">
+                    <?php
+                }
+            }
+        ?>
 	</div>
 </div>

@@ -42,6 +42,21 @@
 ?>
 <script>
 	$(document).ready(function(){
+		// attach checkbox on each record...
+		if($('form#global-action').length > 0 || $('input#query-stream').length > 0 )
+		{
+			$('table#myTableList thead tr').prepend('<th><input type="checkbox" id="check-all" /></th>');
+			$('table#myTableList tbody tr').each(function(i,el){
+				$(this).prepend('<td style="min-width: 0px;"><input type="checkbox" class="check-record" value="'+$(this).attr('alt')+'" onclick="javascript:$.fn.updateAttachButton();" /></td>');
+			});
+
+			$('input#check-all').change(function(){
+				$('input.check-record').attr('checked' , $(this).attr('checked')?true:false);
+                $('input.check-record').change(); // update background color on each TR record...
+				$.fn.updateAttachButton();
+			});
+		}
+		
 		<?php if(empty($popup)): ?>
             // ADD & DELETE BUTTON have the same life fate !!
             if($('a.get-started').length == 0)
@@ -122,7 +137,7 @@
 			$('table#myTableList tbody tr').click(function(e){
 				if(!$('input[type=checkbox]').is(e.target))
 				{
-					var targetID = "<?php echo (empty($myEntry)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>"+($('input#query-stream').length > 0?$('input#query-stream').val():'');
+					var targetID = ($('input#query-alias').length > 0?$('input#query-alias').val():'<?php echo (empty($myEntry)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>')+($('input#query-stream').length > 0?$('input#query-stream').val():'');
 					if($(this).find("td.form-name").length > 0)
 					{
 					    $("input#"+targetID).val( $(this).find("td.form-name").text()+' ('+$(this).find("h5.title-code").text()+')');
@@ -135,23 +150,13 @@
 					$("input#"+targetID).nextAll("input[type=hidden]").val( $(this).find("input[type=hidden].slug-code").val() );
 					$("input#"+targetID).change();
 
-					// Update the subcategory dropdown value, if existed !!
-					if($('select.subcategory').length > 0)
+					// Update other attribute...
+					if($('input.wholesaler').length > 0)
 					{
-						$('select.subcategory').html('');
-						
-						var catcheck = $(this).find("td.form-subcategory").html();
-						
-						if(catcheck != '-')
-						{
-							var subcat = catcheck.split('<br>');
-						
-							$.each(subcat , function(i,el){
-                                el = $.trim(el);
-								$('select.subcategory').append('<option value="'+el+'">'+el+'</option>');
-							});
-						}
-						
+                        var wholesaler = $(this).find("td.form-wholesaler h5");
+                        if(wholesaler.length > 0)
+                        {                            $('input#wholesaler').val(wholesaler.text()).nextAll('input[type=hidden].wholesaler').val(wholesaler.next('input[type=hidden]').val());
+                        }
 					}
 
 					$.colorbox.close();
@@ -162,11 +167,11 @@
 		// FOR AJAX REASON !!
 		// ---------------------------------------------------------------------- >>>
 		
-		// HIDE SEARCH LINK !!
-		$('a.searchMeLink').closest('div.input-prepend').hide();
+		// UPDATE SEARCH LINK !!
+		$('a.searchMeLink').attr('href',site+'admin/entries/<?php echo $myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']); ?>/index/1<?php echo get_more_extension($extensionPaging); ?>');
 		
-		// HIDE ADD NEW DATABASE LINK !!
-		$('a.get-started').hide();
+		// UPDATE ADD NEW DATABASE LINK !!
+		$('a.get-started').attr('href',site+'admin/entries/<?php echo $myType['Type']['slug'].'/'.(empty($myEntry)?'':$myEntry['Entry']['slug'].'/').'add'.(!empty($extensionPaging['type'])?'?type='.$extensionPaging['type']:''); ?>');
 		
 		// disable language selector ONLY IF one language available !!		
 		var myLangSelector = ($('#colorbox').length > 0 && $('#colorbox').is(':visible')? $('#colorbox').find('div.lang-selector:first') : $('div.lang-selector')  );
@@ -225,9 +230,16 @@
 						$entityTitle = $value['key'];
                         $hideKeyQuery = '';
                         $shortkey = substr($entityTitle, 5);
-                        if(!empty($popup) && $this->request->query['key'] == $shortkey)
+                        if(!empty($popup))
                         {
-                            $hideKeyQuery = 'hide';
+                            if($this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!')
+                            {
+                                $hideKeyQuery = 'hide';
+                            }
+                            else if($this->request->query['key'] == 'kategori' && $this->request->query['value'] != 'Retailer' && $shortkey == 'wholesaler')
+                            {
+                                $hideKeyQuery = 'hide';
+                            }
                         }
                         
                         $datefield = '';
@@ -261,10 +273,42 @@
         </th>
 		<th>
 		    <?php
+/*
                 $entityTitle = "status";
                 echo $this->Html->link(string_unslug($entityTitle).($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' asc'?" desc":" asc") ));
+*/
+                $entityTitle = "modified_by";
+                echo $this->Html->link('last updated by'.($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' asc'?" desc":" asc") ));
             ?>
 		</th>
+		<?php
+			if(empty($popup))
+			{
+				?>
+		<th class="action">
+			<form id="global-action" style="margin: 0;" action="#" accept-charset="utf-8" method="post" enctype="multipart/form-data">
+				<select REQUIRED name="data[action]" class="input-small">
+					<option style="font-weight: bold;" value="">Action :</option>
+					<?php
+/*
+                        if($myType['Type']['slug'] != 'pages')
+                        {
+                            ?>
+                    <option value="active">Publish</option>
+					<option value="disable">Draft</option>                            
+                            <?php
+                        }
+*/
+                    ?>
+					<option value="delete">Delete</option>
+				</select>
+				<input type="hidden" name="data[record]" id="action-records" />
+				<button type="submit" style="margin-top: -10px;" class="btn btn-success"><strong>GO!</strong></button>
+			</form>
+		</th>	
+				<?php
+			}
+		?>
 	</tr>
 	</thead>
 	
@@ -324,9 +368,16 @@
 						$shortkey = substr($value10['key'], 5);
                         $displayValue = $value['EntryMeta'][$shortkey];
                         $hideKeyQuery = '';
-                        if(!empty($popup) && $this->request->query['key'] == $shortkey)
+                        if(!empty($popup))
                         {
-                            $hideKeyQuery = 'hide';
+                            if($this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!')
+                            {
+                                $hideKeyQuery = 'hide';
+                            }
+                            else if($this->request->query['key'] == 'kategori' && $this->request->query['value'] != 'Retailer' && $shortkey == 'wholesaler')
+                            {
+                                $hideKeyQuery = 'hide';
+                            }
                         }
                         
                         echo "<td class='".$value10['key']." ".$hideKeyQuery."'>";
@@ -360,6 +411,7 @@
 									$emptybrowse = 1;
 									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']);
 									echo '<p>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).'</p>';
+                                    echo '<input type="hidden" value="'.$mydetails['Entry']['slug'].'">';
 								}
 							}
 							
@@ -370,7 +422,17 @@
 						}
                         else if($value10['input_type'] == 'browse')
                         {
-                        	$entrydetail = $this->Get->meta_details($displayValue , get_slug($shortkey));
+                            $entrytype = '';
+                            if($shortkey == 'wholesaler')
+                            {
+                                $entrytype = 'client';
+                            }
+                            else
+                            {
+                                $entrytype = get_slug($shortkey);
+                            }
+                            
+                        	$entrydetail = $this->Get->meta_details($displayValue , $entrytype );
 							if(empty($entrydetail))
 							{
 								echo $displayValue;
@@ -379,6 +441,7 @@
 							{
 								$outputResult = (empty($entrydetail['EntryMeta']['name'])?$entrydetail['Entry']['title']:$entrydetail['EntryMeta']['name']);
 								echo '<h5>'.(empty($popup)?$this->Html->link($outputResult,array("controller"=>"entries","action"=>$entrydetail['Entry']['entry_type']."/edit/".$entrydetail['Entry']['slug']),array('target'=>'_blank')):$outputResult).'</h5>';
+                                echo '<input type="hidden" value="'.$entrydetail['Entry']['slug'].'">';
                                 
                                 echo '<p>';                                
                                 // Try to use Primary EntryMeta first !!
@@ -440,6 +503,7 @@
 		?>
 		<td><?php echo date_converter($value['Entry']['modified'], $mySetting['date_format'] , $mySetting['time_format']); ?></td>
 		<td style='min-width: 0px;' <?php echo (empty($popup)?'':'class="offbutt"'); ?>>
+<!--
 			<span class="label <?php echo $value['Entry']['status']==0?'label-important':'label-success'; ?>">
 				<?php
 					if($value['Entry']['status'] == 0)
@@ -448,7 +512,37 @@
 						echo "Published";
 				?>
 			</span>
+-->
+            <span class="label label-inverse">
+				<?php echo $value['AccountModifiedBy']['username']; ?>
+			</span>
 		</td>
+		<?php
+			if(empty($popup))
+			{
+				echo "<td>";
+/*
+				if($myType['Type']['slug'] != 'pages')
+				{
+					$confirm = null;
+					$targetURL = 'entries/change_status/'.$value['Entry']['id'];
+					if($value['Entry']['status'] == 0)
+					{
+						echo '<a href="javascript:void(0)" onclick="changeLocation(\''.$targetURL.'\')" class="btn btn-info"><i class="icon-ok icon-white"></i></a>';					
+					}
+					else
+					{
+						$confirm = 'Are you sure to set '.strtoupper($value['Entry']['title']).' as draft ?';
+						echo '<a href="javascript:void(0)" onclick="show_confirm(\''.$confirm.'\',\''.$targetURL.'\')" class="btn btn-warning"><i class="icon-ban-circle icon-white"></i></a>';
+					}
+				}
+*/
+				?>
+            <a href="javascript:void(0)" onclick="show_confirm('Are you sure want to delete <?php echo strtoupper($value['Entry']['title']); ?> ?','entries/delete/<?php echo $value['Entry']['id']; ?>')" class="btn btn-danger"><i class="icon-trash icon-white"></i></a>
+				<?php
+				echo "</td>";
+			}				
+		?>
 	</tr>
 	
 	<?php

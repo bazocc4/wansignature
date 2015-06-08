@@ -476,7 +476,8 @@ class EntriesController extends AppController {
 		if(!empty($popup) || $this->request->is('ajax'))
 		{
 			$this->layout = 'ajax';
-			$data['stream'] = (isset($this->request->query['stream'])?$this->request->query['stream']:NULL);
+			$data['stream'] = (isset($this->request->query['stream'])?$this->request->query['stream']:NULL);            
+            $data['alias'] = (isset($this->request->query['alias'])?$this->request->query['alias']:NULL);
 		}	
 		if ($this->request->is('ajax') && empty($popup) || $popup == "ajax" || !empty($searchMe)) 
 		{	

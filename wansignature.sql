@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.21, for Win32 (x86)
+-- MySQL dump 10.13  Distrib 5.6.24, for Win32 (x86)
 --
 -- Host: localhost    Database: wansignature
 -- ------------------------------------------------------
--- Server version	5.6.21
+-- Server version	5.6.24
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -46,7 +46,7 @@ CREATE TABLE `cms_accounts` (
 
 LOCK TABLES `cms_accounts` WRITE;
 /*!40000 ALTER TABLE `cms_accounts` DISABLE KEYS */;
-INSERT INTO `cms_accounts` VALUES (1,1,1,'Admin Basuki','admin@yahoo.com','169e781bd52860b584879cbe117085da596238f3','2015-06-09 13:01:51','2013-01-04 00:00:00',1,'2014-05-05 15:15:38',1);
+INSERT INTO `cms_accounts` VALUES (1,1,1,'Admin Basuki','admin@yahoo.com','169e781bd52860b584879cbe117085da596238f3','2015-06-09 20:58:26','2013-01-04 00:00:00',1,'2014-05-05 15:15:38',1);
 INSERT INTO `cms_accounts` VALUES (2,2,2,'Andy Basuki','andybasuki88@gmail.com','d82dff1679e0137a0bab60cc67cc6a2ad36f10a0','2015-06-08 09:34:35','2015-06-02 20:19:53',1,'2015-06-02 20:19:53',1);
 /*!40000 ALTER TABLE `cms_accounts` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -410,7 +410,7 @@ CREATE TABLE `cms_type_metas` (
   `validation` text,
   `instruction` varchar(300) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=844 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=861 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -443,7 +443,7 @@ INSERT INTO `cms_type_metas` VALUES (29,7,'form-alamat','','textarea','','Alamat
 INSERT INTO `cms_type_metas` VALUES (30,7,'form-telepon','','text','','Nomer Telp / HP yang dapat dihubungi.');
 INSERT INTO `cms_type_metas` VALUES (31,7,'form-email','','text','is_email|','Alamat E-mail yang dapat dihubungi.');
 INSERT INTO `cms_type_metas` VALUES (32,7,'form-tgl_join','','datepicker','','First time working date at WAN Signature.');
-INSERT INTO `cms_type_metas` VALUES (33,8,'category','general',NULL,NULL,NULL);
+INSERT INTO `cms_type_metas` VALUES (33,8,'category','tools',NULL,NULL,NULL);
 INSERT INTO `cms_type_metas` VALUES (34,8,'title_key','Currency',NULL,NULL,NULL);
 INSERT INTO `cms_type_metas` VALUES (35,8,'form-rate_value','','text','not_empty|is_numeric|','Harga nominal kurs per $1 USD.');
 INSERT INTO `cms_type_metas` VALUES (36,9,'category','storage',NULL,NULL,NULL);
@@ -624,6 +624,23 @@ INSERT INTO `cms_type_metas` VALUES (805,14,'form-prev_barcode','','text','','Pr
 INSERT INTO `cms_type_metas` VALUES (806,14,'form-prev_sold_note','','textarea','','Previous sold note for transaction history.');
 INSERT INTO `cms_type_metas` VALUES (842,17,'form-payment_balance','','text','','Total payment balance on this client invoice.');
 INSERT INTO `cms_type_metas` VALUES (843,17,'form-transaction_history','','textarea','','');
+INSERT INTO `cms_type_metas` VALUES (844,24,'category','tools',NULL,NULL,NULL);
+INSERT INTO `cms_type_metas` VALUES (845,24,'title_key','Document Code',NULL,NULL,NULL);
+INSERT INTO `cms_type_metas` VALUES (846,24,'form-date','','datepicker','not_empty|','Tanggal kirim / jalan.');
+INSERT INTO `cms_type_metas` VALUES (847,24,'form-delivery_type','Warehouse To Warehouse\r\nWarehouse To Exhibition\r\nExhibition To Warehouse\r\nExhibition To Exhibition\r\nSouvenir\r\nDiamond Sale\r\nCor Jewelry Sale\r\nDiamond Return\r\nCor Jewelry Return','dropdown','not_empty|','What type of delivery is this document for.');
+INSERT INTO `cms_type_metas` VALUES (848,24,'form-dmd_client_invoice','','browse','','Diamond Sale Invoice.');
+INSERT INTO `cms_type_metas` VALUES (849,24,'form-cor_client_invoice','','browse','','Cor Jewelry Sale Invoice.');
+INSERT INTO `cms_type_metas` VALUES (850,24,'form-client','','browse','','Client destination to sent.');
+INSERT INTO `cms_type_metas` VALUES (851,24,'form-dmd_vendor_invoice','','browse','','Diamond Return Invoice.');
+INSERT INTO `cms_type_metas` VALUES (852,24,'form-cor_vendor_invoice','','browse','','Cor Jewelry Return Invoice.');
+INSERT INTO `cms_type_metas` VALUES (853,24,'form-vendor','','browse','','Vendor destination to sent.');
+INSERT INTO `cms_type_metas` VALUES (854,24,'form-warehouse_origin','','browse','','Gudang asal tempat pengambilan barang.');
+INSERT INTO `cms_type_metas` VALUES (855,24,'form-exhibition_origin','','browse','','Pameran asal tempat pengambilan barang.');
+INSERT INTO `cms_type_metas` VALUES (856,24,'form-warehouse_destination','','browse','','Gudang tujuan pengiriman barang.');
+INSERT INTO `cms_type_metas` VALUES (857,24,'form-exhibition_destination','','browse','','Pameran tujuan pengiriman barang.');
+INSERT INTO `cms_type_metas` VALUES (858,24,'form-diamond','','multibrowse','','Produk diamond yang hendak dikirim.');
+INSERT INTO `cms_type_metas` VALUES (859,24,'form-cor_jewelry','','multibrowse','','Produk perhiasan cor yang hendak dikirim.');
+INSERT INTO `cms_type_metas` VALUES (860,24,'form-logistic','','multibrowse','','Barang logistik maupun souvenir yang hendak dikirim.');
 /*!40000 ALTER TABLE `cms_type_metas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -647,7 +664,7 @@ CREATE TABLE `cms_types` (
   `modified_by` int(10) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `slug` (`slug`)
-) ENGINE=MyISAM AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=25 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -677,6 +694,7 @@ INSERT INTO `cms_types` VALUES (20,'Dmd Vendor Invoice','dmd-vendor-invoice','Su
 INSERT INTO `cms_types` VALUES (21,'Cor Vendor Invoice','cor-vendor-invoice','Surat pemesanan produk cor terhadap vendor.',0,0,'2015-06-07 14:19:23',1,'2015-06-09 16:18:31',1);
 INSERT INTO `cms_types` VALUES (22,'Dmd Client Invoice','dmd-client-invoice','Dokumen invoice penjualan produk diamond terhadap client.',0,0,'2015-06-07 14:34:39',1,'2015-06-09 16:43:58',1);
 INSERT INTO `cms_types` VALUES (23,'Cor Client Invoice','cor-client-invoice','Dokumen invoice penjualan produk cor terhadap client.',0,0,'2015-06-09 13:30:14',1,'2015-06-09 16:26:59',1);
+INSERT INTO `cms_types` VALUES (24,'Surat Jalan','surat-jalan','Dokumen tanda bukti pengiriman barang, baik terhadap client (penjualan), vendor (return), maupun perpindahan antar warehouse / exhibition.',0,0,'2015-06-09 23:46:04',1,'2015-06-09 23:46:04',1);
 /*!40000 ALTER TABLE `cms_types` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -764,4 +782,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-09 16:55:38
+-- Dump completed on 2015-06-10  0:20:46

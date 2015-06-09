@@ -24,7 +24,7 @@
 <script type="text/javascript">
 	$("a#<?php echo (empty($myType)?'pages':$myType['Type']['slug']); ?>").addClass("active");
 </script>
-<div class="inner-header">
+<div class="inner-header row-fluid">
 	<?php
 		if(count($mySetting['language']) > 1)
 		{
@@ -67,7 +67,7 @@
 			echo $this->Html->image('upload/'.(isset($_POST['data']['Entry'][2]['value'])?$_POST['data']['Entry'][2]['value'].'.'.$myImageTypeList[$_POST['data']['Entry'][2]['value']]:(empty($myEntry)?'0.jpg':$myEntry['Entry']['main_image'].'.'.$myImageTypeList[$myEntry['Entry']['main_image']])),array('id'=>'mySelectCoverAlbum'));
 		?>			
 	</div>
-	<div class="title">
+	<div class="title span8">
 		<?php
 			if(empty($myEntry))
 			{

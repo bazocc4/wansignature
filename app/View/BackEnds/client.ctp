@@ -327,9 +327,11 @@
 					echo (empty($popup)?$this->Html->link($this->Html->image('upload/'.$value['Entry']['main_image'].'.'.$myImageTypeList[$value['Entry']['main_image']], array('alt'=>$value['ParentImageEntry']['title'],'title' => $value['ParentImageEntry']['title'])),array('action'=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']).'/edit/'.$value['Entry']['slug'].(!empty($myEntry)&&$myType['Type']['slug']!=$myChildType['Type']['slug']?'?type='.$myChildType['Type']['slug']:'')),array("escape"=>false)):$this->Html->image('upload/'.$value['Entry']['main_image'].'.'.$myImageTypeList[$value['Entry']['main_image']], array('alt'=>$value['ParentImageEntry']['title'],'title' => $value['ParentImageEntry']['title'])));
 					echo '</div>';
 				}
+        
+                $editUrl = array('action'=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'edit',$value['Entry']['slug'] ,'?'=> (!empty($myEntry)&&$myType['Type']['slug']!=$myChildType['Type']['slug']?array('type'=>$myChildType['Type']['slug']):'')   );
 			?>
 			<input class="slug-code" type="hidden" value="<?php echo $value['Entry']['slug']; ?>" />
-			<h5 class="title-code"><?php echo (empty($popup)?$this->Html->link($value['Entry']['title'],array('action'=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'edit',$value['Entry']['slug'] ,'?'=> (!empty($myEntry)&&$myType['Type']['slug']!=$myChildType['Type']['slug']?array('type'=>$myChildType['Type']['slug']):'')   )  ):$value['Entry']['title']); ?></h5>
+			<h5 class="title-code"><?php echo (empty($popup)?$this->Html->link($value['Entry']['title'], $editUrl ):$value['Entry']['title']); ?></h5>
 			<p>
 				<?php
 					if($descriptionUsed == 1 && !empty($value['Entry']['description']))
@@ -520,25 +522,28 @@
 		<?php
 			if(empty($popup))
 			{
-				echo "<td>";
+                echo "<td class='action-btn'>";
+                echo $this->Html->link('<i class="icon-edit icon-white"></i>', $editUrl, array('escape'=>false, 'class'=>'btn btn-primary','data-toggle'=>'tooltip', 'title'=>'CLICK TO EDIT / VIEW DETAIL') );
+                
 /*
-				if($myType['Type']['slug'] != 'pages')
+                if($myType['Type']['slug'] != 'pages')
 				{
 					$confirm = null;
 					$targetURL = 'entries/change_status/'.$value['Entry']['id'];
+                    echo '&nbsp;&nbsp;';
 					if($value['Entry']['status'] == 0)
 					{
-						echo '<a href="javascript:void(0)" onclick="changeLocation(\''.$targetURL.'\')" class="btn btn-info"><i class="icon-ok icon-white"></i></a>';					
+						echo '<a data-toggle="tooltip" title="CLICK TO PUBLISH RECORD" href="javascript:void(0)" onclick="changeLocation(\''.$targetURL.'\')" class="btn btn-info"><i class="icon-ok icon-white"></i></a>';					
 					}
 					else
 					{
 						$confirm = 'Are you sure to set '.strtoupper($value['Entry']['title']).' as draft ?';
-						echo '<a href="javascript:void(0)" onclick="show_confirm(\''.$confirm.'\',\''.$targetURL.'\')" class="btn btn-warning"><i class="icon-ban-circle icon-white"></i></a>';
+						echo '<a data-toggle="tooltip" title="CLICK TO DRAFT RECORD" href="javascript:void(0)" onclick="show_confirm(\''.$confirm.'\',\''.$targetURL.'\')" class="btn btn-warning"><i class="icon-ban-circle icon-white"></i></a>';
 					}
 				}
 */
 				?>
-            <a href="javascript:void(0)" onclick="show_confirm('Are you sure want to delete <?php echo strtoupper($value['Entry']['title']); ?> ?','entries/delete/<?php echo $value['Entry']['id']; ?>')" class="btn btn-danger"><i class="icon-trash icon-white"></i></a>
+            &nbsp;<a data-toggle="tooltip" title="CLICK TO DELETE RECORD" href="javascript:void(0)" onclick="show_confirm('Are you sure want to delete <?php echo strtoupper($value['Entry']['title']); ?> ?','entries/delete/<?php echo $value['Entry']['id']; ?>')" class="btn btn-danger"><i class="icon-trash icon-white"></i></a>
 				<?php
 				echo "</td>";
 			}				

@@ -189,8 +189,11 @@ table.list thead tr th.date-field{ min-width: 100px; }
 table.list > tbody > tr > td{ position: relative; min-width: 60px; /*padding:10px*/}
 table.list > tbody > tr > td:nth-child(1){ padding-left: 5px; }
 table.list > tbody > tr > td.main-title { min-width: 200px; }
+
+/* TD BACKGROUND TRANSITION */
+table.list tr:nth-child(odd) td {background: #E1E1E1;}
 table.list tr.on-checked td {background: #FFFFBB;}
-table.list tr:hover td{ background: #E1E1E1; }
+table.list tr:hover td{ background: #C3CFDB; }
 
 /* CUSTOMABLE CSS HOVER */
 table.list.nohover tr:hover td{background: none;}
@@ -212,10 +215,10 @@ table.list .thumbs{ float: left; width: 50px; height: 50px; overflow: hidden; ma
 table.list .thumbs img{ max-height: 50px; }
 
 table.list tr td a.insert-into-post{ position: absolute; top: 20px; left: 0px; display: none; }
-table.list tr td .btn{ display: none; }
 table.list tr td.offbutt{ text-align: left; }
 
 table.list th.action{ min-width: 100px !important; }
+table.list td.action-btn{ line-height: 35px; }
 
 table.list-field .dropdown-menu{ min-width: 85px; }
 table.list-field .dropdown-menu a{ text-align: left; padding: 3px 5px !important; }

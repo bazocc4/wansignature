@@ -964,7 +964,14 @@ class EntriesController extends AppController {
 						}
 						else if($value['input_type'] == 'multibrowse')
 						{
-							$this->request->data['EntryMeta']['value'] = implode('|', array_unique(array_filter($value['value'])));
+                            if(!empty($value['total'])) // special mode...
+                            {
+                                foreach($value['value'] as $nanokey => $nanovalue)
+                                {
+                                    $value['value'][$nanokey] .= '_'.$value['total'][$nanokey];
+                                }
+                            }
+							$this->request->data['EntryMeta']['value'] = implode('|', $value['value']);
 						}
 						else
 						{
@@ -1263,7 +1270,14 @@ class EntriesController extends AppController {
 								}
 								else if($value['input_type'] == 'multibrowse')
 								{
-									$this->request->data['EntryMeta']['value'] = implode('|', array_unique(array_filter($value['value'])));
+                                    if(!empty($value['total'])) // special mode...
+                                    {
+                                        foreach($value['value'] as $nanokey => $nanovalue)
+                                        {
+                                            $value['value'][$nanokey] .= '_'.$value['total'][$nanokey];
+                                        }
+                                    }
+									$this->request->data['EntryMeta']['value'] = implode('|', $value['value']);
 								}
 								else
 								{

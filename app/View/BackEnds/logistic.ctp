@@ -147,24 +147,15 @@
 					$("input#"+targetID).nextAll("input[type=hidden]").val( $(this).find("input[type=hidden].slug-code").val() );
 					$("input#"+targetID).change();
 
-					// Update the subcategory dropdown value, if existed !!
-					if($('select.subcategory').length > 0)
-					{
-						$('select.subcategory').html('');
-						
-						var catcheck = $(this).find("td.form-subcategory").html();
-						
-						if(catcheck != '-')
-						{
-							var subcat = catcheck.split('<br>');
-						
-							$.each(subcat , function(i,el){
-                                el = $.trim(el);
-								$('select.subcategory').append('<option value="'+el+'">'+el+'</option>');
-							});
-						}
-						
-					}
+					// update other attribute ...
+                    var $trytotal = $("input#"+targetID).nextAll('input[type=number]');
+                    if($trytotal.length > 0)
+                    {
+                        $trytotal.val('');
+                        $trytotal.removeAttr('readonly');
+                        $trytotal.attr('max' , parseInt($(this).find("td.form-total_stock").text()) );
+                        $trytotal.focus();
+                    }
 
 					$.colorbox.close();
 				}
@@ -400,16 +391,11 @@
 							$emptybrowse = 0;
 							foreach ($displayValue as $brokekey => $brokevalue) 
 							{
-                                $brokeWithTotal = explode('_', $brokevalue);
-                                
-                                $brokevalue = $brokeWithTotal[0];
-                                $broketotal = $brokeWithTotal[1];
-                                
 								$mydetails = $this->Get->meta_details($brokevalue , $browse_slug );
 								if(!empty($mydetails))
 								{
 									$emptybrowse = 1;
-									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']).(!empty($broketotal)?' ('.$broketotal.' pcs)':'');
+									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']);
 									echo '<p>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).'</p>';
                                     echo '<input type="hidden" value="'.$mydetails['Entry']['slug'].'">';
 								}

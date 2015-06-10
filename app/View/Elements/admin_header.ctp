@@ -72,6 +72,20 @@
 
 						$("input#"+newTargetID).nextAll("input[type=hidden]").val( mytr.find("input[type=hidden].slug-code").val() );
 						$("input#"+newTargetID).change();
+                        
+                        // update other attribute ...
+                        var $trytotal = $("input#"+newTargetID).nextAll('input[type=number]');
+                        if($trytotal.length > 0)
+                        {
+                            $trytotal.val('');
+                            $trytotal.removeAttr('readonly');
+                            
+                            var $total_stock = mytr.find("td.form-total_stock");
+                            if($total_stock.length > 0)
+                            {
+                                $trytotal.attr('max' , parseInt($total_stock.text()) );              
+                            }
+                        }
 
 						counter_stream++;
 					}

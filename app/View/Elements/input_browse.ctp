@@ -9,6 +9,14 @@
     {
         $browse_slug = 'client';
     }
+    else if($shortkey == 'warehouse_origin' || $shortkey == 'warehouse_destination')
+    {
+        $browse_slug = 'warehouse';
+    }
+    else if($shortkey == 'exhibition_origin' || $shortkey == 'exhibition_destination')
+    {
+        $browse_slug = 'exhibition';
+    }
     else
     {
         $browse_slug = $browse_alias;

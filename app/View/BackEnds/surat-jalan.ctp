@@ -93,7 +93,18 @@
 			// submit bulk action checkbox !!
 			if($('form#global-action').length > 0)
             {
-                $('form#global-action').submit(function(){				
+                $('form#global-action').submit(function(){
+                    
+                    if($(this).find('select#action-status').val() == 'active')
+                    {
+                        $('input.check-record:checked').each(function(i,el){
+                            if($(el).closest('tr').find('a.change-accepted').length == 0)
+                            {
+                                $(el).attr('checked' , false).change();
+                            }
+                        });
+                    }
+                    
                     var records = [];
                     $('input.check-record:checked').each(function(i,el){
                         records.push($(el).val());
@@ -271,14 +282,16 @@
                 echo $this->Html->link('last '.string_unslug($entityTitle).($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' asc'?" desc":" asc") ));
             ?>
         </th>
-		<th>
-		    <?php
-/*
-                $entityTitle = "status";
-                echo $this->Html->link(string_unslug($entityTitle).($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' asc'?" desc":" asc") ));
-*/
+        <th>
+            <?php
                 $entityTitle = "modified_by";
                 echo $this->Html->link('last updated by'.($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' asc'?" desc":" asc") ));
+            ?>
+        </th>
+		<th>
+		    <?php
+                $entityTitle = "status";
+                echo $this->Html->link(string_unslug($entityTitle).($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' asc'?" desc":" asc") ));                
             ?>
 		</th>
 		<?php
@@ -287,19 +300,9 @@
 				?>
 		<th class="action">
 			<form id="global-action" style="margin: 0;" action="#" accept-charset="utf-8" method="post" enctype="multipart/form-data">
-				<select REQUIRED name="data[action]" class="input-small">
+				<select REQUIRED name="data[action]" class="input-small" id="action-status">
 					<option style="font-weight: bold;" value="">Action :</option>
-					<?php
-/*
-                        if($myType['Type']['slug'] != 'pages')
-                        {
-                            ?>
-                    <option value="active">Publish</option>
-					<option value="disable">Draft</option>                            
-                            <?php
-                        }
-*/
-                    ?>
+					<option value="active">Accepted</option>
 					<option value="delete">Delete</option>
 				</select>
 				<input type="hidden" name="data[record]" id="action-records" />
@@ -492,20 +495,20 @@
             }
 		?>
 		<td><?php echo date_converter($value['Entry']['modified'], $mySetting['date_format'] , $mySetting['time_format']); ?></td>
+		<td>
+		    <span class="label label-inverse">
+				<?php echo $value['AccountModifiedBy']['username']; ?>
+			</span>
+		</td>
 		<td style='min-width: 0px;' <?php echo (empty($popup)?'':'class="offbutt"'); ?>>
-<!--
 			<span class="label <?php echo $value['Entry']['status']==0?'label-important':'label-success'; ?>">
 				<?php
 					if($value['Entry']['status'] == 0)
-						echo "Draft";
+						echo "On Process";
 					else
-						echo "Published";
+						echo "Accepted";
 				?>
-			</span>
--->
-            <span class="label label-inverse">
-				<?php echo $value['AccountModifiedBy']['username']; ?>
-			</span>
+			</span>            
 		</td>
 		<?php
 			if(empty($popup))
@@ -513,23 +516,13 @@
                 echo "<td class='action-btn'>";
                 echo $this->Html->link('<i class="icon-edit icon-white"></i>', $editUrl, array('escape'=>false, 'class'=>'btn btn-primary','data-toggle'=>'tooltip', 'title'=>'CLICK TO EDIT / VIEW DETAIL') );
                 
-/*
-                if($myType['Type']['slug'] != 'pages')
+                if($value['Entry']['status'] == 0)
 				{
-					$confirm = null;
+					$confirm = 'Apakah Anda yakin pengiriman barang dari Surat Jalan '.strtoupper($value['Entry']['title']).' sudah diterima seluruhnya ?';
 					$targetURL = 'entries/change_status/'.$value['Entry']['id'];
-                    echo '&nbsp;&nbsp;';
-					if($value['Entry']['status'] == 0)
-					{
-						echo '<a data-toggle="tooltip" title="CLICK TO PUBLISH RECORD" href="javascript:void(0)" onclick="changeLocation(\''.$targetURL.'\')" class="btn btn-info"><i class="icon-ok icon-white"></i></a>';					
-					}
-					else
-					{
-						$confirm = 'Are you sure to set '.strtoupper($value['Entry']['title']).' as draft ?';
-						echo '<a data-toggle="tooltip" title="CLICK TO DRAFT RECORD" href="javascript:void(0)" onclick="show_confirm(\''.$confirm.'\',\''.$targetURL.'\')" class="btn btn-warning"><i class="icon-ban-circle icon-white"></i></a>';
-					}
+                    
+                    echo '&nbsp;&nbsp;<a data-toggle="tooltip" title="CLICK TO SET AS ACCEPTED" href="javascript:void(0)" onclick="show_confirm(\''.$confirm.'\',\''.$targetURL.'\')" class="btn btn-info change-accepted"><i class="icon-ok icon-white"></i></a>';					
 				}
-*/
 				?>
             &nbsp;<a data-toggle="tooltip" title="CLICK TO DELETE RECORD" href="javascript:void(0)" onclick="show_confirm('Are you sure want to delete <?php echo strtoupper($value['Entry']['title']); ?> ?','entries/delete/<?php echo $value['Entry']['id']; ?>')" class="btn btn-danger"><i class="icon-trash icon-white"></i></a>
 				<?php

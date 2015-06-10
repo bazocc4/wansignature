@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.24, for Win32 (x86)
+-- MySQL dump 10.13  Distrib 5.6.21, for Win32 (x86)
 --
 -- Host: localhost    Database: wansignature
 -- ------------------------------------------------------
--- Server version	5.6.24
+-- Server version	5.6.21
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -46,7 +46,7 @@ CREATE TABLE `cms_accounts` (
 
 LOCK TABLES `cms_accounts` WRITE;
 /*!40000 ALTER TABLE `cms_accounts` DISABLE KEYS */;
-INSERT INTO `cms_accounts` VALUES (1,1,1,'Admin Basuki','admin@yahoo.com','169e781bd52860b584879cbe117085da596238f3','2015-06-09 20:58:26','2013-01-04 00:00:00',1,'2014-05-05 15:15:38',1);
+INSERT INTO `cms_accounts` VALUES (1,1,1,'Admin Basuki','admin@yahoo.com','169e781bd52860b584879cbe117085da596238f3','2015-06-10 09:21:18','2013-01-04 00:00:00',1,'2014-05-05 15:15:38',1);
 INSERT INTO `cms_accounts` VALUES (2,2,2,'Andy Basuki','andybasuki88@gmail.com','d82dff1679e0137a0bab60cc67cc6a2ad36f10a0','2015-06-08 09:34:35','2015-06-02 20:19:53',1,'2015-06-02 20:19:53',1);
 /*!40000 ALTER TABLE `cms_accounts` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -76,7 +76,7 @@ CREATE TABLE `cms_entries` (
   `lang_code` varchar(10) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `slug` (`slug`)
-) ENGINE=MyISAM AUTO_INCREMENT=50 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=56 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -131,6 +131,11 @@ INSERT INTO `cms_entries` VALUES (46,'product-type','Earring','earring-1','',0,0
 INSERT INTO `cms_entries` VALUES (47,'logistic','Baut Mur','baut-mur','',0,0,1,2,'2015-06-07 09:18:39',1,'2015-06-07 10:30:50',1,47,'en-47');
 INSERT INTO `cms_entries` VALUES (48,'logistic-warehouse','tunjungan-plaza-wh','tunjungan-plaza-wh-1','',0,47,1,0,'2015-06-07 09:41:38',1,'2015-06-07 09:41:38',1,48,'en-48');
 INSERT INTO `cms_entries` VALUES (49,'logistic-warehouse','atom-wh','atom-wh-1','',0,47,1,0,'2015-06-07 10:29:07',1,'2015-06-07 10:30:50',1,49,'en-49');
+INSERT INTO `cms_entries` VALUES (51,'surat-jalan','asdfgfg','asdfgfg','',0,0,1,0,'2015-06-10 10:36:24',1,'2015-06-10 10:36:50',1,51,'en-51');
+INSERT INTO `cms_entries` VALUES (52,'surat-jalan','test sjoke','test-sjoke','',0,0,1,0,'2015-06-10 11:28:07',1,'2015-06-10 12:10:13',1,52,'en-52');
+INSERT INTO `cms_entries` VALUES (53,'surat-jalan','test kedua surat jalan','test-kedua-surat-jalan','',0,0,1,0,'2015-06-10 12:11:21',1,'2015-06-10 12:11:42',1,53,'en-53');
+INSERT INTO `cms_entries` VALUES (54,'surat-jalan','wqwqwqwqw','wqwqwqwqw','',0,0,0,0,'2015-06-10 16:08:57',1,'2015-06-10 17:17:15',1,54,'en-54');
+INSERT INTO `cms_entries` VALUES (55,'logistic','Souvenir X','souvenir-x','[contoh sample]',0,0,1,0,'2015-06-10 17:15:41',1,'2015-06-10 17:15:41',1,55,'en-55');
 /*!40000 ALTER TABLE `cms_entries` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -147,7 +152,7 @@ CREATE TABLE `cms_entry_metas` (
   `key` varchar(500) NOT NULL,
   `value` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=251 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=304 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -317,6 +322,33 @@ INSERT INTO `cms_entry_metas` VALUES (243,27,'form-exhibition','');
 INSERT INTO `cms_entry_metas` VALUES (247,28,'form-telepon','031-70574934 / 7E715559');
 INSERT INTO `cms_entry_metas` VALUES (248,28,'form-warehouse','');
 INSERT INTO `cms_entry_metas` VALUES (249,28,'form-exhibition','');
+INSERT INTO `cms_entry_metas` VALUES (265,51,'form-diamond','');
+INSERT INTO `cms_entry_metas` VALUES (266,51,'form-cor_jewelry','');
+INSERT INTO `cms_entry_metas` VALUES (257,51,'backup-slug','\nasdfgfg\n');
+INSERT INTO `cms_entry_metas` VALUES (264,51,'form-delivery_type','Warehouse To Warehouse');
+INSERT INTO `cms_entry_metas` VALUES (263,51,'form-date','06/10/2015');
+INSERT INTO `cms_entry_metas` VALUES (267,51,'form-logistic','');
+INSERT INTO `cms_entry_metas` VALUES (268,52,'backup-slug','\ntest-sjoke\n');
+INSERT INTO `cms_entry_metas` VALUES (269,52,'form-date','06/10/2015');
+INSERT INTO `cms_entry_metas` VALUES (270,52,'form-delivery_type','Warehouse To Warehouse');
+INSERT INTO `cms_entry_metas` VALUES (271,52,'form-diamond','');
+INSERT INTO `cms_entry_metas` VALUES (272,52,'form-cor_jewelry','');
+INSERT INTO `cms_entry_metas` VALUES (273,52,'form-logistic','');
+INSERT INTO `cms_entry_metas` VALUES (274,53,'backup-slug','\ntest-kedua-surat-jalan\n');
+INSERT INTO `cms_entry_metas` VALUES (275,53,'form-date','06/10/2015');
+INSERT INTO `cms_entry_metas` VALUES (276,53,'form-delivery_type','Warehouse To Warehouse');
+INSERT INTO `cms_entry_metas` VALUES (277,53,'form-diamond','');
+INSERT INTO `cms_entry_metas` VALUES (278,53,'form-cor_jewelry','');
+INSERT INTO `cms_entry_metas` VALUES (279,53,'form-logistic','');
+INSERT INTO `cms_entry_metas` VALUES (280,54,'backup-slug','\nwqwqwqwqw\n');
+INSERT INTO `cms_entry_metas` VALUES (303,54,'form-logistic','baut-mur_70|souvenir-x_25');
+INSERT INTO `cms_entry_metas` VALUES (302,54,'form-cor_jewelry','');
+INSERT INTO `cms_entry_metas` VALUES (301,54,'form-diamond','');
+INSERT INTO `cms_entry_metas` VALUES (300,54,'form-delivery_type','Warehouse To Warehouse');
+INSERT INTO `cms_entry_metas` VALUES (291,55,'backup-slug','\nsouvenir-x\n');
+INSERT INTO `cms_entry_metas` VALUES (292,55,'form-logistic_type','Souvenir');
+INSERT INTO `cms_entry_metas` VALUES (293,55,'form-total_stock','75');
+INSERT INTO `cms_entry_metas` VALUES (299,54,'form-date','06/10/2015');
 /*!40000 ALTER TABLE `cms_entry_metas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -782,4 +814,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-10  0:20:46
+-- Dump completed on 2015-06-10 17:44:35

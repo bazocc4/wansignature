@@ -57,18 +57,9 @@
 				
 				// save as draft button !!
 				$('button#save-as-draft').click(function(){
-					// set last status button as draft !!
+					// set last status button as draft & submit form !!
 					$('select.status:last').val('0');
-					$(this).closest('form').find('button[type=submit]:first').click();
-				});
-				
-				// save as published button !!
-				$('button#save-button').click(function(){
-					<?php if(empty($myEntry)): ?>
-					// set last status button as published !!
-					$('select.status:last').val('1');
-					<?php endif; ?>
-					$(this).closest('form').find('button[type=submit]:first').click();
+					$('button#save-button').click();
 				});
 			});
 		</script>
@@ -257,11 +248,9 @@
 	<!-- SAVE BUTTON -->
 		<div class="control-action">
 			<!-- always use submit button to submit form -->
-			<button class="hide" type="submit"></button>
-
-			<button id="save-button" type="button" class="btn btn-primary"><?php echo $saveButton; ?></button>
+			<button id="save-button" type="submit" class="btn btn-primary"><?php echo $saveButton; ?></button>
 			<?php
-				if(empty($myEntry))
+				if(empty($myEntry) && !empty($myType))
 				{
 					echo '<button id="save-as-draft" type="button" class="btn btn-inverse hide">Save as Draft</button>';
 				}

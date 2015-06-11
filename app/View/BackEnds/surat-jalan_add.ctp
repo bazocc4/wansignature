@@ -17,6 +17,10 @@
 				<?php if(!empty($this->request->query['anchor'])): ?>
 					$('div#form-<?php echo $this->request->query['anchor']; ?>').prevAll('a.get-from-library:first').focus();
 				<?php endif; ?>
+                
+                // Hide main_image !!
+                $('div.thumbs').hide();
+                $('div.change-pic').hide();
 			});
 		</script>
 		<?php
@@ -47,60 +51,42 @@
 					$('p#id-title-description').css('display','<?php echo (!empty($lang)?'none':'block'); ?>');
 				}
 				
-				// media sortable
-				if($("div#myPictureWrapper").length > 0)
-				{
-					$("div#myPictureWrapper").sortable({ opacity: 0.6, cursor: 'move'});
-					// print total pictures...
-					$('div#myPictureWrapper').prevAll('.galleryCount:first').find('span').html( $('div#myPictureWrapper').find('div.photo').length );
-				}
-				
-				// save as draft button !!
-				$('button#save-as-draft').click(function(){
-					// set last status button as draft !!
-					$('select.status:last').val('0');
-					$(this).closest('form').find('button[type=submit]:first').click();
-				});
-                
-                $('form').submit(function(){
-                    if($('select.status:last').val() == '1')
-                    {
-                        if(!confirm('Apakah Anda yakin pengiriman barang dari Surat Jalan ini sudah diterima seluruhnya?\nJika benar, maka tekan "OK".\nJika tidak, maka tekan "Cancel" dan ubah Status menjadi "On Process".'))
-                        {
-                            $('select.status:last').focus();
-                            return false;
-                        }
-                    }
-                });
-                
-                <?php
-                    if($myEntry['Entry']['status']=='1')
-                    {
-                        ?>
-                $('#form-title-entry').append(' (VIEW MODE)');
-                $('button.cancel-form-button').html('&laquo; Back to Surat Jalan &laquo;');
-                        <?php
-                    }
-                ?>
-                
-                // onchange origin callback ...
+				// onchange origin callback ...
                 $('input#warehouse-origin , input#exhibition-origin').change(function(e){
                     var targetid = e.target.getAttribute('id');
                     var targetvalue = $('input#'+targetid).nextAll('input[type=hidden]:first').val();
                     
                     var storage = '';
-                    var content = '';                    
+                    var content = '';
+                    var cleaning = true;
                     if(targetvalue.length > 0)
                     {
                         storage = targetid.split('-');
                         storage = storage[0];
                         content = targetvalue;
+                        
+                        if(!$(this).is(':visible'))
+                        {
+                            cleaning = false;
+                        }
                     }
                     
-                    $('div.diamond-group , div.cor-jewelry-group , div.logistic-group').html('').closest('div.control-group').find('a.add-raw').attr({
+                    var $products = $('div.diamond-group , div.cor-jewelry-group , div.logistic-group');
+                    $products.closest('div.control-group').find('a.add-raw').attr({
                         'data-storage': storage,
                         'data-content': content
-                    }).click();
+                    });
+                    
+                    if(cleaning)
+                    {
+                        $products.html('').closest('div.control-group').find('a.add-raw').click();
+                    }
+                    else
+                    {
+                        $products.find('a.get-from-table').each(function(){
+                            $(this).attr('href', $(this).attr('href')+'&storage='+storage+'&content='+content );
+                        });
+                    }
                 });
                 
                 // onchange delivery_type callback ...
@@ -292,6 +278,7 @@
 			$value['model'] = 'Entry';
 			$value['counter'] = 0;
 			$value['input_type'] = 'text';
+            $value['inputsize'] = 'input-medium';
 			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['title']);
 			echo $this->element('input_'.$value['input_type'] , $value);
 		?>
@@ -302,16 +289,7 @@
 			{
 				if(substr($value['key'], 0 , 5) == 'form-')
 				{
-					// SPECIAL CHECK !!
-					if($value['key'] == 'form-subcategory' && !empty($myEntry))
-					{	
-						$subcat_optvalue = $this->Get->meta_details($myEntry['EntryMeta']['category'] , 'category');
-						$value['optionlist'] = $subcat_optvalue['EntryMeta']['subcategory'];
-					}
-					else
-					{
-						$value['optionlist'] = $value['value'];
-					}
+					$value['optionlist'] = $value['value'];
 					unset($value['value']);
 
 					// now get value from EntryMeta if existed !!
@@ -347,30 +325,13 @@
                         $value['display'] = 'none';
                     }
                     
+                    // view mode ...
+                    if(!empty($myEntry))
+                    {
+                        $value['view_mode'] = true;
+                    }
+                    
 					echo $this->element(($value['key']=='form-logistic'?'special':'input').'_'.$value['input_type'] , $value);
-				}
-			}
-			// HIDE THE BROKEN INPUT TYPE !!!!!!!!!!!!!
-			foreach ($myEntry['EntryMeta'] as $key => $value)
-			{
-				if(substr($value['key'], 0 , 5) == 'form-')
-				{
-					$broken = 1;
-					foreach ($myAutomatic as $key20 => $value20) 
-					{
-						if($value['key'] == $value20['key'])
-						{
-							$broken = 0;
-							break;
-						}
-					}
-					if($broken == 1)
-					{
-						$value['display'] = 'none';
-						$value['model'] = 'EntryMeta';
-						$value['counter'] = $counter++;
-						echo $this->element('input_textarea' , $value);
-					}
 				}
 			}
 		?>		
@@ -400,7 +361,7 @@
 			$value['list'][1]['id'] = '1';
 			$value['list'][1]['name'] = 'Accepted';
             $value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['status']);
-            $value['p'] = "Pilih <strong>On Process</strong> jika pengiriman masih diproses.<br>Pilih <strong>Accepted</strong> jika seluruh pengiriman barang sudah diterima oleh pihak penerima.<br><span style='color:red'>NB: Surat Jalan dengan status <strong>Accepted</strong> tidak dapat diubah kembali.</span>";
+            $value['p'] = "Pilih <strong>On Process</strong> jika pengiriman masih diproses.<br>Pilih <strong>Accepted</strong> jika seluruh pengiriman barang sudah diterima oleh pihak penerima.";
 			echo $this->element('input_'.$value['input_type'] , $value);
 		?>
 		
@@ -409,24 +370,9 @@
 	<!-- SAVE BUTTON -->
 		<div class="control-action">
 			<!-- always use submit button to submit form -->
-			<button id="save-button" type="submit" class="btn btn-primary <?php echo ($myEntry['Entry']['status']=='1'?'hide':''); ?>"><?php echo $saveButton; ?></button>
-			<?php
-				if(empty($myEntry) && !empty($myType))
-				{
-					echo '<button id="save-as-draft" type="button" class="btn btn-inverse hide">Save as Draft</button>';
-				}
-
-                $langUrlCancel = '';
-                if(!empty($lang))
-                {
-                    $langUrlCancel = (empty($myChildTypeLink)?'?':'&').'lang='.$lang;
-                }
-                else if(!empty($myEntry))
-                {
-                    $langUrlCancel = (empty($myChildTypeLink)?'?':'&').'lang='.substr( $myEntry['Entry']['lang_code'] , 0,2);
-                }
-			?>
-        	<button type="button" class="btn cancel-form-button" onclick="javascript: window.location=site+'admin/entries/<?php echo (empty($myType)?'pages':$myType['Type']['slug']).(empty($myChildType)?'':'/'.$myParentEntry['Entry']['slug']).$myChildTypeLink.$langUrlCancel; ?>'">Cancel</button>
+			<button id="save-button" type="submit" class="btn btn-primary"><?php echo $saveButton; ?></button>
+           
+        	<button type="button" class="btn cancel-form-button" onclick="javascript: window.location=site+'admin/entries/<?php echo (empty($myType)?'pages':$myType['Type']['slug']).(empty($myChildType)?'':'/'.$myParentEntry['Entry']['slug']).$myChildTypeLink; ?>'">Cancel</button>
 		</div>
 	</fieldset>
 <?php echo $this->Form->end(); ?>

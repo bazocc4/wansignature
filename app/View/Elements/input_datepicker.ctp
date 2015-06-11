@@ -25,15 +25,31 @@
 	});
 </script>
 <div class="control-group" <?php echo (empty($display)?'':'style="display:none"'); ?>>
-	<label class="control-label" <?php echo (!empty($required)?'style="color: red;"':''); ?>>
+	<label class="control-label" <?php echo (!empty($required)&&!$view_mode?'style="color: red;"':''); ?>>
         <?php echo string_unslug($shortkey); ?>
     </label>
-	<div class="controls">
-		<input <?php echo $required; ?> class="input-small dpicker <?php echo $shortkey; ?>" type="text" value="<?php echo (isset($_POST['data'][$model][$counter]['value'])?$_POST['data'][$model][$counter]['value']:(empty($value)?(strpos(strtolower($validation), 'not_empty') !== FALSE?$month."/".$day."/".$year:""):$value)); ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value]"/>
-		<!--
-		<a href="javascript:void(0)" class="btn clear-date">Clear</a>
-		-->
+	<div class="controls">		
 		<?php
+            if($view_mode)
+            {
+                echo '<div class="view-mode '.$shortkey.'">';
+                if(empty($value))
+                {
+                    echo '-';
+                }
+                else
+                {
+                    echo date_converter($value , $mySetting['date_format']);
+                }
+                echo '</div>';
+            }
+        ?>
+        
+        <div class="<?php echo ($view_mode?'hide':''); ?>">
+<input <?php echo $required; ?> class="input-small dpicker <?php echo $shortkey; ?>" type="text" value="<?php echo (isset($_POST['data'][$model][$counter]['value'])?$_POST['data'][$model][$counter]['value']:(empty($value)?(strpos(strtolower($validation), 'not_empty') !== FALSE?$month."/".$day."/".$year:""):$value)); ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value]"/>        
+        </div>
+                         
+        <?php
 			if(!empty($p))
 			{
 				echo '<p class="help-block">'.$p.'</p>';

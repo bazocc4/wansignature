@@ -9,24 +9,43 @@
 	}
 ?>
 <div class="control-group" <?php echo (empty($display)?'':'style="display:none"'); ?>>
-	<label class="control-label" <?php echo (!empty($required)?'style="color: red;"':''); ?>>
+	<label class="control-label" <?php echo (!empty($required)&&!$view_mode?'style="color: red;"':''); ?>>
         <?php echo string_unslug($shortkey); ?>
     </label>
 	<div class="controls">
-		<select class="<?php echo ($shortkey=='status'?'input-medium':'input-xlarge'); ?> <?php echo $shortkey; ?>" <?php echo $required.' '.(strpos($key, "discount")===FALSE?'':'style="width:50px;"');?> name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value]">
-			<?php
-				if(empty($required))
-				{
-					echo '<option value="">'.$placeholder.'</option>';
-				}
-				$value = isset($_POST['data'][$model][$counter]['value'])?$_POST['data'][$model][$counter]['value']:$value;
-				foreach ($list as $key10 => $value10)
-				{
-					echo "<option ".(strtolower($value10['id']) == strtolower($value)?'SELECTED':'')." value=\"".$value10['id']."\">".$value10['name']."</option>";
-				}
-			?>
-		</select>
 		<?php
+            if($view_mode)
+            {
+                echo '<div class="view-mode '.$shortkey.'">';
+                if(empty($value))
+                {
+                    echo '-';
+                }
+                else
+                {
+                    echo $value;
+                }
+                echo '</div>';
+            }
+        ?>
+        
+        <div class="<?php echo ($view_mode?'hide':''); ?>">
+            <select class="<?php echo ($shortkey=='status'?'input-medium':'input-xlarge'); ?> <?php echo $shortkey; ?>" <?php echo $required.' '.(strpos($key, "discount")===FALSE?'':'style="width:50px;"');?> name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value]">
+                <?php
+                    if(empty($required))
+                    {
+                        echo '<option value="">'.$placeholder.'</option>';
+                    }
+                    $value = isset($_POST['data'][$model][$counter]['value'])?$_POST['data'][$model][$counter]['value']:$value;
+                    foreach ($list as $key10 => $value10)
+                    {
+                        echo "<option ".(strtolower($value10['id']) == strtolower($value)?'SELECTED':'')." value=\"".$value10['id']."\">".$value10['name']."</option>";
+                    }
+                ?>
+            </select>
+        </div>
+                    
+        <?php
 			if(!empty($p))
 			{
 				echo '<p class="help-block">'.$p.'</p>';

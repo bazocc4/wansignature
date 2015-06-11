@@ -38,7 +38,7 @@
 	});
 </script>
 <div class="control-group" <?php echo (empty($display)?'':'style="display:none"'); ?>>
-	<label class="control-label" <?php echo (strpos(strtolower($validation), 'not_empty') !== FALSE?'style="color: red;"':''); ?>>
+	<label class="control-label" <?php echo (strpos(strtolower($validation), 'not_empty') !== FALSE && !$view_mode?'style="color: red;"':''); ?>>
         <?php echo string_unslug($shortkey); ?>
     </label>
 	<div class="controls <?php echo $browse_slug; ?>-group">
@@ -93,22 +93,39 @@
                             }
                         }
                         
-						echo '<div class="row-fluid '.$browse_slug.'-detail bottom-spacer">';
-					
-						if(!empty($metaDetails['EntryMeta']['name']))
-						{
-							echo '<input REQUIRED id="'.$browse_slug.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$metaDetails['EntryMeta']['name'].' ('.$metaDetails['Entry']['title'].')'.'" readonly="true"/>';
-						}
-						else
-						{
-							echo '<input REQUIRED id="'.$browse_slug.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$metaDetails['Entry']['title'].'" readonly="true"/>';
-						}
+						echo '<div class="row-fluid '.$browse_slug.'-detail '.($view_mode?'':'bottom-spacer').'">';
                         
-                        echo '&nbsp;<input REQUIRED type="number" min="1" class="input-mini" placeholder="pcs" name="data['.$model.']['.$counter.'][total][]" value="'.$metatotal.'">';
-						
-						echo '&nbsp;'.$this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>array('popup'=>'init', 'stream'=>$raw_stream)),array('class'=>'btn btn-info get-from-table'));
-	                    echo '<input class="'.$shortkey.'" type="hidden" name="data['.$model.']['.$counter.'][value][]" value="'.$metaDetails['Entry']['slug'].'"/>';
-	                    echo '&nbsp;<a class="btn btn-danger del-raw" href="javascript:void(0)"><i class="icon-trash icon-white"></i></a>';
+                        if($view_mode)
+                        {
+                            echo '<div class="view-mode '.$shortkey.'">';
+                            echo ($metakey+1).'.) '.$metaDetails['Entry']['title'];
+                            if(!empty($metatotal))
+                            {
+                                echo ' ('.$metatotal.' pcs)';
+                            }
+                            echo '</div>';
+                        }
+					
+						?>
+        <div class="<?php echo ($view_mode?'hide':''); ?>">
+        <?php
+            if(!empty($metaDetails['EntryMeta']['name']))
+            {
+                echo '<input REQUIRED id="'.$browse_slug.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$metaDetails['EntryMeta']['name'].' ('.$metaDetails['Entry']['title'].')'.'" readonly="true"/>';
+            }
+            else
+            {
+                echo '<input REQUIRED id="'.$browse_slug.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$metaDetails['Entry']['title'].'" readonly="true"/>';
+            }
+
+            echo '&nbsp;<input REQUIRED type="number" min="1" class="input-mini" placeholder="pcs" name="data['.$model.']['.$counter.'][total][]" value="'.$metatotal.'">';
+
+            echo '&nbsp;'.$this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>array('popup'=>'init', 'stream'=>$raw_stream)),array('class'=>'btn btn-info get-from-table'));
+            echo '<input class="'.$shortkey.'" type="hidden" name="data['.$model.']['.$counter.'][value][]" value="'.$metaDetails['Entry']['slug'].'"/>';
+            echo '&nbsp;<a class="btn btn-danger del-raw" href="javascript:void(0)"><i class="icon-trash icon-white"></i></a>';
+        ?>
+        </div>			
+						<?php
 						
 						echo '</div>';
 						
@@ -125,15 +142,23 @@
         // if NO browse record displayed, then show it one !!
         <?php if($raw_stream == 1): ?>
 $(document).ready(function(){
-	$('div.<?php echo $browse_slug; ?>-group').closest('div.control-group').find('a.add-raw').click();
+    <?php if($view_mode): ?>
+	$('div.<?php echo $browse_slug; ?>-group').html('<div class="view-mode">-</div>');
+    <?php else: ?>
+    $('div.<?php echo $browse_slug; ?>-group').closest('div.control-group').find('a.add-raw').click();
+    <?php endif; ?>
 });
         <?php endif; ?>
     </script>
     
 	<div class="controls">
-		<a data-storage="" data-content="" href="javascript:void(0)" class="add-raw" style="text-decoration: underline;">Add a <?php echo str_replace('_', ' ', $shortkey); ?></a>
+		<a data-storage="" data-content="" href="javascript:void(0)" class="add-raw <?php echo ($view_mode?'hide':''); ?>" style="text-decoration: underline;">Add a <?php echo str_replace('_', ' ', $shortkey); ?></a>
 		<p class="help-block">
+		
+		    <?php if(!$view_mode): ?>
 			Want to create new one? Click <?php echo $this->Html->link('here<img alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>'entries','action'=>$browse_slug.'/add'),array("target"=>"SingleSecondaryWindowName","onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;","escape"=>false)); ?>.<br/>
+            <?php endif; ?>
+            
 	        <?php echo $p; ?>
 	    </p>
 	</div>

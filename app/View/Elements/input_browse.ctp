@@ -69,53 +69,78 @@
     });
 </script>
 <div class="control-group" <?php echo (empty($display)?'':'style="display:none"'); ?>>            
-	<label class="control-label" <?php echo (!empty($required)?'style="color: red;"':''); ?>>
+	<label class="control-label" <?php echo (!empty($required)&&!$view_mode?'style="color: red;"':''); ?>>
         <?php echo string_unslug($shortkey); ?>
     </label>
-	<div class="controls">
-		
-		<input <?php echo $required; ?> <?php echo 'id="'.(empty($browse_alias)?$browse_slug:$browse_alias).'"'; ?> class="targetID input-large" placeholder="<?php echo $placeholder; ?>" value="<?php echo $metaDetails['Entry']['title']; ?>" type="text" readonly="true"/>
-        <?php            
-            $popupExtensions = array('popup'=>'init');
-
-            if(!empty($browse_alias))
+	<div class="controls">		
+		<?php
+            if($view_mode)
             {
-                $popupExtensions['alias'] = $browse_alias;
-                if($browse_alias == 'wholesaler')
+                echo '<div class="view-mode '.$shortkey.'">';                
+                if(empty($metaDetails))
                 {
-                    $popupExtensions['key'] = 'kategori';
-                    $popupExtensions['value'] = 'Wholesaler';
+                    echo '-';
+                    echo '</div>';
                 }
+                else
+                {
+                    echo $metaDetails['Entry']['title'];
+                    echo '</div>';
+                    ?>
+            <p class="help-block">
+                Want to view its detail? Click <?php echo '<a target="_blank" href="'.$imagePath.'admin/entries/'.$metaDetails['Entry']['entry_type'].'/edit/'.$metaDetails['Entry']['slug'].'">here<img alt="External Icon" src="'.$imagePath.'img/external-icon.gif"></a>'; ?>.
+            </p>    
+                    <?php
+                }
+                
+                echo '<p class="help-block">'.$p.'</p>';
             }
-
-            if($shortkey == 'product_type')
-            {
-                if($myType['Type']['slug'] == 'diamond')
-                {
-                    $popupExtensions['key'] = 'category';
-                    $popupExtensions['value'] = 'diamond';
-                }
-                else if($myType['Type']['slug'] == 'cor-jewelry')
-                {
-                    $popupExtensions['key'] = 'category';
-                    $popupExtensions['value'] = '!diamond';
-                }
-            }
-
-            echo $this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>$popupExtensions),array('class'=>'btn btn-info get-from-table'));
         ?>
-        <input class="<?php echo $shortkey; ?>" type="hidden" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value]" value="<?php echo $metaslug; ?>"/>
         
-        <?php if(empty($required)): ?>
-            <a class="btn btn-danger removeID" href="javascript:void(0)">Clear</a>  
-        <?php endif; ?>
-        
-        <a target="_blank" id="<?php echo $shortkey; ?>_view_detail" class="btn btn-primary" href="#">View Detail</a>  
-		
-		<p class="help-block">
-			Want to create new one? Click <?php echo $this->Html->link('here<img alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>'entries','action'=>$browse_slug.'/add'),array("target"=>"SingleSecondaryWindowName","onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;","escape"=>false)); ?>.<br/>
-            <?php echo $p; ?>
-        </p>
+        <div class="<?php echo ($view_mode?'hide':''); ?>">
+            <input <?php echo $required; ?> <?php echo 'id="'.(empty($browse_alias)?$browse_slug:$browse_alias).'"'; ?> class="targetID input-large" placeholder="<?php echo $placeholder; ?>" value="<?php echo $metaDetails['Entry']['title']; ?>" type="text" readonly="true"/>
+            <?php            
+                $popupExtensions = array('popup'=>'init');
+
+                if(!empty($browse_alias))
+                {
+                    $popupExtensions['alias'] = $browse_alias;
+                    if($browse_alias == 'wholesaler')
+                    {
+                        $popupExtensions['key'] = 'kategori';
+                        $popupExtensions['value'] = 'Wholesaler';
+                    }
+                }
+
+                if($shortkey == 'product_type')
+                {
+                    if($myType['Type']['slug'] == 'diamond')
+                    {
+                        $popupExtensions['key'] = 'category';
+                        $popupExtensions['value'] = 'diamond';
+                    }
+                    else if($myType['Type']['slug'] == 'cor-jewelry')
+                    {
+                        $popupExtensions['key'] = 'category';
+                        $popupExtensions['value'] = '!diamond';
+                    }
+                }
+
+                echo $this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>$popupExtensions),array('class'=>'btn btn-info get-from-table'));
+            ?>
+            <input class="<?php echo $shortkey; ?>" type="hidden" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value]" value="<?php echo $metaslug; ?>"/>
+
+            <?php if(empty($required)): ?>
+                <a class="btn btn-danger removeID" href="javascript:void(0)">Clear</a>  
+            <?php endif; ?>
+
+            <a target="_blank" id="<?php echo $shortkey; ?>_view_detail" class="btn btn-primary" href="#">View Detail</a>
+            
+            <p class="help-block">
+                Want to create new one? Click <?php echo $this->Html->link('here<img alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>'entries','action'=>$browse_slug.'/add'),array("target"=>"SingleSecondaryWindowName","onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;","escape"=>false)); ?>.<br/>
+                <?php echo $p; ?>
+            </p>
+        </div>
 	</div>
 	<input type="hidden" value="<?php echo $key; ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][key]"/>
 	<input type="hidden" value="<?php echo $input_type; ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][input_type]"/>

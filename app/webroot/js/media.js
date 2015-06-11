@@ -33,6 +33,19 @@ $(document).ready(function(){
     // POPUP ADMIN_DEFAULT.CTP
     $(document).on('click','.get-from-table',function(e){        
         e.preventDefault();
+        
+        // custom check !!
+        if($('#myTypeSlug').val() == 'surat-jalan')
+        {
+            var $storage = $(this).closest('div.control-group').find('a[data-storage][data-content].add-raw');
+            if($storage.length > 0 && ($storage.attr('data-storage').length == 0 || $storage.attr('data-content').length == 0) )
+            {
+                alert('Silahkan pilih tempat pengambilan barang terlebih dahulu (Warehouse Origin / Exhibition Origin).');
+                $('input#warehouse-origin , input#exhibition-origin').nextAll('a.get-from-table').focus();
+                return false;
+            }
+        }
+        
         $.colorbox({
             reposition: false,
             href: $(this).attr('href')+($('a#lang_identifier').length>0?'&lang='+$('a#lang_identifier').text().toLowerCase():''),

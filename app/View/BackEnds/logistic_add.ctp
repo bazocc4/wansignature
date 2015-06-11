@@ -17,6 +17,10 @@
 				<?php if(!empty($this->request->query['anchor'])): ?>
 					$('div#form-<?php echo $this->request->query['anchor']; ?>').prevAll('a.get-from-library:first').focus();
 				<?php endif; ?>
+                
+                $(document).on('change','input[id^=warehouse] , input[id^=exhibition]',function(){
+                    $(this).nextAll('input[type=number]').removeAttr('readonly').focus();
+                });
 			});
 		</script>
 		<?php
@@ -57,10 +61,22 @@
 				
 				// save as draft button !!
 				$('button#save-as-draft').click(function(){
-					// set last status button as draft !!
+					// set last status button as draft & submit form !!
 					$('select.status:last').val('0');
-					$(this).closest('form').find('button[type=submit]:first').click();
+					$('button#save-button').click();
 				});
+                
+                $('div.warehouse-group , div.exhibition-group').on('keyup', 'input[type=number]', function(){
+                    var totalstock = 0;
+                    $('div.warehouse-group , div.exhibition-group').find('input[type=number]').each(function(){
+                        if( $.isNumeric( $(this).val() ) )
+                        {
+                            totalstock += parseInt( $(this).val() );
+                        }
+                    });
+                    
+                    $('span.total_stock').text(totalstock);
+                }).find('input[type=number]:first').trigger('keyup');
 			});
 		</script>
 		<p class="notes important" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>
@@ -84,7 +100,7 @@
 			$value['validation'] = 'not_empty';
 			$value['model'] = 'Entry';
 			$value['counter'] = 0;
-			$value['input_type'] = 'browse';
+			$value['input_type'] = 'text';
 			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['title']);
 			echo $this->element('input_'.$value['input_type'] , $value);
 		?>
@@ -133,7 +149,7 @@
 						default:
 							break;
 					}
-					echo $this->element('input_'.$value['input_type'] , $value);
+					echo $this->element(($value['key']=='form-warehouse'||$value['key']=='form-exhibition'?'special':'input').'_'.$value['input_type'] , $value);
 				}
 			}
 			// HIDE THE BROKEN INPUT TYPE !!!!!!!!!!!!!
@@ -161,6 +177,15 @@
 			}
 		?>		
 		<!-- END OF META ATTRIBUTES -->
+		
+		<div class="control-group">
+            <label class="control-label">Total Stock</label>
+            <div class="controls">
+                <div class="view-mode">
+                    <span class="total_stock">0</span> pcs
+                </div>
+            </div>
+        </div>
 		
 		<?php
 			// Our CKEditor Description Field !!

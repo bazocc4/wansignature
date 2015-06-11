@@ -74,7 +74,7 @@
     </label>
 	<div class="controls">
 		
-		<input <?php echo $required; ?> <?php echo (empty($display)?'id="'.(empty($browse_alias)?$browse_slug:$browse_alias).'"':''); ?> class="targetID input-large" placeholder="<?php echo $placeholder; ?>" value="<?php echo $metaDetails['Entry']['title']; ?>" type="text" readonly="true"/>
+		<input <?php echo $required; ?> <?php echo 'id="'.(empty($browse_alias)?$browse_slug:$browse_alias).'"'; ?> class="targetID input-large" placeholder="<?php echo $placeholder; ?>" value="<?php echo $metaDetails['Entry']['title']; ?>" type="text" readonly="true"/>
         <?php            
             $popupExtensions = array('popup'=>'init');
 

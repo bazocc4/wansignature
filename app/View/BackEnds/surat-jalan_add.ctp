@@ -83,29 +83,48 @@
                     }
                 ?>
                 
+                // onchange origin callback ...
+                $('input#warehouse-origin , input#exhibition-origin').change(function(e){
+                    var targetid = e.target.getAttribute('id');
+                    var targetvalue = $('input#'+targetid).nextAll('input[type=hidden]:first').val();
+                    
+                    var storage = '';
+                    var content = '';                    
+                    if(targetvalue.length > 0)
+                    {
+                        storage = targetid.split('-');
+                        storage = storage[0];
+                        content = targetvalue;
+                    }
+                    
+                    $('div.diamond-group , div.cor-jewelry-group , div.logistic-group').html('').closest('div.control-group').find('a.add-raw').attr({
+                        'data-storage': storage,
+                        'data-content': content
+                    }).click();
+                });
+                
+                // onchange delivery_type callback ...
                 $('select.delivery_type').change(function(){
                     // origin toggle ...
                     if($(this).val().indexOf('Exhibition To') >= 0 )
                     {
-                        if($('input#warehouse-origin').is(':visible'))
+                        $('input.warehouse_origin').closest('div.control-group').hide();
+                        $('input.warehouse_origin , input#warehouse-origin').val('');
+                        
+                        if(!$('input#exhibition-origin').is(':visible'))
                         {
-                            $('input.warehouse_origin').closest('div.control-group').hide();
-                            $('input.warehouse_origin , input#warehouse-origin').val('');
-                            
-                            $('input#warehouse-origin').change();
+                            $('input#exhibition-origin').change().closest('div.control-group').show();
                         }
-                        $('input.exhibition_origin').closest('div.control-group').show();
                     }
                     else
                     {
-                        if($('input#exhibition-origin').is(':visible'))
+                        $('input.exhibition_origin').closest('div.control-group').hide();
+                        $('input.exhibition_origin , input#exhibition-origin').val('');
+                        
+                        if(!$('input#warehouse-origin').is(':visible'))
                         {
-                            $('input.exhibition_origin').closest('div.control-group').hide();
-                            $('input.exhibition_origin , input#exhibition-origin').val('');
-                            
-                            $('input#exhibition-origin').change();
+                            $('input#warehouse-origin').change().closest('div.control-group').show();
                         }
-                        $('input.warehouse_origin').closest('div.control-group').show();
                     }
                     
                     // destination toggle ...
@@ -249,11 +268,6 @@
                         }
                     }
                 }).trigger('change');
-                
-                // onchange origin callback ...
-                $('input#warehouse-origin , input#exhibition-origin').change(function(){
-                    $('div.diamond-group , div.cor-jewelry-group , div.logistic-group').html('').closest('div.control-group').find('a.add-raw').click();
-                });
 			});
 		</script>
 		<p class="notes important" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>
@@ -326,6 +340,13 @@
 						default:
 							break;
 					}
+                    
+                    // custom display ...
+                    if(strpos($value['key'] , '_origin') !== FALSE)
+                    {
+                        $value['display'] = 'none';
+                    }
+                    
 					echo $this->element(($value['key']=='form-logistic'?'special':'input').'_'.$value['input_type'] , $value);
 				}
 			}

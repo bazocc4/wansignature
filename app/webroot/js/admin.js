@@ -40,8 +40,7 @@ var jcrop_api = new Array();
 	    
 	    $(document).on('click','a.removeID',function(e){
             e.preventDefault();            
-	    	$(this).closest("div.controls").find("input.targetID").val("").change();
-	    	$(this).closest("div.controls").find("input[type=hidden]").val("");
+            $(this).siblings("input[type=hidden] , input.targetID").val("").trigger('change');
 	    });
 	    
 	    // AJAX IN EDIT FORM (CHANGE LANGUAGE)

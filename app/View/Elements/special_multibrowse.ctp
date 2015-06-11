@@ -14,7 +14,13 @@
             
             content += '&nbsp;<input REQUIRED type="number" min="1" class="input-mini" placeholder="pcs" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][total][]" readonly="true"/>';
             
-            content += '&nbsp;<a class="btn btn-info get-from-table" href="'+linkpath+'admin/entries/<?php echo $browse_slug; ?>?popup=init&stream='+<?php echo $var_stream; ?>+'">Browse</a>';            
+            var storage = '';
+            if($(this).attr('data-storage').length > 0 && $(this).attr('data-content').length > 0)
+            {
+                storage += '&storage='+$(this).attr('data-storage')+'&content='+$(this).attr('data-content');
+            }
+            
+            content += '&nbsp;<a class="btn btn-info get-from-table" href="'+linkpath+'admin/entries/<?php echo $browse_slug; ?>?popup=init&stream='+<?php echo $var_stream; ?>+storage+'">Browse</a>';
             content += '<input class="<?php echo $shortkey; ?>" type="hidden" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value][]" />';
             content += '&nbsp;<a class="btn btn-danger del-raw" href="javascript:void(0)"><i class="icon-trash icon-white"></i></a>';
             content += '</div>';
@@ -25,6 +31,7 @@
         
 		($('#colorbox').length>0&&$('#colorbox').is(':visible')?$('#colorbox').children().last().children():$(document)).on("click",'div.<?php echo $browse_slug; ?>-group a.del-raw',function(e){
             $(this).closest('div.<?php echo $browse_slug; ?>-detail').animate({opacity : 0 , height : 0, marginBottom : 0},1000,function(){
+                $(this).find('input[type=number]').val('').trigger('keyup');
                 $(this).detach();
             });
         });
@@ -124,7 +131,7 @@ $(document).ready(function(){
     </script>
     
 	<div class="controls">
-		<a href="javascript:void(0)" class="add-raw" style="text-decoration: underline;">Add a <?php echo str_replace('_', ' ', $shortkey); ?></a>
+		<a data-storage="" data-content="" href="javascript:void(0)" class="add-raw" style="text-decoration: underline;">Add a <?php echo str_replace('_', ' ', $shortkey); ?></a>
 		<p class="help-block">
 			Want to create new one? Click <?php echo $this->Html->link('here<img alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>'entries','action'=>$browse_slug.'/add'),array("target"=>"SingleSecondaryWindowName","onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;","escape"=>false)); ?>.<br/>
 	        <?php echo $p; ?>

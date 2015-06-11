@@ -77,13 +77,11 @@
                         var $trytotal = $("input#"+newTargetID).nextAll('input[type=number]');
                         if($trytotal.length > 0)
                         {
-                            $trytotal.val('');
-                            $trytotal.removeAttr('readonly');
+                            $trytotal.removeAttr('readonly').focus();
                             
-                            var $total_stock = mytr.find("td.form-total_stock");
-                            if($total_stock.length > 0)
+                            if($('#myTypeSlug').val() == 'surat-jalan')
                             {
-                                $trytotal.attr('max' , parseInt($total_stock.text()) );              
+                                $trytotal.val('').attr('max' , mytr.find("input[type=hidden][value=<?php echo $this->request->query['content']; ?>]").attr('data-total') );
                             }
                         }
 

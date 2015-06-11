@@ -153,7 +153,7 @@
                     {
                         $trytotal.val('');
                         $trytotal.removeAttr('readonly');
-                        $trytotal.attr('max' , parseInt($(this).find("td.form-total_stock").text()) );
+                        $trytotal.attr('max' , $(this).find("input[type=hidden][value=<?php echo $this->request->query['content']; ?>]").attr('data-total') );
                         $trytotal.focus();
                     }
 
@@ -255,7 +255,10 @@
             {
                 echo '<th>Gallery Count</th>';
             }
-		?>		
+		?>
+		
+		<th>TOTAL STOCK</th>
+		
 		<th class="date-field">
             <?php
                 $entityTitle = "modified";
@@ -308,6 +311,8 @@
 		$orderlist = "";
 		foreach ($myList as $value):
 		$orderlist .= $value['Entry']['sort_order'].",";
+        
+        $totalstock = 0;
 	?>	
 	<tr class="orderlist" alt="<?php echo $value['Entry']['id']; ?>">
 		<td class="main-title">
@@ -391,13 +396,20 @@
 							$emptybrowse = 0;
 							foreach ($displayValue as $brokekey => $brokevalue) 
 							{
+                                $brokeWithTotal = explode('_', $brokevalue);
+                                
+                                $brokevalue = $brokeWithTotal[0];
+                                $broketotal = $brokeWithTotal[1];
+                                
+                                $totalstock += $broketotal;
+                                
 								$mydetails = $this->Get->meta_details($brokevalue , $browse_slug );
 								if(!empty($mydetails))
 								{
 									$emptybrowse = 1;
-									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']);
-									echo '<p>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).'</p>';
-                                    echo '<input type="hidden" value="'.$mydetails['Entry']['slug'].'">';
+									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']).(!empty($broketotal)?' ('.$broketotal.' pcs)':'');
+                                    echo '<p '.($this->request->query['content'] == $brokevalue?'style="color:red"':'').'>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).'</p>';
+                                    echo '<input data-total="'.$broketotal.'" type="hidden" value="'.$mydetails['Entry']['slug'].'">';
 								}
 							}
 							
@@ -477,6 +489,9 @@
                 echo "</td>";
             }
 		?>
+		
+		<td class="form-total_stock"><h5><?php echo $totalstock; ?> pcs</h5></td>
+		
 		<td><?php echo date_converter($value['Entry']['modified'], $mySetting['date_format'] , $mySetting['time_format']); ?></td>
 		<td style='min-width: 0px;' <?php echo (empty($popup)?'':'class="offbutt"'); ?>>
 <!--

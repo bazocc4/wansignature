@@ -678,10 +678,25 @@ class EntriesController extends AppController {
 			// ----------------------------------------- >>>
             // ADDITIONAL FILTERING METHOD !!
             // ----------------------------------------- >>>
-            if(FALSE)
+            if($myType['Type']['slug'] == 'logistic')
             {
-                unset($mysql[$key]);
-                continue;
+                if(!empty($this->request->query['storage']) && !empty($this->request->query['content']) )
+                {
+                    $pecah_storage = explode('|', $value['EntryMeta'][$this->request->query['storage']]);
+                    $storage_key = key(preg_grep("/^".$this->request->query['content']."_.*/", $pecah_storage));
+                    if($storage_key >= 0)
+                    {
+                        $pecah_total = explode('_', $pecah_storage[$storage_key]);
+                        if( $pecah_total[1] < 1 )
+                        {
+                            unset($mysql[$key]);    continue;
+                        }
+                    }
+                    else
+                    {
+                        unset($mysql[$key]);    continue;
+                    }
+                }
             }
 			// ----------------------------------------- >>>
             // END OF ADDITIONAL FILTERING METHOD !!

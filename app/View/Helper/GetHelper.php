@@ -46,8 +46,8 @@ class GetHelper extends AppHelper
 	{
 		return $this->Type->findBySlug($slug);
 	}
-
-	function getRefererUrl($imagePath , $url_lang = NULL , $queryURL = array())
+    
+    function getRefererUrl($imagePath , $url_lang = NULL , $queryURL = array())
 	{
 		if($_SESSION['allowRefererURL']) { return $_SERVER['HTTP_REFERER']; }
 		

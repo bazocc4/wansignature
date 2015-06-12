@@ -88,6 +88,21 @@
                         {
                             echo '<div class="view-mode '.$shortkey.'">';
                             echo ($metakey+1).'.) '.$metaDetails['Entry']['title'];
+                            
+                            // print additional information too !!
+                            if($metaDetails['Entry']['entry_type'] == 'diamond')
+                            {
+                                $query = $this->Get->meta_details($metaDetails['EntryMeta']['product_type'] , 'product-type');
+                                echo ' / '.strtoupper($query['Entry']['title']);
+                            }
+                            else if($metaDetails['Entry']['entry_type'] == 'cor-jewelry')
+                            {
+                                $query = $this->Get->meta_details($metaDetails['EntryMeta']['product_type'] , 'product-type');
+                                echo ' / '.$query['Entry']['title'].' / '.$query['EntryMeta']['category'];
+                                $query = $this->Get->meta_details($metaDetails['EntryMeta']['product_brand'] , 'product-brand');
+                                echo ' / '.$query['Entry']['title'];
+                            }
+                            
                             echo '</div>';
                         }
                         ?>

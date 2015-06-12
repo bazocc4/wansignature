@@ -23,6 +23,15 @@
 ?>
 <script type="text/javascript">
 	$("a#<?php echo (empty($myType)?'pages':$myType['Type']['slug']); ?>").addClass("active");
+    
+    $(document).ready(function(){
+        
+        $('form').submit(function(){
+            var $target = $(this).find('div.control-group').not(':visible').find('input[type=hidden][name$="[validation]"]:last').each(function(){
+                $(this).val( $(this).val().replace("not_empty|", "") );
+            });
+        });        
+    });
 </script>
 <div class="inner-header row-fluid">
 	<?php

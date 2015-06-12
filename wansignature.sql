@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.24, for Win32 (x86)
+-- MySQL dump 10.13  Distrib 5.6.21, for Win32 (x86)
 --
 -- Host: localhost    Database: wansignature
 -- ------------------------------------------------------
--- Server version	5.6.24
+-- Server version	5.6.21
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -46,7 +46,7 @@ CREATE TABLE `cms_accounts` (
 
 LOCK TABLES `cms_accounts` WRITE;
 /*!40000 ALTER TABLE `cms_accounts` DISABLE KEYS */;
-INSERT INTO `cms_accounts` VALUES (1,1,1,'Admin Basuki','admin@yahoo.com','169e781bd52860b584879cbe117085da596238f3','2015-06-11 20:36:30','2013-01-04 00:00:00',1,'2014-05-05 15:15:38',1);
+INSERT INTO `cms_accounts` VALUES (1,1,1,'Admin Basuki','admin@yahoo.com','169e781bd52860b584879cbe117085da596238f3','2015-06-12 09:25:45','2013-01-04 00:00:00',1,'2014-05-05 15:15:38',1);
 INSERT INTO `cms_accounts` VALUES (2,2,2,'Andy Basuki','andybasuki88@gmail.com','d82dff1679e0137a0bab60cc67cc6a2ad36f10a0','2015-06-08 09:34:35','2015-06-02 20:19:53',1,'2015-06-02 20:19:53',1);
 /*!40000 ALTER TABLE `cms_accounts` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -76,7 +76,7 @@ CREATE TABLE `cms_entries` (
   `lang_code` varchar(10) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `slug` (`slug`)
-) ENGINE=MyISAM AUTO_INCREMENT=60 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=72 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -103,7 +103,7 @@ INSERT INTO `cms_entries` VALUES (17,'product-type','DRF','drf','Diamond Rings F
 INSERT INTO `cms_entries` VALUES (18,'product-type','DEF','def','Diamond Earrings Finish',0,0,1,0,'2015-06-03 23:24:13',1,'2015-06-05 21:29:52',1,18,'en-18');
 INSERT INTO `cms_entries` VALUES (19,'product-type','Pipe Necklace','pipe-necklace','',0,0,1,0,'2015-06-03 23:25:33',1,'2015-06-05 23:38:05',1,19,'en-19');
 INSERT INTO `cms_entries` VALUES (20,'product-type','Pipe Bracelet','pipe-bracelet','',0,0,1,0,'2015-06-03 23:25:53',1,'2015-06-05 23:38:12',1,20,'en-20');
-INSERT INTO `cms_entries` VALUES (21,'product-brand','BVLGARI','bvlgari','',0,0,1,0,'2015-06-03 23:31:03',1,'2015-06-03 23:31:03',1,21,'en-21');
+INSERT INTO `cms_entries` VALUES (21,'product-brand','BVLGARI','bvlgari','',0,0,1,0,'2015-06-03 23:31:03',1,'2015-06-12 15:42:01',1,21,'en-21');
 INSERT INTO `cms_entries` VALUES (22,'product-brand','VAN CLEEF','van-cleef','',0,0,1,0,'2015-06-03 23:31:14',1,'2015-06-03 23:31:14',1,22,'en-22');
 INSERT INTO `cms_entries` VALUES (23,'product-brand','HERMES','hermes','',0,0,1,0,'2015-06-03 23:31:27',1,'2015-06-03 23:31:27',1,23,'en-23');
 INSERT INTO `cms_entries` VALUES (24,'exhibition','JIJF 2015 (8th)','jijf-2015-8th','',0,0,1,0,'2015-06-05 12:41:43',1,'2015-06-05 12:41:43',1,24,'en-24');
@@ -125,7 +125,7 @@ INSERT INTO `cms_entries` VALUES (39,'client','Michael','michael','G243940, G243
 INSERT INTO `cms_entries` VALUES (43,'cor-jewelry','G123160','g123160','',0,0,1,0,'2015-06-06 16:32:20',1,'2015-06-06 16:32:20',1,43,'en-43');
 INSERT INTO `cms_entries` VALUES (41,'product-type','MADE IN ITALY','made-in-italy','',0,0,1,0,'2015-06-05 23:48:05',1,'2015-06-05 23:48:05',1,41,'en-41');
 INSERT INTO `cms_entries` VALUES (42,'product-type','MADE IN KOREA','made-in-korea','',0,0,1,0,'2015-06-05 23:48:27',1,'2015-06-08 16:01:29',1,42,'en-42');
-INSERT INTO `cms_entries` VALUES (44,'diamond','100773','100773','',0,0,1,0,'2015-06-06 16:33:08',1,'2015-06-06 16:34:22',1,44,'en-44');
+INSERT INTO `cms_entries` VALUES (44,'diamond','100773','100773','',0,0,1,0,'2015-06-06 16:33:08',1,'2015-06-12 14:31:05',1,44,'en-44');
 INSERT INTO `cms_entries` VALUES (45,'product-type','Earring','earring','',0,0,1,0,'2015-06-07 08:22:24',1,'2015-06-07 08:22:24',1,45,'en-45');
 INSERT INTO `cms_entries` VALUES (46,'product-type','Earring','earring-1','',0,0,1,0,'2015-06-07 08:22:40',1,'2015-06-07 08:22:40',1,46,'en-46');
 INSERT INTO `cms_entries` VALUES (47,'logistic','Baut Mur','baut-mur','',0,0,1,0,'2015-06-07 09:18:39',1,'2015-06-11 12:51:09',1,47,'en-47');
@@ -133,9 +133,17 @@ INSERT INTO `cms_entries` VALUES (58,'logistic','Obeng','obeng','[untuk reparasi
 INSERT INTO `cms_entries` VALUES (51,'surat-jalan','asdfgfg','asdfgfg','',0,0,1,0,'2015-06-10 10:36:24',1,'2015-06-10 10:36:50',1,51,'en-51');
 INSERT INTO `cms_entries` VALUES (52,'surat-jalan','test sjoke','test-sjoke','',0,0,1,0,'2015-06-10 11:28:07',1,'2015-06-10 12:10:13',1,52,'en-52');
 INSERT INTO `cms_entries` VALUES (53,'surat-jalan','test kedua surat jalan','test-kedua-surat-jalan','',0,0,1,0,'2015-06-10 12:11:21',1,'2015-06-10 12:11:42',1,53,'en-53');
-INSERT INTO `cms_entries` VALUES (54,'surat-jalan','wqwqwqwqw','wqwqwqwqw','',0,0,0,0,'2015-06-10 16:08:57',1,'2015-06-11 19:15:18',1,54,'en-54');
+INSERT INTO `cms_entries` VALUES (54,'surat-jalan','wqwq','wqwqwqwqw','TEST WQWQWQ',0,0,1,0,'2015-06-10 16:08:57',1,'2015-06-12 16:37:07',1,54,'en-54');
 INSERT INTO `cms_entries` VALUES (55,'logistic','Souvenir X','souvenir-x','[contoh sample]',0,0,1,0,'2015-06-10 17:15:41',1,'2015-06-11 12:43:32',1,55,'en-55');
 INSERT INTO `cms_entries` VALUES (59,'surat-jalan','N123456','n123456','',0,0,0,0,'2015-06-12 00:16:59',1,'2015-06-12 00:16:59',1,59,'en-59');
+INSERT INTO `cms_entries` VALUES (60,'surat-jalan','SRJ005','srj001','SURAT JALAN DITERIMA\r\nTHANKS :)',0,0,1,0,'2015-06-12 13:34:45',1,'2015-06-12 16:27:27',1,60,'en-60');
+INSERT INTO `cms_entries` VALUES (61,'diamond','012115','012115','',0,0,1,0,'2015-06-12 14:32:34',1,'2015-06-12 14:32:35',1,61,'en-61');
+INSERT INTO `cms_entries` VALUES (64,'vendor','Front Sriwijaya','front-sriwijaya','Ancestor vendor.',0,0,1,0,'2015-06-12 16:42:22',1,'2015-06-12 16:42:22',1,64,'en-64');
+INSERT INTO `cms_entries` VALUES (65,'vendor','Elang Wijaya','elang-wijaya','',0,0,1,0,'2015-06-12 16:44:20',1,'2015-06-12 16:44:20',1,65,'en-65');
+INSERT INTO `cms_entries` VALUES (66,'dmd-client-invoice','INV / DMD / C001','inv-dmd-c001','',0,0,1,0,'2015-06-12 16:46:13',1,'2015-06-12 16:46:13',1,66,'en-66');
+INSERT INTO `cms_entries` VALUES (67,'cor-client-invoice','INV / COR / C005','inv-cor-c005','',0,0,1,0,'2015-06-12 16:47:21',1,'2015-06-12 16:47:21',1,67,'en-67');
+INSERT INTO `cms_entries` VALUES (68,'dmd-vendor-invoice','INV / DMD / V012','inv-dmd-v012','',0,0,1,0,'2015-06-12 16:48:32',1,'2015-06-12 16:48:32',1,68,'en-68');
+INSERT INTO `cms_entries` VALUES (69,'cor-vendor-invoice','INV / COR / C021','inv-cor-c021','',0,0,1,0,'2015-06-12 16:49:03',1,'2015-06-12 16:49:04',1,69,'en-69');
 /*!40000 ALTER TABLE `cms_entries` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -152,7 +160,7 @@ CREATE TABLE `cms_entry_metas` (
   `key` varchar(500) NOT NULL,
   `value` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=341 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=429 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -192,7 +200,7 @@ INSERT INTO `cms_entry_metas` VALUES (35,17,'backup-slug','\ndrf\n');
 INSERT INTO `cms_entry_metas` VALUES (36,18,'backup-slug','\ndef\n');
 INSERT INTO `cms_entry_metas` VALUES (37,19,'backup-slug','\npipe-necklace\n');
 INSERT INTO `cms_entry_metas` VALUES (38,20,'backup-slug','\npipe-bracelet\n');
-INSERT INTO `cms_entry_metas` VALUES (39,21,'backup-slug','\nbvlgari\n');
+INSERT INTO `cms_entry_metas` VALUES (39,21,'backup-slug','\nbvlgari\nbvlgariku\n');
 INSERT INTO `cms_entry_metas` VALUES (40,22,'backup-slug','\nvan-cleef\n');
 INSERT INTO `cms_entry_metas` VALUES (41,23,'backup-slug','\nhermes\n');
 INSERT INTO `cms_entry_metas` VALUES (42,24,'backup-slug','\njijf-2015-8th\n');
@@ -293,9 +301,8 @@ INSERT INTO `cms_entry_metas` VALUES (196,42,'backup-slug','\nmade-in-korea\n');
 INSERT INTO `cms_entry_metas` VALUES (250,42,'form-category','Korea (100%)');
 INSERT INTO `cms_entry_metas` VALUES (200,43,'form-product_brand','bvlgari');
 INSERT INTO `cms_entry_metas` VALUES (201,44,'backup-slug','\n013093\n100773\n');
-INSERT INTO `cms_entry_metas` VALUES (207,44,'form-report_type','SR');
-INSERT INTO `cms_entry_metas` VALUES (206,44,'form-vendor_currency','USD');
-INSERT INTO `cms_entry_metas` VALUES (205,44,'form-product_type','dpf');
+INSERT INTO `cms_entry_metas` VALUES (348,44,'form-product_type','dpf');
+INSERT INTO `cms_entry_metas` VALUES (349,44,'form-product_status','STOCK');
 INSERT INTO `cms_entry_metas` VALUES (208,45,'backup-slug','\nearring\n');
 INSERT INTO `cms_entry_metas` VALUES (209,45,'form-category','999 3D (115%)');
 INSERT INTO `cms_entry_metas` VALUES (210,46,'backup-slug','\nearring-1\n');
@@ -361,6 +368,56 @@ INSERT INTO `cms_entry_metas` VALUES (337,59,'form-warehouse_origin','tunjungan-
 INSERT INTO `cms_entry_metas` VALUES (338,59,'form-diamond','100773');
 INSERT INTO `cms_entry_metas` VALUES (339,59,'form-cor_jewelry','');
 INSERT INTO `cms_entry_metas` VALUES (340,59,'form-logistic','obeng_10|souvenir-x_15|baut-mur_2');
+INSERT INTO `cms_entry_metas` VALUES (341,60,'backup-slug','\nsrj001\n');
+INSERT INTO `cms_entry_metas` VALUES (342,60,'form-date','06/12/2015');
+INSERT INTO `cms_entry_metas` VALUES (343,60,'form-delivery_type','Warehouse To Warehouse');
+INSERT INTO `cms_entry_metas` VALUES (344,60,'form-warehouse_origin','tunjungan-plaza-wh');
+INSERT INTO `cms_entry_metas` VALUES (345,60,'form-diamond','100773');
+INSERT INTO `cms_entry_metas` VALUES (346,60,'form-cor_jewelry','g123160');
+INSERT INTO `cms_entry_metas` VALUES (347,60,'form-logistic','obeng_20');
+INSERT INTO `cms_entry_metas` VALUES (350,44,'form-warehouse','tunjungan-plaza-wh');
+INSERT INTO `cms_entry_metas` VALUES (351,44,'form-vendor_currency','USD');
+INSERT INTO `cms_entry_metas` VALUES (352,44,'form-report_type','SR');
+INSERT INTO `cms_entry_metas` VALUES (353,61,'backup-slug','\n012115\n');
+INSERT INTO `cms_entry_metas` VALUES (354,61,'form-product_type','def');
+INSERT INTO `cms_entry_metas` VALUES (355,61,'form-product_status','consignment');
+INSERT INTO `cms_entry_metas` VALUES (356,61,'form-warehouse','tunjungan-plaza-wh');
+INSERT INTO `cms_entry_metas` VALUES (357,61,'form-exhibition','jijf-2015-8th');
+INSERT INTO `cms_entry_metas` VALUES (358,61,'form-vendor_currency','USD');
+INSERT INTO `cms_entry_metas` VALUES (359,61,'form-report_type','SR');
+INSERT INTO `cms_entry_metas` VALUES (375,64,'form-kode_vendor','FR SWI');
+INSERT INTO `cms_entry_metas` VALUES (376,64,'form-alamat','Jl. Sriwijaya Utara 50\r\nSurabaya, Indonesia');
+INSERT INTO `cms_entry_metas` VALUES (377,64,'form-telepon','031 123 456');
+INSERT INTO `cms_entry_metas` VALUES (378,64,'form-email','frontsriwijaya@yahoo.com');
+INSERT INTO `cms_entry_metas` VALUES (374,64,'backup-slug','\nfront-sriwijaya\n');
+INSERT INTO `cms_entry_metas` VALUES (379,64,'form-capital_x','0.32');
+INSERT INTO `cms_entry_metas` VALUES (380,65,'backup-slug','\nelang-wijaya\n');
+INSERT INTO `cms_entry_metas` VALUES (381,65,'form-kode_vendor','EW');
+INSERT INTO `cms_entry_metas` VALUES (382,65,'form-alamat','Jl. Wijaya Mas 27\r\nSurabaya, Indonesia');
+INSERT INTO `cms_entry_metas` VALUES (383,65,'form-telepon','081 5757 1234');
+INSERT INTO `cms_entry_metas` VALUES (384,65,'form-email','elangwijaya@yahoo.com');
+INSERT INTO `cms_entry_metas` VALUES (385,65,'form-capital_x','0.265');
+INSERT INTO `cms_entry_metas` VALUES (386,66,'backup-slug','\ninv-dmd-c001\n');
+INSERT INTO `cms_entry_metas` VALUES (387,66,'form-date','06/12/2015');
+INSERT INTO `cms_entry_metas` VALUES (388,66,'form-client','michael');
+INSERT INTO `cms_entry_metas` VALUES (389,66,'form-wholesaler','cik-ninih');
+INSERT INTO `cms_entry_metas` VALUES (390,66,'form-sale_venue','Warehouse');
+INSERT INTO `cms_entry_metas` VALUES (391,66,'form-warehouse','tunjungan-plaza-wh');
+INSERT INTO `cms_entry_metas` VALUES (392,67,'backup-slug','\ninv-cor-c005\n');
+INSERT INTO `cms_entry_metas` VALUES (393,67,'form-date','06/12/2015');
+INSERT INTO `cms_entry_metas` VALUES (394,67,'form-client','reyner-gunawan');
+INSERT INTO `cms_entry_metas` VALUES (395,67,'form-wholesaler','grace-novarinus');
+INSERT INTO `cms_entry_metas` VALUES (396,67,'form-sale_venue','Warehouse');
+INSERT INTO `cms_entry_metas` VALUES (397,67,'form-warehouse','tunjungan-plaza-wh');
+INSERT INTO `cms_entry_metas` VALUES (398,68,'backup-slug','\ninv-dmd-v012\n');
+INSERT INTO `cms_entry_metas` VALUES (399,68,'form-date','06/12/2015');
+INSERT INTO `cms_entry_metas` VALUES (400,68,'form-vendor','elang-wijaya');
+INSERT INTO `cms_entry_metas` VALUES (401,68,'form-warehouse','tunjungan-plaza-wh');
+INSERT INTO `cms_entry_metas` VALUES (402,68,'form-currency','USD');
+INSERT INTO `cms_entry_metas` VALUES (403,69,'backup-slug','\ninv-cor-c021\n');
+INSERT INTO `cms_entry_metas` VALUES (404,69,'form-date','06/12/2015');
+INSERT INTO `cms_entry_metas` VALUES (405,69,'form-vendor','front-sriwijaya');
+INSERT INTO `cms_entry_metas` VALUES (406,69,'form-warehouse','tunjungan-plaza-wh');
 /*!40000 ALTER TABLE `cms_entry_metas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -553,7 +610,7 @@ INSERT INTO `cms_type_metas` VALUES (834,17,'form-gold_price','','text','is_nume
 INSERT INTO `cms_type_metas` VALUES (835,17,'form-payment_ct_ld','','text','','Payment from client using CT (local material) & LD.');
 INSERT INTO `cms_type_metas` VALUES (836,17,'form-payment_rosok','','text','','Payment from client using rosok item.');
 INSERT INTO `cms_type_metas` VALUES (837,17,'form-payment_checks','','text','','Payment from client using bank checks.');
-INSERT INTO `cms_type_metas` VALUES (760,14,'form-status_in_wan','','text','','Current product status (Stock / Sold / Consignment / Return / Changed / etc.)');
+INSERT INTO `cms_type_metas` VALUES (760,14,'form-product_status','','text','','Current product status (Stock / Sold / Consignment / Return / Changed / etc.)');
 INSERT INTO `cms_type_metas` VALUES (759,14,'form-sell_barcode','','text','is_numeric|','Adjusted product price tag.');
 INSERT INTO `cms_type_metas` VALUES (758,14,'form-barcode','','text','is_numeric|','Product price tag.');
 INSERT INTO `cms_type_metas` VALUES (757,14,'form-product_type','','browse','','Tipe produk berlian.');
@@ -579,11 +636,11 @@ INSERT INTO `cms_type_metas` VALUES (702,20,'form-currency','USD\r\nHKD','radio'
 INSERT INTO `cms_type_metas` VALUES (701,20,'form-total_item_sent','','text','is_numeric|','Jumlah produk yang sudah terkirim (pcs).');
 INSERT INTO `cms_type_metas` VALUES (700,20,'form-total_pcs','','text','is_numeric|','Total pcs of diamond purchased.');
 INSERT INTO `cms_type_metas` VALUES (698,20,'form-vendor','','browse','not_empty|','');
-INSERT INTO `cms_type_metas` VALUES (699,20,'form-warehouse','','browse','','Gudang tempat penerimaan produk diamond yang dikirim vendor.');
+INSERT INTO `cms_type_metas` VALUES (699,20,'form-warehouse','','browse','not_empty|','Gudang tempat penerimaan produk diamond yang dikirim vendor.');
 INSERT INTO `cms_type_metas` VALUES (409,21,'category','invoice',NULL,NULL,NULL);
 INSERT INTO `cms_type_metas` VALUES (410,21,'title_key','Invoice Code',NULL,NULL,NULL);
 INSERT INTO `cms_type_metas` VALUES (706,21,'form-vendor','','browse','not_empty|','');
-INSERT INTO `cms_type_metas` VALUES (707,21,'form-warehouse','','browse','','Gudang tempat penerimaan produk cor yang dikirim vendor.');
+INSERT INTO `cms_type_metas` VALUES (707,21,'form-warehouse','','browse','not_empty|','Gudang tempat penerimaan produk cor yang dikirim vendor.');
 INSERT INTO `cms_type_metas` VALUES (708,21,'form-total_pcs','','text','is_numeric|','Total pcs of jewelries purchased.');
 INSERT INTO `cms_type_metas` VALUES (709,21,'form-total_item_sent','','text','is_numeric|','Jumlah produk yang sudah terkirim (pcs).');
 INSERT INTO `cms_type_metas` VALUES (710,21,'form-total_weight','','text','is_numeric|','Total weight of jewelries purchased (gram).');
@@ -823,4 +880,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-12  0:36:33
+-- Dump completed on 2015-06-12 17:39:05

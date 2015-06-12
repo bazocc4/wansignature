@@ -362,8 +362,17 @@
 			$value['list'][1]['name'] = 'Accepted';
             $value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['status']);
             $value['p'] = "Pilih <strong>On Process</strong> jika pengiriman masih diproses.<br>Pilih <strong>Accepted</strong> jika seluruh pengiriman barang sudah diterima oleh pihak penerima.";
+            $value['display'] = ($myEntry['Entry']['status']==1?'none':'');
 			echo $this->element('input_'.$value['input_type'] , $value);
 		?>
+		
+		<div class="control-group <?php echo ($myEntry['Entry']['status']==1?'':'hide'); ?>">
+            <label class="control-label">Status</label>
+            <div class="controls">
+                <span class="label label-success">Accepted</span>
+                <p class="help-block">Seluruh pengiriman barang sudah diterima oleh pihak penerima.</p>
+            </div>
+        </div>
 		
 		<!-- myTypeSlug is for media upload settings purpose !! -->
 		<input type="hidden" value="<?php echo (empty($myChildType)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>" id="myTypeSlug"/>

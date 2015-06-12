@@ -698,6 +698,16 @@ class EntriesController extends AppController {
                     }
                 }
             }
+            else if($myType['Type']['slug'] == 'diamond' || $myType['Type']['slug'] == 'cor-jewelry')
+            {
+                if(!empty($this->request->query['storage']) && !empty($this->request->query['content']) )
+                {
+                    if(!($value['EntryMeta'][ $this->request->query['storage'] ] == $this->request->query['content'] && ($this->request->query['storage'] == 'warehouse' && stripos($value['EntryMeta']['product_status'] , 'stock') !== FALSE || $this->request->query['storage'] == 'exhibition' && stripos($value['EntryMeta']['product_status'] , 'consignment') !== FALSE)))
+                    {
+                        unset($mysql[$key]);    continue;
+                    }
+                }
+            }
 			// ----------------------------------------- >>>
             // END OF ADDITIONAL FILTERING METHOD !!
             // ----------------------------------------- >>>
@@ -979,6 +989,7 @@ class EntriesController extends AppController {
 						}
 						else if($value['input_type'] == 'multibrowse')
 						{
+                            $value['value'] = array_unique(array_filter($value['value']));
                             if(!empty($value['total'])) // special mode...
                             {
                                 foreach($value['value'] as $nanokey => $nanovalue)
@@ -986,7 +997,7 @@ class EntriesController extends AppController {
                                     $value['value'][$nanokey] .= '_'.$value['total'][$nanokey];
                                 }
                             }
-							$this->request->data['EntryMeta']['value'] = implode('|', $value['value']);
+							$this->request->data['EntryMeta']['value'] = implode('|', $value['value'] );
 						}
 						else
 						{
@@ -1143,12 +1154,7 @@ class EntriesController extends AppController {
 			if(empty($lang))
 			{
 				$this->request->data['Entry']['title'] = $this->request->data['Entry'][0]['value'];
-                // generate slug from title if title has changed...
-                if(strtolower($this->request->data['Entry']['title']) != strtolower($myEntry['Entry']['title']))
-                {
-                    $this->request->data['Entry']['slug'] = $this->get_slug($this->request->data['Entry']['title']);
-                }
-				$this->request->data['Entry']['description'] = $this->request->data['Entry'][1]['value'];
+                $this->request->data['Entry']['description'] = $this->request->data['Entry'][1]['value'];
 				$this->request->data['Entry']['main_image'] = $this->request->data['Entry'][2]['value'];
 				if(isset($this->request->data['Entry'][3]['value']))
 				{
@@ -1209,7 +1215,11 @@ class EntriesController extends AppController {
 					// ------------------------------------- end of entry details...
 					$this->Entry->id = $myEntry['Entry']['id'];
 					$this->Entry->save($this->request->data);
-					$galleryId = $myEntry['Entry']['id'];
+				
+                    // SKIP ENTRYMETA PROCESS ON SOME ENTRY_TYPE !!!
+                if($myEntry['Entry']['entry_type'] != 'surat-jalan')
+                {
+                    $galleryId = $myEntry['Entry']['id'];
                     if($data['gallery'])
                     {
                         // delete all the child image, and then add again !!
@@ -1285,6 +1295,7 @@ class EntriesController extends AppController {
 								}
 								else if($value['input_type'] == 'multibrowse')
 								{
+                                    $value['value'] = array_unique(array_filter($value['value']));
                                     if(!empty($value['total'])) // special mode...
                                     {
                                         foreach($value['value'] as $nanokey => $nanovalue)
@@ -1292,7 +1303,7 @@ class EntriesController extends AppController {
                                             $value['value'][$nanokey] .= '_'.$value['total'][$nanokey];
                                         }
                                     }
-									$this->request->data['EntryMeta']['value'] = implode('|', $value['value']);
+									$this->request->data['EntryMeta']['value'] = implode('|', $value['value'] );
 								}
 								else
 								{
@@ -1325,7 +1336,8 @@ class EntriesController extends AppController {
 								$this->EntryMeta->save($this->request->data);
 							}
 						}
-					}
+					}    
+                }
                     
                     // --------- UPDATE SHIPPING ID OR SOMETHING ELSE RELATED !! ----------- //
 				    $this->_add_update_id_meta($myType['Type']['slug'] , $myChildTypeSlug , $myParentEntry , $myEntry);

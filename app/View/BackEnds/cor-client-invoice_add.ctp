@@ -152,6 +152,12 @@
 						default:
 							break;
 					}
+                    
+                    // on-the-fly validation ...
+                    if($value['key'] == 'form-warehouse' || $value['key'] == 'form-exhibition')
+                    {
+                        $value['validation'] .= 'not_empty|';
+                    }
 					echo $this->element('input_'.$value['input_type'] , $value);
 				}
 			}

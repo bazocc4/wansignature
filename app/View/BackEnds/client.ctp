@@ -336,7 +336,7 @@
 				<?php
 					if($descriptionUsed == 1 && !empty($value['Entry']['description']))
 					{
-						$description = strip_tags($value['Entry']['description']);
+						$description = nl2br($value['Entry']['description']);
 						echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$value['Entry']['description'].'">'.substr($description,0,30).'...</a>' : $description);
 					}
 				?>
@@ -471,7 +471,7 @@
                                 }
                                 else
                                 {
-                                    $description = strip_tags($entrydetail['Entry']['description']);
+                                    $description = nl2br($entrydetail['Entry']['description']);
                             	    echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$entrydetail['Entry']['description'].'">'.substr($description,0,30).'...</a>' : $description);
                                 }                                
                                 echo '</p>';

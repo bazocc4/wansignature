@@ -85,6 +85,17 @@
                 else
                 {
                     echo $metaDetails['Entry']['title'];
+                    
+                    // print additional information too !!
+                    if($metaDetails['Entry']['entry_type'] == 'warehouse')
+                    {
+                        echo ' / '.nl2br($metaDetails['EntryMeta']['alamat']).' / '.$metaDetails['EntryMeta']['telepon'];
+                    }
+                    else if($metaDetails['Entry']['entry_type'] == 'exhibition')
+                    {
+                        echo ' / '.(!empty($metaDetails['EntryMeta']['start_date'])?date_converter($metaDetails['EntryMeta']['start_date'], $mySetting['date_format']):'[start date]').' s/d '.(!empty($metaDetails['EntryMeta']['end_date'])?date_converter($metaDetails['EntryMeta']['end_date'], $mySetting['date_format']):'[end date]').' / '.nl2br($metaDetails['EntryMeta']['alamat']).' / '.$metaDetails['EntryMeta']['telepon'];
+                    }
+                    
                     echo '</div>';
                     ?>
             <p class="help-block">

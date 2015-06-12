@@ -40,8 +40,8 @@ $(document).ready(function(){
             var $storage = $(this).closest('div.control-group').find('a[data-storage][data-content].add-raw');
             if($storage.length > 0 && ($storage.attr('data-storage').length == 0 || $storage.attr('data-content').length == 0) )
             {
-                alert('Silahkan pilih tempat pengambilan barang terlebih dahulu (Warehouse Origin / Exhibition Origin).');
-                $('input#warehouse-origin , input#exhibition-origin').nextAll('a.get-from-table').focus();
+                alert('Silahkan pilih tempat pengambilan barang terlebih dahulu.');
+                $('input#warehouse-origin , input#exhibition-origin').nextAll('a.get-from-table:visible').click();
                 return false;
             }
         }

@@ -254,6 +254,16 @@
                         }
                     }
                 }).trigger('change');
+                
+                $('form').submit(function(){
+                    // [origin != destination] validation ...
+                    if($('select.delivery_type').val() == 'Warehouse To Warehouse' && $('input.warehouse_origin').val() == $('input.warehouse_destination').val() || $('select.delivery_type').val() == 'Exhibition To Exhibition' && $('input.exhibition_origin').val() == $('input.exhibition_destination').val())
+                    {
+                        alert('Tempat pengambilan barang TIDAK BOLEH SAMA dengan tempat tujuan pengiriman barang!');
+                        $('input#warehouse-origin , input#exhibition-origin').focus();
+                        return false;
+                    }
+                });
 			});
 		</script>
 		<p class="notes important" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>
@@ -323,6 +333,12 @@
                     if(strpos($value['key'] , '_origin') !== FALSE)
                     {
                         $value['display'] = 'none';
+                    }
+                    
+                    // on-the-fly validation ...
+                    if($value['key'] == 'form-client' || $value['key'] == 'form-vendor' || strpos($value['key'] , '_origin') !== FALSE || strpos($value['key'] , '_destination') !== FALSE)
+                    {
+                        $value['validation'] .= 'not_empty|';
                     }
                     
                     // view mode ...

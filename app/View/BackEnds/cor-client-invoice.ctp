@@ -135,26 +135,42 @@
 				if(!$('input[type=checkbox]').is(e.target))
 				{
 					var targetID = ($('input#query-alias').length > 0?$('input#query-alias').val():'<?php echo (empty($myEntry)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>')+($('input#query-stream').length > 0?$('input#query-stream').val():'');
-					if($(this).find("td.form-name").length > 0)
+                    var mytr = $(this); // same var name as in admin_header.ctp element ...
+					var richvalue = '';
+					if(mytr.find("td.form-name").length > 0)
 					{
-					    $("input#"+targetID).val( $(this).find("td.form-name").text()+' ('+$(this).find("h5.title-code").text()+')');
+					    richvalue = mytr.find("td.form-name").text()+' ('+mytr.find("h5.title-code").text()+')';
 					}
 					else
 					{
-					    $("input#"+targetID).val( $(this).find("h5.title-code").text() );
+					    richvalue = mytr.find("h5.title-code").text();
 					}
-					
-					$("input#"+targetID).nextAll("input[type=hidden]").val( $(this).find("input[type=hidden].slug-code").val() );
+                    
+                    // second filter ...
+                    if(mytr.find("td.form-product_type h5").length > 0)
+                    {
+                        richvalue += ' / ' + mytr.find('td.form-product_type h5').text();
+                    }
+                    if(mytr.find("td.form-product_brand h5").length > 0)
+                    {
+                        richvalue += ' / ' + mytr.find('td.form-product_brand h5').text();
+                    }
+                    
+                    $("input#"+targetID).val(richvalue).nextAll("input[type=hidden]").val( mytr.find("input[type=hidden].slug-code").val() );
 					$("input#"+targetID).change();
 
 					// update other attribute ...
-                    var $trytotal = $("input#"+targetID).nextAll('input[type=number]');
-                    if($trytotal.length > 0)
+                    if($('input#client').length > 0)
                     {
-                        $trytotal.val('');
-                        $trytotal.removeAttr('readonly');
-                        $trytotal.attr('max' , $(this).find("input[type=hidden][value=<?php echo $this->request->query['content']; ?>]").attr('data-total') );
-                        $trytotal.focus();
+                        var $client = mytr.find("td.form-client");
+$('input#client').val($client.find('h5').text()).nextAll('input.client').val($client.find('input[type=hidden]').val());                        
+                    }
+                    
+                    if($('input#warehouse-origin').length > 0)
+                    {
+                        var $warehouse = mytr.find("td.form-warehouse");
+$('input#warehouse-origin').val($warehouse.find('h5').text()).nextAll('input.warehouse_origin').val($warehouse.find('input[type=hidden]').val());
+                        $('input#warehouse-origin').change();
                     }
 
 					$.colorbox.close();
@@ -255,10 +271,7 @@
             {
                 echo '<th>Gallery Count</th>';
             }
-		?>
-		
-		<th>TOTAL STOCK</th>
-		
+		?>		
 		<th class="date-field">
             <?php
                 $entityTitle = "modified";
@@ -311,8 +324,6 @@
 		$orderlist = "";
 		foreach ($myList as $value):
 		$orderlist .= $value['Entry']['sort_order'].",";
-        
-        $totalstock = 0;
 	?>	
 	<tr class="orderlist" alt="<?php echo $value['Entry']['id']; ?>">
 		<td class="main-title">
@@ -401,14 +412,12 @@
                                 $brokevalue = $brokeWithTotal[0];
                                 $broketotal = $brokeWithTotal[1];
                                 
-                                $totalstock += $broketotal;
-                                
 								$mydetails = $this->Get->meta_details($brokevalue , $browse_slug );
 								if(!empty($mydetails))
 								{
 									$emptybrowse = 1;
 									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']).(!empty($broketotal)?' ('.$broketotal.' pcs)':'');
-                                    echo '<p '.($this->request->query['content'] == $brokevalue?'style="color:red"':'').'>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).'</p>';
+									echo '<p>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).'</p>';
                                     echo '<input data-total="'.$broketotal.'" type="hidden" value="'.$mydetails['Entry']['slug'].'">';
 								}
 							}
@@ -489,9 +498,6 @@
                 echo "</td>";
             }
 		?>
-		
-		<td class="form-total_stock"><h5><?php echo $totalstock; ?> pcs</h5></td>
-		
 		<td><?php echo date_converter($value['Entry']['modified'], $mySetting['date_format'] , $mySetting['time_format']); ?></td>
 		<td style='min-width: 0px;' <?php echo (empty($popup)?'':'class="offbutt"'); ?>>
 <!--

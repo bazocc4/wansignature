@@ -55,11 +55,11 @@
 		$inputsize = 'input-xlarge';
 	}
 	
-	if($shortkey == 'discount' || $shortkey == 'weight' || $shortkey == 'qty' || $shortkey == 'Bunga Cek')
+	if($shortkey == 'discount' || $shortkey == 'weight' || $shortkey == 'qty' || $shortkey == 'Bunga Cek' || $shortkey == 'loan_interest_rate')
 	{
 		$inputsize = 'input-mini';
 	}
-	else if($shortkey == "price" || $shortkey == "rate_value")
+	else if($shortkey == "price" || $shortkey == "rate_value" || $shortkey == 'hkd_to_usd')
 	{
 		$inputsize = 'input-small';
 	}
@@ -95,10 +95,14 @@
 			{
 				echo 'unit(s)';
 			}
-            else if($shortkey == 'Bunga Cek')
+            else if($shortkey == 'Bunga Cek' || $shortkey == 'loan_interest_rate')
 			{
 				echo '% / month';
 			}
+            else if($shortkey == 'hkd_to_usd')
+            {
+                echo 'HKD = $1 USD.';
+            }
             else if($shortkey == 'rate_value')
 			{
 				echo '<span id="currency_duplicator"></span> = $1 USD.';

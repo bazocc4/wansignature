@@ -194,6 +194,39 @@
 		// disable language selector ONLY IF one language available !!		
 		var myLangSelector = ($('#colorbox').length > 0 && $('#colorbox').is(':visible')? $('#colorbox').find('div.lang-selector:first') : $('div.lang-selector')  );
 		if(myLangSelector.find('ul.dropdown-menu li').length <= 1)	myLangSelector.hide();
+        
+        // UPDATE SOME NEW COLUMN !!
+        $('table#myTableList tbody td.form-delivery_type').each(function(i,el){            
+            var destination = '';
+            var invoice = '';
+            switch($(el).text()){
+                case 'Warehouse To Warehouse':
+                case 'Exhibition To Warehouse':
+                    destination = 'warehouse_destination';
+                    break;
+                case 'Warehouse To Exhibition':
+                case 'Exhibition To Exhibition':
+                    destination = 'exhibition_destination';
+                    break;
+                case 'Diamond Return':
+                case 'Cor Jewelry Return':
+                    destination = 'vendor';
+                    invoice = ($(el).text() == 'Diamond Return'?'dmd_vendor_invoice':'cor_vendor_invoice');
+                    break;
+                default:
+                    destination = 'client';
+                    invoice = ($(el).text() == 'Diamond Sale'?'dmd_client_invoice':'cor_client_invoice');
+                    break;
+            }
+            
+            $(el).nextAll('td.form-destination').html( $(el).nextAll('td.form-'+destination).html() );
+            if(invoice.length > 0)
+            {
+                $(el).nextAll('td.form-invoice').html( $(el).nextAll('td.form-'+invoice).html() );
+            }
+            
+            $(el).nextAll('td.form-origin').html( $(el).nextAll('td.form-'+ ($(el).text().indexOf('Exhibition To')>=0?'exhibition_origin':'warehouse_origin') ).html() );
+        });
 	});
 </script>
 <?php if($totalList <= 0){ ?>
@@ -222,7 +255,7 @@
 				}
 			}
 		?>
-		<th>
+		<th class="date-field">
 		    <?php
                 echo $this->Html->link($titlekey.' ('.$totalList.')'.($_SESSION['order_by'] == 'title ASC'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == 'title DESC'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$_SESSION['order_by'] == 'title ASC'?"z_to_a":"a_to_z"));
             ?>
@@ -248,7 +281,7 @@
 						$entityTitle = $value['key'];
                         $hideKeyQuery = '';
                         $shortkey = substr($entityTitle, 5);
-                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!')
+                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!' || $shortkey == 'client' || $shortkey == 'vendor' || strpos($shortkey, '_destination') !== FALSE || strpos($shortkey, '_invoice') !== FALSE || strpos($shortkey, '_origin') !== FALSE)
                         {
                             $hideKeyQuery = 'hide';
                         }
@@ -259,6 +292,7 @@
                             case 'datepicker':
                             case 'datetimepicker':
                             case 'multidate':
+                            case 'multibrowse':
                                 $datefield = 'date-field';
                                 break;
                         }
@@ -266,6 +300,19 @@
                         echo "<th ".($value['input_type'] == 'textarea' || $value['input_type'] == 'ckeditor'?"style='min-width:200px;'":"")." class='".$hideKeyQuery." ".$datefield."'>";
                         echo $this->Html->link(string_unslug($shortkey).($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' asc'?" desc":" asc") ));
 						echo "</th>";
+                        
+                        if($shortkey == 'exhibition_destination')
+                        {
+                            echo '<th>destination</th>';
+                        }
+                        else if($shortkey == 'cor_vendor_invoice')
+                        {
+                            echo '<th>invoice</th>';
+                        }
+                        else if($shortkey == 'exhibition_origin')
+                        {
+                            echo '<th>origin</th>';
+                        }
 					}
 				}
 			}
@@ -322,7 +369,7 @@
 		$orderlist .= $value['Entry']['sort_order'].",";
 	?>	
 	<tr class="orderlist" alt="<?php echo $value['Entry']['id']; ?>">
-		<td class="main-title">
+		<td>
 			<?php
 				if($imageUsed == 1)
 				{
@@ -340,7 +387,7 @@
 					if($descriptionUsed == 1 && !empty($value['Entry']['description']))
 					{
 						$description = nl2br($value['Entry']['description']);
-						echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$value['Entry']['description'].'">'.substr($description,0,30).'...</a>' : $description);
+						echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description);
 					}
 				?>
 			</p>
@@ -373,7 +420,7 @@
 						$shortkey = substr($value10['key'], 5);
                         $displayValue = $value['EntryMeta'][$shortkey];
                         $hideKeyQuery = '';
-                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!')
+                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!' || $shortkey == 'client' || $shortkey == 'vendor' || strpos($shortkey, '_destination') !== FALSE || strpos($shortkey, '_invoice') !== FALSE || strpos($shortkey, '_origin') !== FALSE)
                         {
                             $hideKeyQuery = 'hide';
                         }
@@ -413,7 +460,7 @@
 								{
 									$emptybrowse = 1;
 									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']).(!empty($broketotal)?' ('.$broketotal.' pcs)':'');
-									echo '<p>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).'</p>';
+                                    echo '<p>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).'</p>';
                                     echo '<input type="hidden" value="'.$mydetails['Entry']['slug'].'">';
 								}
 							}
@@ -425,7 +472,21 @@
 						}
                         else if($value10['input_type'] == 'browse')
                         {
-                        	$entrydetail = $this->Get->meta_details($displayValue , get_slug($shortkey));
+                        	$entrytype = '';
+                            if(strpos($shortkey , 'warehouse') !== FALSE)
+                            {
+                                $entrytype = 'warehouse';
+                            }
+                            else if(strpos($shortkey , 'exhibition') !== FALSE)
+                            {
+                                $entrytype = 'exhibition';
+                            }
+                            else
+                            {
+                                $entrytype = get_slug($shortkey);
+                            }
+                            
+                        	$entrydetail = $this->Get->meta_details($displayValue , $entrytype );
 							if(empty($entrydetail))
 							{
 								echo $displayValue;
@@ -463,7 +524,7 @@
                                 else
                                 {
                                     $description = nl2br($entrydetail['Entry']['description']);
-                            	    echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$entrydetail['Entry']['description'].'">'.substr($description,0,30).'...</a>' : $description);
+                            	    echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description);
                                 }                                
                                 echo '</p>';
 							}
@@ -473,6 +534,19 @@
                         	echo $this->Get->outputConverter($value10['input_type'] , $displayValue , $myImageTypeList , $shortkey);
                         }                        
                         echo "</td>";
+                        
+                        if($shortkey == 'exhibition_destination')
+                        {
+                            echo "<td class='form-destination'>-</td>";
+                        }
+                        else if($shortkey == 'cor_vendor_invoice')
+                        {
+                            echo "<td class='form-invoice'>-</td>";
+                        }
+                        else if($shortkey == 'exhibition_origin')
+                        {
+                            echo "<td class='form-origin'>-</td>";
+                        }
 					}
 				}
 			}

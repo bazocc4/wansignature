@@ -22,7 +22,7 @@
 				if(strtolower($value10['id']) == strtolower($value) || $pertama == 1)
 				{
 					$pertama = 0;
-					echo "<input id='".$labelfor."' class='".$shortkey."' ".$required." CHECKED value='".$value10['id']."' name='data[".$model."][".$counter."][value]' type='radio' /><label for='".$labelfor."'>".$value10['name']."</label>";
+					echo "<input id='".$labelfor."' class='".$shortkey."' ".$required." ".(empty($required)?'':'CHECKED')." value='".$value10['id']."' name='data[".$model."][".$counter."][value]' type='radio' /><label for='".$labelfor."'>".$value10['name']."</label>";
 				}
 				else
 				{

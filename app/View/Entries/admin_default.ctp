@@ -135,24 +135,37 @@
 				if(!$('input[type=checkbox]').is(e.target))
 				{
 					var targetID = ($('input#query-alias').length > 0?$('input#query-alias').val():'<?php echo (empty($myEntry)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>')+($('input#query-stream').length > 0?$('input#query-stream').val():'');
-					if($(this).find("td.form-name").length > 0)
+                    var mytr = $(this); // same var name as in admin_header.ctp element ...
+					var richvalue = '';
+					if(mytr.find("td.form-name").length > 0)
 					{
-					    $("input#"+targetID).val( $(this).find("td.form-name").text()+' ('+$(this).find("h5.title-code").text()+')');
+					    richvalue = mytr.find("td.form-name").text()+' ('+mytr.find("h5.title-code").text()+')';
 					}
 					else
 					{
-					    $("input#"+targetID).val( $(this).find("h5.title-code").text() );
+					    richvalue = mytr.find("h5.title-code").text();
 					}
-					
-					$("input#"+targetID).nextAll("input[type=hidden]").val( $(this).find("input[type=hidden].slug-code").val() );
+                    
+                    // second filter ...
+                    if(mytr.find("td.form-product_type h5").length > 0)
+                    {
+                        richvalue += ' / ' + mytr.find('td.form-product_type h5').text();
+                    }
+                    if(mytr.find("td.form-product_brand h5").length > 0)
+                    {
+                        richvalue += ' / ' + mytr.find('td.form-product_brand h5').text();
+                    }
+                    
+                    $("input#"+targetID).val(richvalue).nextAll("input[type=hidden]").val( mytr.find("input[type=hidden].slug-code").val() );
 					$("input#"+targetID).change();
 
-					// Update the subcategory dropdown value, if existed !!
+					// update other attribute ...
+                    // Update the subcategory dropdown value, if existed !!
 					if($('select.subcategory').length > 0)
 					{
 						$('select.subcategory').html('');
 						
-						var catcheck = $(this).find("td.form-subcategory").html();
+						var catcheck = mytr.find("td.form-subcategory").html();
 						
 						if(catcheck != '-')
 						{
@@ -337,7 +350,7 @@
 					if($descriptionUsed == 1 && !empty($value['Entry']['description']))
 					{
 						$description = nl2br($value['Entry']['description']);
-						echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$value['Entry']['description'].'">'.substr($description,0,30).'...</a>' : $description);
+						echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description);
 					}
 				?>
 			</p>
@@ -460,7 +473,7 @@
                                 else
                                 {
                                     $description = nl2br($entrydetail['Entry']['description']);
-                            	    echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$entrydetail['Entry']['description'].'">'.substr($description,0,30).'...</a>' : $description);
+                            	    echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description);
                                 }                                
                                 echo '</p>';
 							}

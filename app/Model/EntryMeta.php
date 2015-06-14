@@ -65,7 +65,8 @@ class EntryMeta extends AppModel {
 		$imgReason = $this->find('all', array(
 			'conditions' => array(
 				'EntryMeta.key' => 'image_'.$type
-			)
+			),
+            'recursive' => -1
 		));
 		$imgTypeList[0] = 'jpg';
 		foreach ($imgReason as $key20 => $value20)

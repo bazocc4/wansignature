@@ -95,6 +95,18 @@
                     {
                         echo ' / '.(!empty($metaDetails['EntryMeta']['start_date'])?date_converter($metaDetails['EntryMeta']['start_date'], $mySetting['date_format']):'[start date]').' s/d '.(!empty($metaDetails['EntryMeta']['end_date'])?date_converter($metaDetails['EntryMeta']['end_date'], $mySetting['date_format']):'[end date]').' / '.nl2br($metaDetails['EntryMeta']['alamat']).' / '.$metaDetails['EntryMeta']['telepon'];
                     }
+                    else if($metaDetails['Entry']['entry_type'] == 'client')
+                    {
+                        echo ' / '.strtoupper($metaDetails['EntryMeta']['kode_pelanggan']).' / '.$metaDetails['EntryMeta']['kategori'].' / '.nl2br($metaDetails['EntryMeta']['alamat']).' / '.$metaDetails['EntryMeta']['telepon'];
+                    }
+                    else if($metaDetails['Entry']['entry_type'] == 'vendor')
+                    {
+                        echo ' / '.strtoupper($metaDetails['EntryMeta']['kode_vendor']).' / '.nl2br($metaDetails['EntryMeta']['alamat']).' / '.$metaDetails['EntryMeta']['telepon'];
+                    }
+                    else if(strpos($metaDetails['Entry']['entry_type'] , '-invoice') !== FALSE)
+                    {
+                        echo ' <i class="icon-calendar"></i> '.date_converter($metaDetails['EntryMeta']['date'] , $mySetting['date_format']);
+                    }
                     
                     echo '</div>';
                     ?>

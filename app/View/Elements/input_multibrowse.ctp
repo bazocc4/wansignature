@@ -43,7 +43,7 @@
 			$raw_stream = 1;
 			
 			// Check data POST first !!
-			if(!empty($_POST['data'][$model][$counter]['value']))
+			if(!empty($_POST['data'][$model][$counter]['value']) && !$view_mode)
 			{
 				foreach ($_POST['data'][$model][$counter]['value'] as $metakey => $metavalue) 
 				{
@@ -109,15 +109,17 @@
                         
                     <div class="<?php echo ($view_mode?'hide':''); ?>">
                     <?php
-                        if(!empty($metaDetails['EntryMeta']['name']))
-                        {
-                            echo '<input REQUIRED id="'.$browse_slug.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$metaDetails['EntryMeta']['name'].' ('.$metaDetails['Entry']['title'].')'.'" readonly="true"/>';
-                        }
+                        $richvalue = '';
+						if(!empty($metaDetails['EntryMeta']['name']))
+						{
+							$richvalue = $metaDetails['EntryMeta']['name'].' ('.$metaDetails['Entry']['title'].')';
+						}
                         else
-                        {
-                            echo '<input REQUIRED id="'.$browse_slug.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$metaDetails['Entry']['title'].'" readonly="true"/>';
-                        }
-
+						{
+                            $richvalue = $metaDetails['Entry']['title'];
+						}
+                        
+                        echo '<input REQUIRED id="'.$browse_slug.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$richvalue.'" readonly="true"/>';
                         echo '&nbsp;'.$this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>array('popup'=>'init', 'stream'=>$raw_stream)),array('class'=>'btn btn-info get-from-table'));
                         echo '<input class="'.$shortkey.'" type="hidden" name="data['.$model.']['.$counter.'][value][]" value="'.$metaDetails['Entry']['slug'].'"/>';
                         echo '&nbsp;<a class="btn btn-danger del-raw" href="javascript:void(0)"><i class="icon-trash icon-white"></i></a>';     

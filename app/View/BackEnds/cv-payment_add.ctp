@@ -66,18 +66,26 @@
 					$('button#save-button').click();
 				});
                 
-                // add trailing currency to "Amount" field...
-                $('input.amount').after(' <?php echo $myParentEntry['EntryMeta']['currency']; ?>');
-                
-                <?php
-                    if(empty($myEntry) && empty($this->request->data))
+                // trigger keyup on some element ...
+                $('input.additional_cost').keyup(function(){
+                    var ratevalue = $('input.gold_bar_rate').val();
+                    var value = $(this).val();
+                    
+                    if($.isNumeric(value) && $.isNumeric(ratevalue))
                     {
-                        $hkdrate = $this->Get->meta_details(NULL , 'usd-rate' , NULL , NULL , NULL , NULL , 'hkd');
-                        ?>
-                $('input.hkd_to_usd').val('<?php echo $hkdrate['EntryMeta']['rate_value']; ?>');
-                        <?php
+                        var result = (parseFloat(value) / parseFloat(ratevalue)).toFixed(3);
+                        
+                        $('span.result_rate').html('= <span class="additional_cost_gram">'+result+'</span> gram Gold Bar.');
                     }
-                ?>
+                    else
+                    {
+                        $('span.result_rate').html('');
+                    }
+                }).trigger('keyup');
+                
+                $('input.gold_bar_rate').keyup(function(){
+                    $('input.additional_cost').keyup();
+                });
 			});
 		</script>
 		<p class="notes important" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>
@@ -150,7 +158,7 @@
 						default:
 							break;
 					}
-					echo $this->element(($value['key']=='form-diamond'?'special':'input').'_'.$value['input_type'] , $value);
+					echo $this->element((strpos($value['key'], '_jewelry')!==FALSE?'special':'input').'_'.$value['input_type'] , $value);
 				}
 			}
 			// HIDE THE BROKEN INPUT TYPE !!!!!!!!!!!!!

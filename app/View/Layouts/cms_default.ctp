@@ -68,6 +68,7 @@
 		<script src="<?php echo $imagePath; ?>js/uploadfile/jquery.fileupload-ui.js"></script>
         <?php
             // our custom javascript !!
+            echo $this->Html->script('number_format');
             echo $this->Html->script('admin');
             echo $this->Html->script('ajax');
             echo $scripts_for_layout;

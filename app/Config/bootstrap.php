@@ -345,14 +345,15 @@ function parseTime($s)
 }
 
 function toMoney($amount,$separator=true,$simple=false){
+    $broken_number = ( false===$simple ? explode('.',$amount) : '' );
     return
         (true===$separator?
             (false===$simple?
-                number_format($amount,2,'.',','):
+                number_format($broken_number[0]).(isset($broken_number[1])?'.'.$broken_number[1]:''):
                 str_replace('.00','',toMoney($amount))
             ):
             (false===$simple?
-                number_format($amount,2,'.',''):
+                number_format($broken_number[0],0,'.','').(isset($broken_number[1])?'.'.$broken_number[1]:''):
                 str_replace('.00','',toMoney($amount,false))
             )
         );

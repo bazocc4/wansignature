@@ -17,6 +17,10 @@
     {
         $browse_slug = 'exhibition';
     }
+    else if($shortkey == 'cost_currency')
+    {
+        $browse_slug = 'usd-rate';
+    }
     else
     {
         $browse_slug = $browse_alias;

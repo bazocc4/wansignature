@@ -55,11 +55,11 @@
 		$inputsize = 'input-xlarge';
 	}
 	
-	if($shortkey == 'discount' || $shortkey == 'weight' || $shortkey == 'qty' || $shortkey == 'Bunga Cek' || $shortkey == 'loan_interest_rate')
+	if($shortkey == 'discount' || $shortkey == 'weight' || $shortkey == 'qty' || $shortkey == 'Bunga Cek' || $shortkey == 'loan_interest_rate' || $shortkey == 'additional_charge' || $shortkey == 'prosentase_susut')
 	{
 		$inputsize = 'input-mini';
 	}
-	else if($shortkey == "price" || $shortkey == "rate_value" || $shortkey == 'hkd_to_usd')
+	else if($shortkey == "price")
 	{
 		$inputsize = 'input-small';
 	}
@@ -99,18 +99,44 @@
 			{
 				echo '% / month';
 			}
+            else if($shortkey == 'additional_charge' || $shortkey == 'prosentase_susut')
+            {
+                echo '%';
+            }
             else if($shortkey == 'hkd_to_usd')
             {
                 echo 'HKD = $1 USD.';
             }
+            else if($shortkey == 'gold_bar_rate')
+            {
+                echo '<span class="currency_duplicator"></span> = 1 gram Gold Bar.';
+                ?>
+<script>
+	$(document).ready(function(){
+		$('input#cost-currency').change(function(){
+            $('span.currency_duplicator').text( $(this).val() );
+            
+            if($(this).val() == '')
+            {
+                $('input.gold_bar_rate').val('').keyup();
+            }
+        }).trigger('change');
+	});
+</script>                
+                <?php
+            }
+            else if($shortkey == 'additional_cost')
+            {
+                echo '<span class="currency_duplicator"></span> <span style="color:red" class="result_rate"></span>';
+            }
             else if($shortkey == 'rate_value')
 			{
-				echo '<span id="currency_duplicator"></span> = $1 USD.';
+				echo '<span class="currency_duplicator"></span> = $1 USD.';
                 ?>
 <script>
 	$(document).ready(function(){
 		$('input.Currency.Title').keyup(function(){
-            $('#currency_duplicator').text( $(this).val() );
+            $('span.currency_duplicator').text( $(this).val() );
         }).trigger('keyup');
 	});
 </script>                

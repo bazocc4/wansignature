@@ -61,38 +61,17 @@
 				
 				// save as draft button !!
 				$('button#save-as-draft').click(function(){
-					// set last status button as draft !!
+					// set last status button as draft & submit form !!
 					$('select.status:last').val('0');
-					$(this).closest('form').find('button[type=submit]:first').click();
+					$('button#save-button').click();
 				});
-				
-				// CUSTOMIZED SCRIPT !!
-                $('input[type=radio].sale_venue').change(function(){
-                    if($(this).is(':checked'))
-                    {
-                        if($(this).val() == 'Warehouse')
-                        {
-                    $('input#exhibition').closest('.control-group').hide();
-                    $('input#exhibition').val('').nextAll('input[type=hidden].exhibition').val('');
-                    $('input#warehouse').closest('.control-group').show();
-                        }
-                        else
-                        {
-                    $('input#warehouse').closest('.control-group').hide();
-                    $('input#warehouse').val('').nextAll('input[type=hidden].warehouse').val('');
-                    $('input#exhibition').closest('.control-group').show();
-                        }
-                    }
-                }).trigger('change');
                 
                 <?php
                     if(empty($myEntry) && empty($this->request->data))
                     {
-                        $rprate = $this->Get->meta_details(NULL , 'usd-rate' , NULL , NULL , NULL , NULL , 'idr');
-                        $goldrate = $this->Get->meta_details(NULL , 'usd-rate' , NULL , NULL , NULL , NULL , 'gold bar%');
-                        $result = round($rprate['EntryMeta']['rate_value'] / $goldrate['EntryMeta']['rate_value']);
+                        $hkdrate = $this->Get->meta_details(NULL , 'usd-rate' , NULL , NULL , NULL , NULL , 'hkd');
                         ?>
-                $('input.gold_price').val('<?php echo $result; ?>');
+                $('input.hkd_rate').val('<?php echo $hkdrate['EntryMeta']['rate_value']; ?>');
                         <?php
                     }
                 ?>
@@ -169,12 +148,7 @@
 							break;
 					}
                     
-                    // on-the-fly validation ...
-                    if($value['key'] == 'form-warehouse' || $value['key'] == 'form-exhibition')
-                    {
-                        $value['validation'] .= 'not_empty|';
-                    }
-					echo $this->element('input_'.$value['input_type'] , $value);
+                    echo $this->element('input_'.$value['input_type'] , $value);
 				}
 			}
 			// HIDE THE BROKEN INPUT TYPE !!!!!!!!!!!!!

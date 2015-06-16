@@ -891,7 +891,7 @@ class Entry extends AppModel {
 		}
 		if(!is_null($title))
 		{
-			$options['conditions']['Entry.title'] = $title;
+			$options['conditions']['Entry.title '.(strpos($title,'%')!==FALSE?'LIKE':'')] = $title;
 		}
         
         // Skip if no options parameter !!

@@ -59,7 +59,7 @@
 	{
 		$inputsize = 'input-mini';
 	}
-	else if($shortkey == "price")
+	else if($shortkey == "price" || $shortkey == "amount")
 	{
 		$inputsize = 'input-small';
 	}
@@ -103,9 +103,17 @@
             {
                 echo '%';
             }
-            else if($shortkey == 'hkd_to_usd')
+            else if($shortkey == 'hkd_rate')
             {
                 echo 'HKD = $1 USD.';
+            }
+            else if($shortkey == 'rp_rate')
+            {
+                echo 'IDR = $1 USD.';
+            }
+            else if($shortkey == 'gold_price')
+            {
+                echo 'IDR = 1 gram Gold Bar.';
             }
             else if($shortkey == 'gold_bar_rate')
             {

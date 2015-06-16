@@ -17,6 +17,10 @@
 				<?php if(!empty($this->request->query['anchor'])): ?>
 					$('div#form-<?php echo $this->request->query['anchor']; ?>').prevAll('a.get-from-library:first').focus();
 				<?php endif; ?>
+                
+                // Hide main_image !!
+                $('div.thumbs').hide();
+                $('div.change-pic').hide();
 			});
 		</script>
 		<?php
@@ -80,6 +84,16 @@
                         }
                     }
                 }).trigger('change');
+                
+                <?php
+                    if(empty($myEntry) && empty($this->request->data))
+                    {
+                        $customrate = $this->Get->meta_details(NULL , 'usd-rate' , NULL , NULL , NULL , NULL , 'idr');
+                        ?>
+                $('input.rp_rate').val('<?php echo $customrate['EntryMeta']['rate_value']; ?>');
+                        <?php
+                    }
+                ?>
 			});
 		</script>
 		<p class="notes important" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>

@@ -17,6 +17,10 @@
 				<?php if(!empty($this->request->query['anchor'])): ?>
 					$('div#form-<?php echo $this->request->query['anchor']; ?>').prevAll('a.get-from-library:first').focus();
 				<?php endif; ?>
+                
+                // Hide main_image !!
+//                $('div.thumbs').hide();
+//                $('div.change-pic').hide();
 			});
 		</script>
 		<?php

@@ -66,18 +66,11 @@
 					$('button#save-button').click();
 				});
                 
-                // add trailing currency to "Amount" field...
-                $('input.amount').after(' <?php echo $myParentEntry['EntryMeta']['currency']; ?>');
-                
-                <?php
-                    if(empty($myEntry) && empty($this->request->data))
-                    {
-                        $hkdrate = $this->Get->meta_details(NULL , 'usd-rate' , NULL , NULL , NULL , NULL , 'hkd');
-                        ?>
-                $('input.hkd_to_usd').val('<?php echo $hkdrate['EntryMeta']['rate_value']; ?>');
-                        <?php
-                    }
-                ?>
+                // update empty hkd_rate ...
+                if($('input.hkd_rate').val() == '')
+                {
+                    $('input.hkd_rate').val('<?php echo $myParentEntry['EntryMeta']['hkd_rate']; ?>');
+                }
 			});
 		</script>
 		<p class="notes important" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>

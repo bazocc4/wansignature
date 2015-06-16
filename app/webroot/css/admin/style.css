@@ -28,6 +28,8 @@ img{
 .sort-symbol {color: red;}
 .tooltip-inner { text-align:left; }
 
+.text-uppercase{ text-transform: uppercase; }
+
 /* ABAS CSS */
 .normal-checkbox{float:left; position: relative; top: 10px}
 .group-checkbox{margin-bottom: 5px !important;}

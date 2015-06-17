@@ -134,40 +134,30 @@
 			$('table#myTableList tbody tr').click(function(e){
 				if(!$('input[type=checkbox]').is(e.target))
 				{
-					var targetID = ($('input#query-alias').length > 0?$('input#query-alias').val():'<?php echo (empty($myEntry)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>')+($('input#query-stream').length > 0?$('input#query-stream').val():'');
-                    var mytr = $(this); // same var name as in admin_header.ctp element ...
-					var richvalue = '';
-					if(mytr.find("td.form-name").length > 0)
+					var targetID = $('input#query-alias').val() + ($('input#query-stream').length > 0?$('input#query-stream').val():'');
+                    
+                    var richvalue = '';
+					if($(this).find("td.form-name").length > 0)
 					{
-					    richvalue = mytr.find("td.form-name").text()+' ('+mytr.find("h5.title-code").text()+')';
+					    richvalue = $(this).find("td.form-name").text()+' ('+$(this).find("h5.title-code").text()+')';
 					}
 					else
 					{
-					    richvalue = mytr.find("h5.title-code").text();
+					    richvalue = $(this).find("h5.title-code").text();
 					}
                     
-                    // second filter ...
-                    if(mytr.find("td.form-product_type h5").length > 0)
-                    {
-                        richvalue += ' / ' + mytr.find('td.form-product_type h5').text();
-                    }
-                    if(mytr.find("td.form-product_brand h5").length > 0)
-                    {
-                        richvalue += ' / ' + mytr.find('td.form-product_brand h5').text();
-                    }
-                    
-                    $("input#"+targetID).val(richvalue).nextAll("input[type=hidden]").val( mytr.find("input[type=hidden].slug-code").val() );
+                    $("input#"+targetID).val(richvalue).nextAll("input[type=hidden]").val( $(this).find("input[type=hidden].slug-code").val() );
 					$("input#"+targetID).change();
 
 					// update other attribute ...
                     if($('input.gold_bar_rate').length > 0)
                     {
                         var goldval = parseFloat($('h5.title-code:contains("Gold Bar")').closest('tr').find('td.form-rate_value input[type=hidden]').val());
-                        var targetval = parseFloat(mytr.find('td.form-rate_value input[type=hidden]').val());
+                        var targetval = parseFloat($(this).find('td.form-rate_value input[type=hidden]').val());
                         $('input.gold_bar_rate').val( (targetval / goldval).toFixed(2) ).keyup();
                     }
 
-					$.colorbox.close();
+					if(!e.isTrigger)    $.colorbox.close();
 				}
 			});
 		<?php endif; ?>

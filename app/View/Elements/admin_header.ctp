@@ -46,66 +46,23 @@
 		$('#attach-checked-data').click(function(e){
 			if(!$(this).hasClass('disabled'))
 			{
-				var counter_stream = $('input#query-stream').val();
-				var targetID = "<?php echo (empty($myEntry)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>";
-				
-				$('input.check-record').each(function(i,el){
-					if($(this).attr('checked'))
-					{
-						var newTargetID = targetID + counter_stream;
-
-						// add new browse ...
-						if($('input#'+newTargetID).length == 0)
-						{
-							$('div.'+targetID+'-group').closest('div.control-group').find('a.add-raw').click();
-						}
-
-						var mytr = $('table#myTableList tr[alt='+$(this).val()+']');
-						var richvalue = '';
-                        if(mytr.find("td.form-name").length > 0)
-						{
-						    richvalue = mytr.find("td.form-name").text()+' ('+mytr.find("h5.title-code").text()+')';
-						}
-                        else
-						{
-						    richvalue = mytr.find("h5.title-code").text();
-						}
-                        
-                        // second filter ...
-                        if(mytr.find("td.form-product_type h5").length > 0)
-                        {
-                            richvalue += ' / ' + mytr.find('td.form-product_type h5').text();
-                        }
-                        if(mytr.find("td.form-product_brand h5").length > 0)
-                        {
-                            richvalue += ' / ' + mytr.find('td.form-product_brand h5').text();
-                        }
-                        
-                        $("input#"+newTargetID).val(richvalue).nextAll("input[type=hidden]").val( mytr.find("input[type=hidden].slug-code").val() );
-						$("input#"+newTargetID).change();
-                        
-                        // update other attribute ...
-                        var $trytotal = $("input#"+newTargetID).nextAll('input[type=number]');
-                        if($trytotal.length > 0)
-                        {
-                            $trytotal.removeAttr('readonly').focus();
-                            
-                            var popupTypeSlug = '<?php echo (empty($myChildType)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>';
-                            
-                            if(popupTypeSlug == 'logistic')
-                            {
-                                $trytotal.val('').attr('max' , mytr.find("input[type=hidden][value=<?php echo $this->request->query['content']; ?>]").attr('data-total') );
-                            }
-                            else if(popupTypeSlug == 'diamond' || popupTypeSlug == 'cor-jewelry')
-                            {
-                                
-                            }
-                        }
-
-						counter_stream++;
-					}
+				var targetID = $('input#query-alias').val();
+				$('input.check-record:checked').each(function(i,el){
+                    // add new browse ...
+                    if($('input#'+targetID+ $('input#query-stream').val() ).length == 0)
+                    {
+                        $('div.'+targetID+'-group').closest('div.control-group').find('a.add-raw').click();
+                        // renew #query-stream NOW ...
+                        $('input#query-stream').val( $.fn.urlParam('stream', $('div.'+targetID+'-detail:last a.get-from-table').attr('href') ) );
+                    }
+                    
+                    // trigger TR row click ...
+                    $('table#myTableList tr[alt='+$(el).val()+']').click();
+                    
+                    // preparing for next #query-stream ...
+                    var $next_detail = $("input#"+targetID+ $('input#query-stream').val() ).closest('div.'+targetID+'-detail').next();
+                    $('input#query-stream').val( $next_detail.length > 0 ? $.fn.urlParam('stream', $next_detail.find('a.get-from-table').attr('href') ) : '' );
 				});
-
 				$.colorbox.close();
 			}
 			else
@@ -214,12 +171,9 @@
                     <?php
                 }
                 
-                if(!empty($alias))
-                {
-                    ?>
-        <input type="hidden" id="query-alias" value="<?php echo $alias; ?>">
-                    <?php
-                }
+                ?>
+        <input type="hidden" id="query-alias" value="<?php echo ( empty($alias) ? (empty($myEntry)?$myType['Type']['slug']:$myChildType['Type']['slug']) : $alias ); ?>">
+                <?php    
             }
         ?>
 	</div>

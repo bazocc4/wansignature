@@ -145,39 +145,22 @@
 			$('table#myTableList tbody tr').click(function(e){
 				if(!$('input[type=checkbox]').is(e.target))
 				{
-					var targetID = ($('input#query-alias').length > 0?$('input#query-alias').val():'<?php echo (empty($myEntry)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>')+($('input#query-stream').length > 0?$('input#query-stream').val():'');
+					var targetID = $('input#query-alias').val() + ($('input#query-stream').length > 0?$('input#query-stream').val():'');
+                    
+                    var richvalue = '';
 					if($(this).find("td.form-name").length > 0)
 					{
-					    $("input#"+targetID).val( $(this).find("td.form-name").text()+' ('+$(this).find("h5.title-code").text()+')');
+					    richvalue = $(this).find("td.form-name").text()+' ('+$(this).find("h5.title-code").text()+')';
 					}
 					else
 					{
-					    $("input#"+targetID).val( $(this).find("h5.title-code").text() );
+					    richvalue = $(this).find("h5.title-code").text();
 					}
-					
-					$("input#"+targetID).nextAll("input[type=hidden]").val( $(this).find("input[type=hidden].slug-code").val() );
+                    
+                    $("input#"+targetID).val(richvalue).nextAll("input[type=hidden]").val( $(this).find("input[type=hidden].slug-code").val() );
 					$("input#"+targetID).change();
-
-					// Update the subcategory dropdown value, if existed !!
-					if($('select.subcategory').length > 0)
-					{
-						$('select.subcategory').html('');
-						
-						var catcheck = $(this).find("td.form-subcategory").html();
-						
-						if(catcheck != '-')
-						{
-							var subcat = catcheck.split('<br>');
-						
-							$.each(subcat , function(i,el){
-                                el = $.trim(el);
-								$('select.subcategory').append('<option value="'+el+'">'+el+'</option>');
-							});
-						}
-						
-					}
-
-					$.colorbox.close();
+                    
+                    if(!e.isTrigger)    $.colorbox.close();
 				}
 			});
 		<?php endif; ?>

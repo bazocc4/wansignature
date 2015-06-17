@@ -95,11 +95,8 @@
             {
                 $('form#global-action').submit(function(){				
                     var records = [];
-                    $('input.check-record').each(function(i,el){
-                        if($(el).attr('checked'))
-                        {
-                            records.push($(el).val());
-                        }
+                    $('input.check-record:checked').each(function(i,el){
+                        records.push($(el).val());
                     });
 
                     if(records.length > 0)
@@ -139,27 +136,17 @@
 				{
 					var targetID = $('input#query-alias').val() + ($('input#query-stream').length > 0?$('input#query-stream').val():'');
                     
-                    var richvalue = '';
-					if($(this).find("td.form-name").length > 0)
-					{
-					    richvalue = $(this).find("td.form-name").text()+' ('+$(this).find("h5.title-code").text()+')';
-					}
-					else
-					{
-					    richvalue = $(this).find("h5.title-code").text();
-					}
+                    var richvalue = $(this).find("h5.title-code").text() + ' / ' + $(this).find('td.form-product_type h5').text();
                     
                     $("input#"+targetID).val(richvalue).nextAll("input[type=hidden]").val( $(this).find("input[type=hidden].slug-code").val() );
 					$("input#"+targetID).change();
 
-					// Update other attribute...
-					if($('input.wholesaler').length > 0)
-					{
-                        var wholesaler = $(this).find("td.form-wholesaler h5");
-                        if(wholesaler.length > 0)
-                        {                            $('input#wholesaler').val(wholesaler.text()).nextAll('input[type=hidden].wholesaler').val(wholesaler.next('input[type=hidden]').val());
-                        }
-					}
+					// update other attribute ...
+                    var $trytotal = $("input#"+targetID).nextAll('input[type=number]');
+                    if($trytotal.length > 0)
+                    {
+                        $trytotal.removeAttr('readonly').focus();
+                    }
 
 					if(!e.isTrigger)    $.colorbox.close();
 				}
@@ -232,16 +219,9 @@
 						$entityTitle = $value['key'];
                         $hideKeyQuery = '';
                         $shortkey = substr($entityTitle, 5);
-                        if(!empty($popup))
+                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!')
                         {
-                            if($this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!')
-                            {
-                                $hideKeyQuery = 'hide';
-                            }
-                            else if($this->request->query['key'] == 'kategori' && $this->request->query['value'] != 'Retailer' && $shortkey == 'wholesaler')
-                            {
-                                $hideKeyQuery = 'hide';
-                            }
+                            $hideKeyQuery = 'hide';
                         }
                         
                         $datefield = '';
@@ -333,7 +313,7 @@
                 $editUrl = array('action'=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'edit',$value['Entry']['slug'] ,'?'=> (!empty($myEntry)&&$myType['Type']['slug']!=$myChildType['Type']['slug']?array('type'=>$myChildType['Type']['slug']):'')   );
 			?>
 			<input class="slug-code" type="hidden" value="<?php echo $value['Entry']['slug']; ?>" />
-			<h5 class="title-code"><?php echo (empty($popup)?$this->Html->link($value['Entry']['title'], $editUrl ):$value['Entry']['title']); ?></h5>
+			<h5 class="title-code"><?php echo (empty($popup)?$this->Html->link($value['Entry']['title'],$editUrl):$value['Entry']['title']); ?></h5>
 			<p>
 				<?php
 					if($descriptionUsed == 1 && !empty($value['Entry']['description']))
@@ -372,16 +352,9 @@
 						$shortkey = substr($value10['key'], 5);
                         $displayValue = $value['EntryMeta'][$shortkey];
                         $hideKeyQuery = '';
-                        if(!empty($popup))
+                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!')
                         {
-                            if($this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!')
-                            {
-                                $hideKeyQuery = 'hide';
-                            }
-                            else if($this->request->query['key'] == 'kategori' && $this->request->query['value'] != 'Retailer' && $shortkey == 'wholesaler')
-                            {
-                                $hideKeyQuery = 'hide';
-                            }
+                            $hideKeyQuery = 'hide';
                         }
                         
                         echo "<td class='".$value10['key']." ".$hideKeyQuery."'>";
@@ -409,13 +382,18 @@
 							$emptybrowse = 0;
 							foreach ($displayValue as $brokekey => $brokevalue) 
 							{
+                                $brokeWithTotal = explode('_', $brokevalue);
+                                
+                                $brokevalue = $brokeWithTotal[0];
+                                $broketotal = $brokeWithTotal[1];
+                                
 								$mydetails = $this->Get->meta_details($brokevalue , $browse_slug );
 								if(!empty($mydetails))
 								{
 									$emptybrowse = 1;
-									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']);
+									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']).(!empty($broketotal)?' ('.$broketotal.' pcs)':'');
 									echo '<p>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).'</p>';
-                                    echo '<input type="hidden" value="'.$mydetails['Entry']['slug'].'">';
+                                    echo '<input data-total="'.$broketotal.'" type="hidden" value="'.$mydetails['Entry']['slug'].'">';
 								}
 							}
 							
@@ -426,17 +404,7 @@
 						}
                         else if($value10['input_type'] == 'browse')
                         {
-                            $entrytype = '';
-                            if($shortkey == 'wholesaler')
-                            {
-                                $entrytype = 'client';
-                            }
-                            else
-                            {
-                                $entrytype = get_slug($shortkey);
-                            }
-                            
-                        	$entrydetail = $this->Get->meta_details($displayValue , $entrytype );
+                        	$entrydetail = $this->Get->meta_details($displayValue , get_slug($shortkey));
 							if(empty($entrydetail))
 							{
 								echo $displayValue;

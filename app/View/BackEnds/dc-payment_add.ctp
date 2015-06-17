@@ -179,7 +179,7 @@
 			$value['validation'] = '';
 			$value['model'] = 'Entry';
 			$value['counter'] = 1;
-			$value['input_type'] = 'textarea';
+			$value['input_type'] = 'ckeditor';
 			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['description']);
 			echo $this->element('input_'.$value['input_type'] , $value);
 

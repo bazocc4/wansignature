@@ -90,9 +90,15 @@
                         {
                             $trytotal.removeAttr('readonly').focus();
                             
-                            if($('#myTypeSlug').val() == 'surat-jalan')
+                            var popupTypeSlug = '<?php echo (empty($myChildType)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>';
+                            
+                            if(popupTypeSlug == 'logistic')
                             {
                                 $trytotal.val('').attr('max' , mytr.find("input[type=hidden][value=<?php echo $this->request->query['content']; ?>]").attr('data-total') );
+                            }
+                            else if(popupTypeSlug == 'diamond' || popupTypeSlug == 'cor-jewelry')
+                            {
+                                
                             }
                         }
 

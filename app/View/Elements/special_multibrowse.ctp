@@ -3,6 +3,21 @@
 	$shortkey = substr($key, 5 );
 	$var_stream = $shortkey.'_stream';	
 	$browse_slug = get_slug($shortkey);
+
+    // unit of additional number ...
+    $unit = '';
+    if($shortkey == 'diamond')
+    {
+        $unit = 'USD';
+    }
+    else if(strpos($shortkey, '_jewelry') !== FALSE)
+    {
+        $unit = 'gram';
+    }
+    else
+    {
+        $unit = 'pcs';
+    }
 ?>
 <script type="text/javascript">
 	var <?php echo $var_stream; ?>;
@@ -12,7 +27,7 @@
             var content = '<div class="row-fluid <?php echo $browse_slug; ?>-detail bottom-spacer">';            
             content += '<input REQUIRED id="<?php echo $browse_slug; ?>'+<?php echo $var_stream; ?>+'" class="input-xlarge" type="text" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][temp][]" readonly="true"/>';
             
-            content += '&nbsp;<input REQUIRED type="number" min="1" class="input-mini" placeholder="pcs" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][total][]" readonly="true"/>';
+            content += '&nbsp;<input REQUIRED type="number" min="1" class="input-mini" placeholder="<?php echo $unit; ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][total][]" readonly="true"/>';
             
             var storage = '';
             if($(this).attr('data-storage').length > 0 && $(this).attr('data-content').length > 0)
@@ -55,7 +70,7 @@
 						echo '<div class="row-fluid '.$browse_slug.'-detail bottom-spacer">';					
 						echo '<input REQUIRED id="'.$browse_slug.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$_POST['data'][$model][$counter]['temp'][$metakey].'" readonly="true"/>';
                         
-                        echo '&nbsp;<input REQUIRED type="number" min="1" class="input-mini" placeholder="pcs" name="data['.$model.']['.$counter.'][total][]" value="'.$_POST['data'][$model][$counter]['total'][$metakey].'">';
+                        echo '&nbsp;<input REQUIRED type="number" min="1" class="input-mini" placeholder="'.$unit.'" name="data['.$model.']['.$counter.'][total][]" value="'.$_POST['data'][$model][$counter]['total'][$metakey].'">';
                         
 						echo '&nbsp;'.$this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>array('popup'=>'init', 'stream'=>$raw_stream)),array('class'=>'btn btn-info get-from-table'));
 	                    echo '<input class="'.$shortkey.'" type="hidden" name="data['.$model.']['.$counter.'][value][]" value="'.$metavalue.'"/>';
@@ -101,7 +116,7 @@
                             echo ($metakey+1).'.) '.$metaDetails['Entry']['title'];
                             if(!empty($metatotal))
                             {
-                                echo ' ('.$metatotal.' pcs)';
+                                echo ' ('.$metatotal.' '.$unit.')';
                             }
                             echo '</div>';
                         }
@@ -120,7 +135,7 @@
             }
 
             echo '<input REQUIRED id="'.$browse_slug.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$richvalue.'" readonly="true"/>';
-            echo '&nbsp;<input REQUIRED type="number" min="1" class="input-mini" placeholder="pcs" name="data['.$model.']['.$counter.'][total][]" value="'.$metatotal.'">';
+            echo '&nbsp;<input REQUIRED type="number" min="1" class="input-mini" placeholder="'.$unit.'" name="data['.$model.']['.$counter.'][total][]" value="'.$metatotal.'">';
 
             echo '&nbsp;'.$this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>array('popup'=>'init', 'stream'=>$raw_stream)),array('class'=>'btn btn-info get-from-table'));
             echo '<input class="'.$shortkey.'" type="hidden" name="data['.$model.']['.$counter.'][value][]" value="'.$metaDetails['Entry']['slug'].'"/>';

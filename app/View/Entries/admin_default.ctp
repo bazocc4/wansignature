@@ -160,24 +160,11 @@
 					$("input#"+targetID).change();
 
 					// update other attribute ...
-                    // Update the subcategory dropdown value, if existed !!
-					if($('select.subcategory').length > 0)
-					{
-						$('select.subcategory').html('');
-						
-						var catcheck = mytr.find("td.form-subcategory").html();
-						
-						if(catcheck != '-')
-						{
-							var subcat = catcheck.split('<br>');
-						
-							$.each(subcat , function(i,el){
-                                el = $.trim(el);
-								$('select.subcategory').append('<option value="'+el+'">'+el+'</option>');
-							});
-						}
-						
-					}
+                    var $trytotal = $("input#"+targetID).nextAll('input[type=number]');
+                    if($trytotal.length > 0)
+                    {
+                        $trytotal.removeAttr('readonly').focus();
+                    }
 
 					$.colorbox.close();
 				}

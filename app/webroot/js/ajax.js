@@ -53,6 +53,18 @@ function openRequestedSinglePopup(strUrl , targetName)
 }
 
 (function($) {
+    // Get URL parameters using jQuery ...
+    // http://www.sitepoint.com/url-parameters-jquery/
+    $.fn.urlParam = function(name , url){
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(url);
+        if (results==null){
+           return null;
+        }
+        else{
+           return results[1] || 0;
+        }
+    }
+    
 	$.fn.checkNumeric = function(e){
 		// Allow: backspace, delete, tab, escape, enter and .
         if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||

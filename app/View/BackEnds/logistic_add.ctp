@@ -17,10 +17,6 @@
 				<?php if(!empty($this->request->query['anchor'])): ?>
 					$('div#form-<?php echo $this->request->query['anchor']; ?>').prevAll('a.get-from-library:first').focus();
 				<?php endif; ?>
-                
-                $(document).on('change','input[id^=warehouse] , input[id^=exhibition]',function(){
-                    $(this).nextAll('input[type=number]').removeAttr('readonly').focus();
-                });
 			});
 		</script>
 		<?php

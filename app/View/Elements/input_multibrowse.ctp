@@ -4,36 +4,6 @@
 	$var_stream = $shortkey.'_stream';	
 	$browse_slug = get_slug($shortkey);
 ?>
-<script type="text/javascript">
-	var <?php echo $var_stream; ?>;
-			
-	$(document).ready(function(){
-		$('div.<?php echo $browse_slug; ?>-group').closest('div.control-group').find('a.add-raw').click(function(){
-            var content = '<div class="row-fluid <?php echo $browse_slug; ?>-detail bottom-spacer">';            
-            content += '<input REQUIRED id="<?php echo $browse_slug; ?>'+<?php echo $var_stream; ?>+'" class="input-xlarge" type="text" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][temp][]" readonly="true"/>';            		            
-            
-            var storage = '';
-            if($(this).attr('data-storage').length > 0 && $(this).attr('data-content').length > 0)
-            {
-                storage += '&storage='+$(this).attr('data-storage')+'&content='+$(this).attr('data-content');
-            }
-            
-            content += '&nbsp;<a class="btn btn-info get-from-table" href="'+linkpath+'admin/entries/<?php echo $browse_slug; ?>?popup=init&stream='+<?php echo $var_stream; ?>+storage+'">Browse</a>';
-            content += '<input class="<?php echo $shortkey; ?>" type="hidden" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value][]" />';
-            content += '&nbsp;<a class="btn btn-danger del-raw" href="javascript:void(0)"><i class="icon-trash icon-white"></i></a>';
-            content += '</div>';
-            
-            $('div.<?php echo $browse_slug; ?>-group').append(content);
-            <?php echo $var_stream; ?>++;
-        });
-        
-		($('#colorbox').length>0&&$('#colorbox').is(':visible')?$('#colorbox').children().last().children():$(document)).on("click",'div.<?php echo $browse_slug; ?>-group a.del-raw',function(e){
-            $(this).closest('div.<?php echo $browse_slug; ?>-detail').animate({opacity : 0 , height : 0, marginBottom : 0},1000,function(){
-                $(this).detach();
-            });
-        });
-	});
-</script>
 <div class="control-group" <?php echo (empty($display)?'':'style="display:none"'); ?>>
 	<label class="control-label" <?php echo (strpos(strtolower($validation), 'not_empty') !== FALSE && !$view_mode?'style="color: red;"':''); ?>>
         <?php echo string_unslug($shortkey); ?>
@@ -136,21 +106,6 @@
 		?>
 	</div>
 	
-	<script>
-        <?php echo $var_stream; ?> = <?php echo $raw_stream; ?>;
-        
-        // if NO browse record displayed, then show it one !!
-        <?php if($raw_stream == 1): ?>
-$(document).ready(function(){
-    <?php if($view_mode): ?>
-	$('div.<?php echo $browse_slug; ?>-group').html('<div class="view-mode">-</div>');
-    <?php else: ?>
-    $('div.<?php echo $browse_slug; ?>-group').closest('div.control-group').find('a.add-raw').click();
-    <?php endif; ?>
-});
-        <?php endif; ?>
-    </script>
-    
 	<div class="controls">
 		<a data-storage="" data-content="" href="javascript:void(0)" class="add-raw <?php echo ($view_mode?'hide':''); ?>" style="text-decoration: underline;">Add a <?php echo str_replace('_', ' ', $shortkey); ?></a>
 		<p class="help-block">
@@ -168,3 +123,54 @@ $(document).ready(function(){
 	<input type="hidden" value="<?php echo $validation; ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][validation]"/>
 	<input type="hidden" value="<?php echo $p; ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][instruction]"/>
 </div>
+
+<script type="text/javascript">
+// special counter variable ...    
+var <?php echo $var_stream; ?> = <?php echo $raw_stream; ?>;
+
+$(document).ready(function(){
+    $('div.<?php echo $browse_slug; ?>-group').closest('div.control-group').find('a.add-raw').click(function(){
+        var content = '<div class="row-fluid <?php echo $browse_slug; ?>-detail bottom-spacer">';            
+        content += '<input REQUIRED id="<?php echo $browse_slug; ?>'+<?php echo $var_stream; ?>+'" class="input-xlarge" type="text" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][temp][]" readonly="true"/>';            		            
+
+        var storage = '';
+        if($(this).attr('data-storage').length > 0 && $(this).attr('data-content').length > 0)
+        {
+            storage += '&storage='+$(this).attr('data-storage')+'&content='+$(this).attr('data-content');
+        }
+
+        content += '&nbsp;<a class="btn btn-info get-from-table" href="'+linkpath+'admin/entries/<?php echo $browse_slug; ?>?popup=init&stream='+<?php echo $var_stream; ?>+storage+'">Browse</a>';
+        content += '<input class="<?php echo $shortkey; ?>" type="hidden" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value][]" />';
+        content += '&nbsp;<a class="btn btn-danger del-raw" href="javascript:void(0)"><i class="icon-trash icon-white"></i></a>';
+        content += '</div>';
+
+        $('div.<?php echo $browse_slug; ?>-group').append(content);
+        <?php echo $var_stream; ?>++;
+    });
+        
+    // if NO browse record displayed, then show it one !!
+    <?php
+        if($raw_stream == 1)
+        {
+            if($view_mode)
+            {
+                ?>
+    $('div.<?php echo $browse_slug; ?>-group').html('<div class="view-mode">-</div>');
+                <?php
+            }
+            else
+            {
+                ?>
+    $('div.<?php echo $browse_slug; ?>-group').closest('div.control-group').find('a.add-raw').click();
+                <?php
+            }
+        }
+    ?>
+        
+    ($('#colorbox').length>0&&$('#colorbox').is(':visible')?$('#colorbox').children().last().children():$(document)).on("click",'div.<?php echo $browse_slug; ?>-group a.del-raw',function(e){
+        $(this).closest('div.<?php echo $browse_slug; ?>-detail').animate({opacity : 0 , height : 0, marginBottom : 0},1000,function(){
+            $(this).detach();
+        });
+    });
+});
+</script>

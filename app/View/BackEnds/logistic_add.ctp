@@ -61,18 +61,6 @@
 					$('select.status:last').val('0');
 					$('button#save-button').click();
 				});
-                
-                $('div.warehouse-group , div.exhibition-group').on('keyup', 'input[type=number]', function(){
-                    var totalstock = 0;
-                    $('div.warehouse-group , div.exhibition-group').find('input[type=number]').each(function(){
-                        if( $.isNumeric( $(this).val() ) )
-                        {
-                            totalstock += parseInt( $(this).val() );
-                        }
-                    });
-                    
-                    $('span.total_stock').text(totalstock);
-                }).find('input[type=number]:first').trigger('keyup');
 			});
 		</script>
 		<p class="notes important" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>
@@ -174,11 +162,26 @@
 		?>		
 		<!-- END OF META ATTRIBUTES -->
 		
+		<script type="text/javascript">
+		    $(document).ready(function(){
+                $('div.warehouse-group , div.exhibition-group').on('keyup', 'input[type=number]', function(){
+                    var totalstock = 0;
+                    $('div.warehouse-group , div.exhibition-group').find('input[type=number]').each(function(){
+                        if( $.isNumeric( $(this).val() ) )
+                        {
+                            totalstock += parseInt( $(this).val() );
+                        }
+                    });
+                    
+                    $('span.total_stock').text(totalstock);
+                }).find('input[type=number]:first').trigger('keyup');
+            });
+		</script>
 		<div class="control-group">
             <label class="control-label">Total Stock</label>
             <div class="controls">
                 <div class="view-mode">
-                    <span class="total_stock">0</span> pcs
+                    <span class="total_stock"></span> pcs
                 </div>
             </div>
         </div>

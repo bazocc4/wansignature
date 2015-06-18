@@ -659,7 +659,7 @@ class GetHelper extends AppHelper
             $echothis = 'Rp.'.str_replace(',', '.', toMoney($result  , true , true) ).',-';
             $echothis .= '<input type="hidden" value="'.$result.'">';
         }
-        else if($shortkey == 'rate_value')
+        else if($shortkey == 'rate_value' || $shortkey == 'vendor_barcode')
         {
             $echothis = '<strong>'.toMoney($result  , true , true).'</strong>';
             $echothis .= '<input type="hidden" value="'.$result.'">';

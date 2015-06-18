@@ -71,6 +71,21 @@
                 {
                     $('input.hkd_rate').val('<?php echo $myParentEntry['EntryMeta']['hkd_rate']; ?>');
                 }
+                
+                // onkeyup Additional Charge ...
+                $('span.total_additional_charge').before('$');
+                $('span.unit_additional_charge').text('USD');
+                
+                $('input.additional_charge').keyup(function(){
+                    var diamond = parseFloat($('span.total_diamond input[type=hidden]').val());
+                    var result = ( $.isNumeric( $(this).val() ) ? diamond * parseFloat($(this).val()) / 100 : 0 );
+                    
+                    $('span.total_additional_charge').html(number_format(result,2)+'<input type="hidden" value="'+result+'">');
+                    
+                    // update amount too ...
+                    var amount = diamond + result;
+                    $('input.amount').val(amount.toFixed(2));
+                });
 			});
 		</script>
 		<p class="notes important" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>
@@ -255,6 +270,13 @@
 		
 		<!-- myTypeSlug is for media upload settings purpose !! -->
 		<input type="hidden" value="<?php echo (empty($myChildType)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>" id="myTypeSlug"/>
+		
+		<?php
+            // get vendor_x ...
+            $vendor_x = $this->Get->meta_details($myParentEntry['EntryMeta']['vendor'] , 'vendor');
+        ?>
+		<input type="hidden" id="vendor_x" value="<?php echo $vendor_x['EntryMeta']['capital_x']; ?>">
+		
 	<!-- SAVE BUTTON -->
 		<div class="control-action">
 			<!-- always use submit button to submit form -->

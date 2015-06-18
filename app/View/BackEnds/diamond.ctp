@@ -136,7 +136,34 @@
 				{
 					var targetID = $('input#query-alias').val() + ($('input#query-stream').length > 0?$('input#query-stream').val():'');
                     
-                    var richvalue = $(this).find("h5.title-code").text() + ' / ' + $(this).find('td.form-product_type h5').text();
+                    var richvalue = $(this).find("h5.title-code").text() + ' ' + $(this).find('td.form-product_type h5').text();
+                    
+                    if($('#myTypeSlug').val() == 'dv-payment')
+                    {
+                        var usd_result = '';
+                        
+                        var barcode = $(this).find('td.form-vendor_barcode').text();
+                        usd_result = parseInt($(this).find('td.form-vendor_barcode input[type=hidden]').val());
+                        
+                        var currency = $(this).find('td.form-vendor_currency').text();
+                        
+                        var vendor_x = $(this).find('td.form-vendor_x').text();
+                        if(vendor_x == '-')
+                        {
+                            vendor_x = ( $('#vendor_x').val()=='' ? 1 : $('#vendor_x').val() );
+                        }
+                        usd_result *= parseFloat(vendor_x);
+                        
+                        var vendor_rate = '';
+                        if(currency == 'HKD')
+                        {
+                            vendor_rate = ($.isNumeric($('input.hkd_rate').val())?$('input.hkd_rate').val():1);
+                            usd_result /= parseFloat(vendor_rate);                            
+                            vendor_rate = ' / '+vendor_rate;
+                        }
+                        
+                        richvalue += ' ['+barcode+' '+currency+' x '+vendor_x+vendor_rate+']';
+                    }
                     
                     $("input#"+targetID).val(richvalue).nextAll("input[type=hidden]").val( $(this).find("input[type=hidden].slug-code").val() );
 					$("input#"+targetID).change();
@@ -145,7 +172,8 @@
                     var $trytotal = $("input#"+targetID).nextAll('input[type=number]');
                     if($trytotal.length > 0)
                     {
-                        $trytotal.removeAttr('readonly').focus();
+                        $trytotal.removeAttr('readonly');
+                        $trytotal.val( usd_result.toFixed(2) ).keyup();
                     }
 
 					if(!e.isTrigger)    $.colorbox.close();

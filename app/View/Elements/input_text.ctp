@@ -101,7 +101,7 @@
 			}
             else if($shortkey == 'additional_charge' || $shortkey == 'prosentase_susut')
             {
-                echo '%';
+                echo '% <span style="color:red;">= <span class="total_'.$shortkey.'"></span> <span class="unit_'.$shortkey.'"></span></span>';
             }
             else if($shortkey == 'hkd_rate')
             {

@@ -71,6 +71,23 @@
                 {
                     $('input.gold_price').val('<?php echo $myParentEntry['EntryMeta']['gold_price']; ?>');
                 }
+                
+                // onkeyup Amount ...
+                $('input.amount').after(' GR');
+                $('input.amount').keyup(function(){
+                    var gold_price = $('input.gold_price').val();
+                    var result = $(this).val();
+                    
+                    if($.isNumeric(gold_price) && $.isNumeric(result))
+                    {
+                        result = parseFloat(result) * parseFloat(gold_price);
+                        $('span.rate_amount').html('= Rp. '+number_format(result)+',-');
+                    }
+                    else
+                    {
+                        $('span.rate_amount').html('');
+                    }
+                });
 			});
 		</script>
 		<p class="notes important" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>

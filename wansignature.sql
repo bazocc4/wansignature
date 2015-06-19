@@ -46,7 +46,7 @@ CREATE TABLE `cms_accounts` (
 
 LOCK TABLES `cms_accounts` WRITE;
 /*!40000 ALTER TABLE `cms_accounts` DISABLE KEYS */;
-INSERT INTO `cms_accounts` VALUES (1,1,1,'Admin Basuki','admin@yahoo.com','169e781bd52860b584879cbe117085da596238f3','2015-06-18 10:18:20','2013-01-04 00:00:00',1,'2014-05-05 15:15:38',1);
+INSERT INTO `cms_accounts` VALUES (1,1,1,'Admin Basuki','admin@yahoo.com','169e781bd52860b584879cbe117085da596238f3','2015-06-19 09:06:14','2013-01-04 00:00:00',1,'2014-05-05 15:15:38',1);
 INSERT INTO `cms_accounts` VALUES (2,2,2,'Andy Basuki','andybasuki88@gmail.com','d82dff1679e0137a0bab60cc67cc6a2ad36f10a0','2015-06-13 11:09:54','2015-06-02 20:19:53',1,'2015-06-02 20:19:53',1);
 /*!40000 ALTER TABLE `cms_accounts` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -76,7 +76,7 @@ CREATE TABLE `cms_entries` (
   `lang_code` varchar(10) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `slug` (`slug`)
-) ENGINE=MyISAM AUTO_INCREMENT=79 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=82 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -121,11 +121,11 @@ INSERT INTO `cms_entries` VALUES (35,'client','Cik Ninih','cik-ninih','G146957 ,
 INSERT INTO `cms_entries` VALUES (36,'client','Yuli','yuli','G542880, G5131033',0,0,1,0,'2015-06-05 13:49:10',1,'2015-06-05 13:49:10',1,36,'en-36');
 INSERT INTO `cms_entries` VALUES (37,'client','Sri Rahayu','sri-rahayu','G5131024',0,0,1,0,'2015-06-05 13:49:46',1,'2015-06-05 13:49:46',1,37,'en-37');
 INSERT INTO `cms_entries` VALUES (38,'client','Susan','susan','G1451362, G1452063, G1151941',0,0,1,0,'2015-06-05 13:51:21',1,'2015-06-05 13:51:21',1,38,'en-38');
-INSERT INTO `cms_entries` VALUES (39,'client','Michael','michael','G243940, G243905',0,0,1,0,'2015-06-05 13:51:45',1,'2015-06-05 13:51:45',1,39,'en-39');
-INSERT INTO `cms_entries` VALUES (43,'cor-jewelry','G123160','g123160','',0,0,1,0,'2015-06-06 16:32:20',1,'2015-06-12 23:48:36',1,43,'en-43');
+INSERT INTO `cms_entries` VALUES (39,'client','Michael','michael','G243940, G243905',0,0,1,0,'2015-06-05 13:51:45',1,'2015-06-19 17:29:27',1,39,'en-39');
+INSERT INTO `cms_entries` VALUES (43,'cor-jewelry','G123160','g123160','',0,0,1,0,'2015-06-06 16:32:20',1,'2015-06-19 12:00:58',1,43,'en-43');
 INSERT INTO `cms_entries` VALUES (41,'product-type','MADE IN ITALY','made-in-italy','',0,0,1,0,'2015-06-05 23:48:05',1,'2015-06-05 23:48:05',1,41,'en-41');
 INSERT INTO `cms_entries` VALUES (42,'product-type','MADE IN KOREA','made-in-korea','',0,0,1,0,'2015-06-05 23:48:27',1,'2015-06-08 16:01:29',1,42,'en-42');
-INSERT INTO `cms_entries` VALUES (44,'diamond','100773','100773','',0,0,1,0,'2015-06-06 16:33:08',1,'2015-06-18 11:25:26',1,44,'en-44');
+INSERT INTO `cms_entries` VALUES (44,'diamond','100773','100773','',0,0,1,0,'2015-06-06 16:33:08',1,'2015-06-19 15:11:58',1,44,'en-44');
 INSERT INTO `cms_entries` VALUES (45,'product-type','Earring','earring','',0,0,1,0,'2015-06-07 08:22:24',1,'2015-06-07 08:22:24',1,45,'en-45');
 INSERT INTO `cms_entries` VALUES (46,'product-type','Earring','earring-1','',0,0,1,0,'2015-06-07 08:22:40',1,'2015-06-07 08:22:40',1,46,'en-46');
 INSERT INTO `cms_entries` VALUES (47,'logistic','Baut Mur','baut-mur','',0,0,1,0,'2015-06-07 09:18:39',1,'2015-06-11 12:51:09',1,47,'en-47');
@@ -137,7 +137,7 @@ INSERT INTO `cms_entries` VALUES (54,'surat-jalan','wqwq','wqwqwqwqw','TEST WQWQ
 INSERT INTO `cms_entries` VALUES (55,'logistic','Souvenir X','souvenir-x','[contoh sample]',0,0,1,0,'2015-06-10 17:15:41',1,'2015-06-11 12:43:32',1,55,'en-55');
 INSERT INTO `cms_entries` VALUES (59,'surat-jalan','N123456','n123456','',0,0,0,0,'2015-06-12 00:16:59',1,'2015-06-12 00:16:59',1,59,'en-59');
 INSERT INTO `cms_entries` VALUES (60,'surat-jalan','SRJ005','srj001','SURAT JALAN DITERIMA\r\nTHANKS :)',0,0,1,0,'2015-06-12 13:34:45',1,'2015-06-12 16:27:27',1,60,'en-60');
-INSERT INTO `cms_entries` VALUES (61,'diamond','012115','012115','',0,0,1,0,'2015-06-12 14:32:34',1,'2015-06-18 13:50:08',1,61,'en-61');
+INSERT INTO `cms_entries` VALUES (61,'diamond','012115','012115','',0,0,1,0,'2015-06-12 14:32:34',1,'2015-06-19 17:27:17',1,61,'en-61');
 INSERT INTO `cms_entries` VALUES (64,'vendor','Front Sriwijaya','front-sriwijaya','Ancestor vendor.',0,0,1,0,'2015-06-12 16:42:22',1,'2015-06-12 16:42:22',1,64,'en-64');
 INSERT INTO `cms_entries` VALUES (65,'vendor','Elang Wijaya','elang-wijaya','',0,0,1,0,'2015-06-12 16:44:20',1,'2015-06-12 16:44:20',1,65,'en-65');
 INSERT INTO `cms_entries` VALUES (66,'dmd-client-invoice','INV / DMD / C001','inv-dmd-c001','',0,0,1,0,'2015-06-12 16:46:13',1,'2015-06-16 16:56:10',1,66,'en-66');
@@ -150,6 +150,8 @@ INSERT INTO `cms_entries` VALUES (75,'usd-rate','USD','usd','United States Dolla
 INSERT INTO `cms_entries` VALUES (76,'cv-payment','test payment CV','test-payment-cv','',0,69,1,0,'2015-06-15 16:56:24',1,'2015-06-15 16:56:24',1,76,'en-76');
 INSERT INTO `cms_entries` VALUES (77,'dmd-vendor-invoice','TEST 005','test-005','',0,0,1,0,'2015-06-16 13:09:08',1,'2015-06-16 13:48:35',1,77,'en-77');
 INSERT INTO `cms_entries` VALUES (78,'dv-payment','Test DV Payment V012','test-dv-payment-v012','',0,68,1,0,'2015-06-18 15:45:58',1,'2015-06-18 16:32:58',1,78,'en-78');
+INSERT INTO `cms_entries` VALUES (79,'product-type','Ring','ring','Ordinary Ring 999',0,0,1,0,'2015-06-19 11:23:19',1,'2015-06-19 11:23:19',1,79,'en-79');
+INSERT INTO `cms_entries` VALUES (80,'cor-jewelry','10003906','10003906','',0,0,1,0,'2015-06-19 11:23:52',1,'2015-06-19 12:00:29',1,80,'en-80');
 /*!40000 ALTER TABLE `cms_entries` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -166,7 +168,7 @@ CREATE TABLE `cms_entry_metas` (
   `key` varchar(500) NOT NULL,
   `value` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=605 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=676 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -289,11 +291,10 @@ INSERT INTO `cms_entry_metas` VALUES (171,38,'form-telepon','082330788899');
 INSERT INTO `cms_entry_metas` VALUES (172,38,'form-warehouse','');
 INSERT INTO `cms_entry_metas` VALUES (173,38,'form-exhibition','');
 INSERT INTO `cms_entry_metas` VALUES (174,39,'backup-slug','\nmichael\n');
-INSERT INTO `cms_entry_metas` VALUES (175,39,'form-kategori','End User');
-INSERT INTO `cms_entry_metas` VALUES (176,39,'form-alamat','Jl. Darmahusada indah 57 ');
-INSERT INTO `cms_entry_metas` VALUES (177,39,'form-telepon','081330568888');
-INSERT INTO `cms_entry_metas` VALUES (178,39,'form-warehouse','');
-INSERT INTO `cms_entry_metas` VALUES (179,39,'form-exhibition','');
+INSERT INTO `cms_entry_metas` VALUES (672,39,'form-telepon','081330568888');
+INSERT INTO `cms_entry_metas` VALUES (673,39,'form-warehouse','');
+INSERT INTO `cms_entry_metas` VALUES (674,39,'form-exhibition','');
+INSERT INTO `cms_entry_metas` VALUES (675,39,'form-diamond_sell_x','0.35');
 INSERT INTO `cms_entry_metas` VALUES (198,43,'backup-slug','\ng123160\n');
 INSERT INTO `cms_entry_metas` VALUES (193,20,'form-category','999 Simple (110%)');
 INSERT INTO `cms_entry_metas` VALUES (192,19,'form-category','999 3D (115%)');
@@ -304,8 +305,9 @@ INSERT INTO `cms_entry_metas` VALUES (194,41,'backup-slug','\nmade-in-italy\n');
 INSERT INTO `cms_entry_metas` VALUES (195,41,'form-category','Italy (125%)');
 INSERT INTO `cms_entry_metas` VALUES (196,42,'backup-slug','\nmade-in-korea\n');
 INSERT INTO `cms_entry_metas` VALUES (250,42,'form-category','Korea (100%)');
-INSERT INTO `cms_entry_metas` VALUES (444,43,'form-product_brand','bvlgari');
+INSERT INTO `cms_entry_metas` VALUES (620,43,'form-product_brand','bvlgari');
 INSERT INTO `cms_entry_metas` VALUES (201,44,'backup-slug','\n013093\n100773\n');
+INSERT INTO `cms_entry_metas` VALUES (638,44,'form-warehouse','tunjungan-plaza-wh');
 INSERT INTO `cms_entry_metas` VALUES (208,45,'backup-slug','\nearring\n');
 INSERT INTO `cms_entry_metas` VALUES (209,45,'form-category','999 3D (115%)');
 INSERT INTO `cms_entry_metas` VALUES (210,46,'backup-slug','\nearring-1\n');
@@ -378,14 +380,13 @@ INSERT INTO `cms_entry_metas` VALUES (344,60,'form-warehouse_origin','tunjungan-
 INSERT INTO `cms_entry_metas` VALUES (345,60,'form-diamond','100773');
 INSERT INTO `cms_entry_metas` VALUES (346,60,'form-cor_jewelry','g123160');
 INSERT INTO `cms_entry_metas` VALUES (347,60,'form-logistic','obeng_20');
-INSERT INTO `cms_entry_metas` VALUES (571,44,'form-vendor_currency','HKD');
-INSERT INTO `cms_entry_metas` VALUES (572,44,'form-vendor_barcode','1839');
+INSERT INTO `cms_entry_metas` VALUES (639,44,'form-vendor_currency','HKD');
 INSERT INTO `cms_entry_metas` VALUES (353,61,'backup-slug','\n012115\n');
-INSERT INTO `cms_entry_metas` VALUES (579,61,'form-vendor_currency','USD');
-INSERT INTO `cms_entry_metas` VALUES (578,61,'form-exhibition','jijf-2015-8th');
-INSERT INTO `cms_entry_metas` VALUES (577,61,'form-warehouse','tunjungan-plaza-wh');
-INSERT INTO `cms_entry_metas` VALUES (576,61,'form-product_status','consignment');
-INSERT INTO `cms_entry_metas` VALUES (575,61,'form-product_type','def');
+INSERT INTO `cms_entry_metas` VALUES (658,61,'form-exhibition','jijf-2015-8th');
+INSERT INTO `cms_entry_metas` VALUES (659,61,'form-vendor_currency','USD');
+INSERT INTO `cms_entry_metas` VALUES (660,61,'form-vendor_barcode','22460');
+INSERT INTO `cms_entry_metas` VALUES (661,61,'form-vendor_x','0.32');
+INSERT INTO `cms_entry_metas` VALUES (662,61,'form-report_type','SR');
 INSERT INTO `cms_entry_metas` VALUES (375,64,'form-kode_vendor','FR SWI');
 INSERT INTO `cms_entry_metas` VALUES (376,64,'form-alamat','Jl. Sriwijaya Utara 50\r\nSurabaya, Indonesia');
 INSERT INTO `cms_entry_metas` VALUES (377,64,'form-telepon','031 123 456');
@@ -415,10 +416,9 @@ INSERT INTO `cms_entry_metas` VALUES (403,69,'backup-slug','\ninv-cor-c021\n');
 INSERT INTO `cms_entry_metas` VALUES (404,69,'form-date','06/12/2015');
 INSERT INTO `cms_entry_metas` VALUES (405,69,'form-vendor','front-sriwijaya');
 INSERT INTO `cms_entry_metas` VALUES (406,69,'form-warehouse','tunjungan-plaza-wh');
-INSERT INTO `cms_entry_metas` VALUES (443,43,'form-product_type','made-in-italy');
-INSERT INTO `cms_entry_metas` VALUES (570,44,'form-warehouse','tunjungan-plaza-wh');
-INSERT INTO `cms_entry_metas` VALUES (445,43,'form-warehouse','tunjungan-plaza-wh');
-INSERT INTO `cms_entry_metas` VALUES (446,43,'form-product_status','STOCK');
+INSERT INTO `cms_entry_metas` VALUES (621,43,'form-item_weight','4.41');
+INSERT INTO `cms_entry_metas` VALUES (640,44,'form-vendor_barcode','1839');
+INSERT INTO `cms_entry_metas` VALUES (619,43,'form-product_type','made-in-italy');
 INSERT INTO `cms_entry_metas` VALUES (460,73,'form-warehouse_origin','tunjungan-plaza-wh');
 INSERT INTO `cms_entry_metas` VALUES (459,73,'form-client','michael');
 INSERT INTO `cms_entry_metas` VALUES (458,73,'form-dmd_client_invoice','inv-dmd-c001');
@@ -464,13 +464,11 @@ INSERT INTO `cms_entry_metas` VALUES (543,68,'form-hkd_rate','7.25');
 INSERT INTO `cms_entry_metas` VALUES (548,66,'form-exhibition','jijf-2015-8th');
 INSERT INTO `cms_entry_metas` VALUES (549,66,'form-rp_rate','13250');
 INSERT INTO `cms_entry_metas` VALUES (555,67,'form-gold_price','501500');
-INSERT INTO `cms_entry_metas` VALUES (573,44,'form-vendor_x','0.230');
-INSERT INTO `cms_entry_metas` VALUES (569,44,'form-product_status','STOCK');
-INSERT INTO `cms_entry_metas` VALUES (568,44,'form-product_type','dpf');
-INSERT INTO `cms_entry_metas` VALUES (574,44,'form-report_type','SR');
-INSERT INTO `cms_entry_metas` VALUES (580,61,'form-vendor_barcode','22460');
-INSERT INTO `cms_entry_metas` VALUES (581,61,'form-vendor_x','0.32');
-INSERT INTO `cms_entry_metas` VALUES (582,61,'form-report_type','SR');
+INSERT INTO `cms_entry_metas` VALUES (636,44,'form-barcode','1962');
+INSERT INTO `cms_entry_metas` VALUES (637,44,'form-product_status','STOCK');
+INSERT INTO `cms_entry_metas` VALUES (635,44,'form-product_type','dpf');
+INSERT INTO `cms_entry_metas` VALUES (657,61,'form-warehouse','tunjungan-plaza-wh');
+INSERT INTO `cms_entry_metas` VALUES (656,61,'form-product_status','consignment');
 INSERT INTO `cms_entry_metas` VALUES (583,68,'count-dv-payment','1');
 INSERT INTO `cms_entry_metas` VALUES (584,78,'backup-slug','\ntest-dv-payment-v012\n');
 INSERT INTO `cms_entry_metas` VALUES (602,78,'form-additional_charge','5.7');
@@ -480,6 +478,25 @@ INSERT INTO `cms_entry_metas` VALUES (601,78,'form-diamond','012115_7187.20|1007
 INSERT INTO `cms_entry_metas` VALUES (600,78,'form-hkd_rate','7.25');
 INSERT INTO `cms_entry_metas` VALUES (599,78,'form-type','Cash');
 INSERT INTO `cms_entry_metas` VALUES (598,78,'form-date','06/18/2015');
+INSERT INTO `cms_entry_metas` VALUES (605,79,'backup-slug','\nring\n');
+INSERT INTO `cms_entry_metas` VALUES (606,79,'form-category','999 Simple (110%)');
+INSERT INTO `cms_entry_metas` VALUES (607,80,'backup-slug','\n10003906\n');
+INSERT INTO `cms_entry_metas` VALUES (616,80,'form-vendor_x','110');
+INSERT INTO `cms_entry_metas` VALUES (615,80,'form-item_weight','3.47');
+INSERT INTO `cms_entry_metas` VALUES (614,80,'form-product_brand','van-cleef');
+INSERT INTO `cms_entry_metas` VALUES (613,80,'form-product_type','ring');
+INSERT INTO `cms_entry_metas` VALUES (617,80,'form-warehouse','atom-wh');
+INSERT INTO `cms_entry_metas` VALUES (618,80,'form-product_status','STOCK');
+INSERT INTO `cms_entry_metas` VALUES (622,43,'form-warehouse','tunjungan-plaza-wh');
+INSERT INTO `cms_entry_metas` VALUES (623,43,'form-product_status','STOCK');
+INSERT INTO `cms_entry_metas` VALUES (663,61,'form-client_x','0.29');
+INSERT INTO `cms_entry_metas` VALUES (641,44,'form-vendor_x','0.230');
+INSERT INTO `cms_entry_metas` VALUES (642,44,'form-report_type','SR');
+INSERT INTO `cms_entry_metas` VALUES (655,61,'form-sell_barcode','24784.04');
+INSERT INTO `cms_entry_metas` VALUES (654,61,'form-barcode','23957');
+INSERT INTO `cms_entry_metas` VALUES (653,61,'form-product_type','def');
+INSERT INTO `cms_entry_metas` VALUES (671,39,'form-alamat','Jl. Darmahusada indah 57 ');
+INSERT INTO `cms_entry_metas` VALUES (670,39,'form-kategori','End User');
 /*!40000 ALTER TABLE `cms_entry_metas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -573,7 +590,7 @@ CREATE TABLE `cms_type_metas` (
   `validation` text,
   `instruction` varchar(300) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1067 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1088 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -667,7 +684,6 @@ INSERT INTO `cms_type_metas` VALUES (834,17,'form-gold_price','','text','is_nume
 INSERT INTO `cms_type_metas` VALUES (835,17,'form-payment_ct_ld','','text','','Payment from client using CT (local material) & LD.');
 INSERT INTO `cms_type_metas` VALUES (836,17,'form-payment_rosok','','text','','Payment from client using rosok item.');
 INSERT INTO `cms_type_metas` VALUES (837,17,'form-payment_checks','','text','','Payment from client using bank checks.');
-INSERT INTO `cms_type_metas` VALUES (904,14,'form-wholesaler_x','','text','is_numeric|','Client wholesaler sell X value.');
 INSERT INTO `cms_type_metas` VALUES (905,14,'form-total_sold_price','','text','','Total sold price to client in USD.');
 INSERT INTO `cms_type_metas` VALUES (906,14,'form-sold_price_usd','','text','','Sold price paid in USD.');
 INSERT INTO `cms_type_metas` VALUES (907,14,'form-sold_price_rp','','text','is_numeric|','Sold price paid in IDR.');
@@ -723,19 +739,18 @@ INSERT INTO `cms_type_metas` VALUES (1013,22,'form-total_pcs','','text','is_nume
 INSERT INTO `cms_type_metas` VALUES (1014,22,'form-total_item_sent','','text','is_numeric|','Jumlah produk yang sudah terkirim (pcs).');
 INSERT INTO `cms_type_metas` VALUES (1015,22,'form-rp_rate','','text','is_numeric|not_empty|','IDR rate to $1 USD.');
 INSERT INTO `cms_type_metas` VALUES (1016,22,'form-disc_adjustment','','text','is_numeric|','Special discount adjustment for this invoice (USD).');
-INSERT INTO `cms_type_metas` VALUES (1017,22,'form-grand_total_price','','text','is_numeric|','Seluruh total harga penjualan produk diamond (USD).');
-INSERT INTO `cms_type_metas` VALUES (1005,20,'form-grand_total_price','','text','is_numeric|','Seluruh total harga pembelian produk diamond (USD).');
+INSERT INTO `cms_type_metas` VALUES (1017,22,'form-total_price','','text','is_numeric|','Seluruh total harga penjualan produk diamond (USD).');
+INSERT INTO `cms_type_metas` VALUES (1005,20,'form-total_price','','text','is_numeric|','Seluruh total harga pembelian produk diamond (USD).');
 INSERT INTO `cms_type_metas` VALUES (705,21,'form-date','','datepicker','not_empty|','Issued invoice date.');
 INSERT INTO `cms_type_metas` VALUES (1010,22,'form-sale_venue','Warehouse\r\nExhibition','radio','not_empty|','Apakah penjualan terjadi dari warehouse atau exhibition (pameran).');
 INSERT INTO `cms_type_metas` VALUES (1009,22,'form-wholesaler','','browse','','The wholesaler of selected client.');
 INSERT INTO `cms_type_metas` VALUES (626,23,'category','invoice',NULL,NULL,NULL);
 INSERT INTO `cms_type_metas` VALUES (627,23,'title_key','Invoice Code',NULL,NULL,NULL);
-INSERT INTO `cms_type_metas` VALUES (1023,23,'form-sale_venue','Warehouse\r\nExhibition','radio','not_empty|','Apakah penjualan terjadi dari warehouse atau exhibition (pameran).');
-INSERT INTO `cms_type_metas` VALUES (1024,23,'form-warehouse','','browse','','Gudang tempat pengiriman produk cor kepada client.');
-INSERT INTO `cms_type_metas` VALUES (1025,23,'form-exhibition','','browse','','Tempat pameran di mana produk terjual.');
-INSERT INTO `cms_type_metas` VALUES (1026,23,'form-total_pcs','','text','is_numeric|','Total pcs of jewelries sold.');
-INSERT INTO `cms_type_metas` VALUES (1027,23,'form-total_item_sent','','text','is_numeric|','Jumlah produk yang sudah terkirim (pcs).');
-INSERT INTO `cms_type_metas` VALUES (1028,23,'form-gold_price','','text','is_numeric|not_empty|','Current gold price per Gram (IDR).');
+INSERT INTO `cms_type_metas` VALUES (1081,23,'form-x_110','','text','is_numeric|','<strong>X 110</strong> factor (999 SIMPLE).');
+INSERT INTO `cms_type_metas` VALUES (1082,23,'form-sold_115','','text','is_numeric|','Weight of <strong>SOLD 115</strong> (gram).');
+INSERT INTO `cms_type_metas` VALUES (1080,23,'form-sold_110','','text','is_numeric|','Weight of <strong>SOLD 110</strong> (gram).');
+INSERT INTO `cms_type_metas` VALUES (1079,23,'form-x_100','','text','is_numeric|','<strong>X 100</strong> factor (KOREA).');
+INSERT INTO `cms_type_metas` VALUES (1078,23,'form-sold_100','','text','is_numeric|','Weight of <strong>SOLD 100</strong> (gram).');
 INSERT INTO `cms_type_metas` VALUES (817,17,'form-stock_date','','datepicker','','Kapan terakhir produk ini masuk ke WH sbg ready stock.');
 INSERT INTO `cms_type_metas` VALUES (816,17,'form-warehouse','','browse','','Gudang di mana produk tersimpan.');
 INSERT INTO `cms_type_metas` VALUES (815,17,'form-vendor_gr','','text','','Total weight of jewelries purchased on this vendor invoice.');
@@ -744,20 +759,17 @@ INSERT INTO `cms_type_metas` VALUES (813,17,'form-vendor_x','','text','is_numeri
 INSERT INTO `cms_type_metas` VALUES (812,17,'form-vendor','','browse','','Pihak vendor yang menyediakan produk ini.');
 INSERT INTO `cms_type_metas` VALUES (811,17,'form-vendor_invoice_code','','text','','Kode invoice dari pihak vendor.');
 INSERT INTO `cms_type_metas` VALUES (810,17,'form-item_size','','text','is_numeric|','Ukuran produk cor.');
-INSERT INTO `cms_type_metas` VALUES (809,17,'form-item_weight','','text','is_numeric|','Berat produk cor dalam satuan <strong>gram</strong>.');
+INSERT INTO `cms_type_metas` VALUES (809,17,'form-item_weight','','text','is_numeric|not_empty|','Berat produk cor dalam satuan <strong>gram</strong>.');
 INSERT INTO `cms_type_metas` VALUES (808,17,'form-product_brand','','browse','','Merk produk cor.');
 INSERT INTO `cms_type_metas` VALUES (807,17,'form-product_type','','browse','','Tipe produk cor.');
-INSERT INTO `cms_type_metas` VALUES (1029,23,'form-sold_125','','text','is_numeric|','Weight of <strong>SOLD 125</strong> (gram).');
-INSERT INTO `cms_type_metas` VALUES (1030,23,'form-x_125','','text','is_numeric|','<strong>X 125</strong> factor (ITALY).');
-INSERT INTO `cms_type_metas` VALUES (1031,23,'form-sold_100','','text','is_numeric|','Weight of <strong>SOLD 100</strong> (gram).');
-INSERT INTO `cms_type_metas` VALUES (1032,23,'form-x_100','','text','is_numeric|','<strong>X 100</strong> factor (KOREA).');
-INSERT INTO `cms_type_metas` VALUES (1033,23,'form-sold_110','','text','is_numeric|','Weight of <strong>SOLD 110</strong> (gram).');
-INSERT INTO `cms_type_metas` VALUES (1034,23,'form-x_110','','text','is_numeric|','<strong>X 110</strong> factor (999 SIMPLE).');
-INSERT INTO `cms_type_metas` VALUES (1035,23,'form-sold_115','','text','is_numeric|','Weight of <strong>SOLD 115</strong> (gram).');
-INSERT INTO `cms_type_metas` VALUES (1036,23,'form-x_115','','text','is_numeric|','<strong>X 115</strong> factor (999 3D).');
-INSERT INTO `cms_type_metas` VALUES (1037,23,'form-disc_adjustment','','text','is_numeric|','Special discount adjustment for this invoice (gram).');
-INSERT INTO `cms_type_metas` VALUES (1022,23,'form-wholesaler','','browse','','The wholesaler of selected client.');
-INSERT INTO `cms_type_metas` VALUES (1020,23,'form-date','','datepicker','not_empty|','Issued invoice date.');
+INSERT INTO `cms_type_metas` VALUES (1077,23,'form-x_125','','text','is_numeric|','<strong>X 125</strong> factor (ITALY).');
+INSERT INTO `cms_type_metas` VALUES (1076,23,'form-sold_125','','text','is_numeric|','Weight of <strong>SOLD 125</strong> (gram).');
+INSERT INTO `cms_type_metas` VALUES (1075,23,'form-gold_price','','text','is_numeric|not_empty|','Current gold price per Gram (IDR).');
+INSERT INTO `cms_type_metas` VALUES (1074,23,'form-total_item_sent','','text','is_numeric|','Jumlah produk yang sudah terkirim (pcs).');
+INSERT INTO `cms_type_metas` VALUES (1073,23,'form-total_pcs','','text','is_numeric|','Total pcs of jewelries sold.');
+INSERT INTO `cms_type_metas` VALUES (1072,23,'form-exhibition','','browse','','Tempat pameran di mana produk terjual.');
+INSERT INTO `cms_type_metas` VALUES (1070,23,'form-sale_venue','Warehouse\r\nExhibition','radio','not_empty|','Apakah penjualan terjadi dari warehouse atau exhibition (pameran).');
+INSERT INTO `cms_type_metas` VALUES (1071,23,'form-warehouse','','browse','','Gudang tempat pengiriman produk cor kepada client.');
 INSERT INTO `cms_type_metas` VALUES (1007,22,'form-date','','datepicker','not_empty|','Issued invoice date.');
 INSERT INTO `cms_type_metas` VALUES (875,14,'form-carat_2','','text','','Kadar carat DIAMOND pada produk ini.');
 INSERT INTO `cms_type_metas` VALUES (874,14,'form-carat_1','','text','','Kadar carat DIAMOND pada produk ini.');
@@ -765,8 +777,8 @@ INSERT INTO `cms_type_metas` VALUES (873,14,'form-exhibition','','browse','','Ex
 INSERT INTO `cms_type_metas` VALUES (871,14,'form-warehouse','','browse','','Gudang di mana produk tersimpan.');
 INSERT INTO `cms_type_metas` VALUES (872,14,'form-stock_date','','datepicker','','Kapan terakhir produk ini masuk ke WH sbg ready stock.');
 INSERT INTO `cms_type_metas` VALUES (870,14,'form-product_status','','text','','Current product status (Stock / Sold / Consignment / Return / Changed / etc.)');
-INSERT INTO `cms_type_metas` VALUES (869,14,'form-sell_barcode','','text','is_numeric|','Adjusted product price tag.');
-INSERT INTO `cms_type_metas` VALUES (868,14,'form-barcode','','text','is_numeric|','Product price tag.');
+INSERT INTO `cms_type_metas` VALUES (869,14,'form-sell_barcode','','text','is_numeric|','Adjusted product price tag (USD).');
+INSERT INTO `cms_type_metas` VALUES (868,14,'form-barcode','','text','is_numeric|not_empty|','Product price tag (USD).');
 INSERT INTO `cms_type_metas` VALUES (867,14,'form-product_type','','browse','','Tipe produk berlian.');
 INSERT INTO `cms_type_metas` VALUES (842,17,'form-payment_balance','','text','','Total payment balance on this client invoice.');
 INSERT INTO `cms_type_metas` VALUES (843,17,'form-transaction_history','','textarea','','');
@@ -818,7 +830,7 @@ INSERT INTO `cms_type_metas` VALUES (983,28,'title_key','Keterangan',NULL,NULL,N
 INSERT INTO `cms_type_metas` VALUES (984,28,'form-date','','datepicker','not_empty|','Transaction date.');
 INSERT INTO `cms_type_metas` VALUES (985,28,'form-type','Cash\r\nCT LD\r\nRosok\r\nChecks\r\nCredit Card\r\nReturn Goods','dropdown','not_empty|','Type of payment.');
 INSERT INTO `cms_type_metas` VALUES (986,28,'form-cor_jewelry','','multibrowse','','Paid cor jewelry product (with price result in gram weight).');
-INSERT INTO `cms_type_metas` VALUES (987,28,'form-prosentase_susut','','text','is_numeric|','Nilai prosentase susut dari produk cor yang dibayarkan.');
+INSERT INTO `cms_type_metas` VALUES (987,28,'form-gold_loss','','text','is_numeric|','Nilai prosentase susut dari produk cor yang dibayarkan.');
 INSERT INTO `cms_type_metas` VALUES (988,28,'form-cost_currency','','browse','','Cost currency from vendor side.');
 INSERT INTO `cms_type_metas` VALUES (989,28,'form-gold_bar_rate','','text','is_numeric|','Selected cost currency rate value per 1 gram Gold Bar.');
 INSERT INTO `cms_type_metas` VALUES (990,28,'form-additional_cost','','text','is_numeric|','Tambahan ongkos yang dibebankan dari vendor dalam satuan currency terpilih (ongkos kerja, pasang, dll).');
@@ -830,11 +842,11 @@ INSERT INTO `cms_type_metas` VALUES (995,28,'form-bank','','browse','','Used ban
 INSERT INTO `cms_type_metas` VALUES (996,28,'form-checks_status','Cek Lunas\r\nCek Titip','radio','','NB: Just for payment using checks.');
 INSERT INTO `cms_type_metas` VALUES (997,28,'form-checks_date','','datepicker','','When due date of this checks.<br>NB: Just for payment using checks.');
 INSERT INTO `cms_type_metas` VALUES (1006,20,'form-payment_balance','','text','is_numeric|','Current payment balance to vendor (USD).');
-INSERT INTO `cms_type_metas` VALUES (1021,23,'form-client','','browse','not_empty|','');
 INSERT INTO `cms_type_metas` VALUES (1018,22,'form-payment_balance','','text','is_numeric|','Current payment balance from client (USD).');
 INSERT INTO `cms_type_metas` VALUES (1019,22,'form-additional_cost','','text','is_numeric|','Total additional cost for this invoice (USD).');
-INSERT INTO `cms_type_metas` VALUES (1038,23,'form-payment_balance','','text','is_numeric|','Current payment balance from client (gram).');
-INSERT INTO `cms_type_metas` VALUES (1039,23,'form-additional_cost','','text','is_numeric|','Total additional cost for this invoice (gram).');
+INSERT INTO `cms_type_metas` VALUES (1068,23,'form-client','','browse','not_empty|','');
+INSERT INTO `cms_type_metas` VALUES (1069,23,'form-wholesaler','','browse','','The wholesaler of selected client.');
+INSERT INTO `cms_type_metas` VALUES (1067,23,'form-date','','datepicker','not_empty|','Issued invoice date.');
 INSERT INTO `cms_type_metas` VALUES (1040,29,'category','invoice',NULL,NULL,NULL);
 INSERT INTO `cms_type_metas` VALUES (1041,29,'title_key','Keterangan',NULL,NULL,NULL);
 INSERT INTO `cms_type_metas` VALUES (1042,29,'form-date','','datepicker','not_empty|','Transaction date.');
@@ -862,6 +874,11 @@ INSERT INTO `cms_type_metas` VALUES (1063,30,'form-amount','','text','not_empty|
 INSERT INTO `cms_type_metas` VALUES (1064,30,'form-bank','','browse','','Used bank for this transaction.');
 INSERT INTO `cms_type_metas` VALUES (1065,30,'form-checks_status','Cek Lunas\r\nCek Titip','radio','','NB: Just for payment using checks.');
 INSERT INTO `cms_type_metas` VALUES (1066,30,'form-checks_date','','datepicker','','When due date of this checks.<br>NB: Just for payment using checks.');
+INSERT INTO `cms_type_metas` VALUES (1083,23,'form-x_115','','text','is_numeric|','<strong>X 115</strong> factor (999 3D).');
+INSERT INTO `cms_type_metas` VALUES (1084,23,'form-disc_adjustment','','text','is_numeric|','Special discount adjustment for this invoice (gram).');
+INSERT INTO `cms_type_metas` VALUES (1085,23,'form-total_weight','','text','is_numeric|','Total weight of jewelries sold (gram).');
+INSERT INTO `cms_type_metas` VALUES (1086,23,'form-payment_balance','','text','is_numeric|','Current payment balance from client (gram).');
+INSERT INTO `cms_type_metas` VALUES (1087,23,'form-additional_cost','','text','is_numeric|','Total additional cost for this invoice (gram).');
 /*!40000 ALTER TABLE `cms_type_metas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -913,7 +930,7 @@ INSERT INTO `cms_types` VALUES (18,'Logistic','logistic','Barang-barang pelengka
 INSERT INTO `cms_types` VALUES (20,'Dmd Vendor Invoice','dmd-vendor-invoice','Surat pemesanan produk diamond terhadap vendor.',0,1,'2015-06-07 12:50:45',1,'2015-06-16 12:55:48',1);
 INSERT INTO `cms_types` VALUES (21,'Cor Vendor Invoice','cor-vendor-invoice','Surat pemesanan produk cor terhadap vendor.',0,1,'2015-06-07 14:19:23',1,'2015-06-15 12:20:04',1);
 INSERT INTO `cms_types` VALUES (22,'Dmd Client Invoice','dmd-client-invoice','Dokumen invoice penjualan produk diamond terhadap client.',0,1,'2015-06-07 14:34:39',1,'2015-06-16 16:49:43',1);
-INSERT INTO `cms_types` VALUES (23,'Cor Client Invoice','cor-client-invoice','Dokumen invoice penjualan produk cor terhadap client.',0,1,'2015-06-09 13:30:14',1,'2015-06-16 22:30:29',1);
+INSERT INTO `cms_types` VALUES (23,'Cor Client Invoice','cor-client-invoice','Dokumen invoice penjualan produk cor terhadap client.',0,1,'2015-06-09 13:30:14',1,'2015-06-19 14:57:02',1);
 INSERT INTO `cms_types` VALUES (24,'Surat Jalan','surat-jalan','Dokumen tanda bukti pengiriman barang, baik terhadap client (penjualan), vendor (return), maupun perpindahan antar warehouse / exhibition.',0,0,'2015-06-09 23:46:04',1,'2015-06-09 23:46:04',1);
 INSERT INTO `cms_types` VALUES (27,'DV Payment','dv-payment','Rekening Koran untuk transaksi pembayaran invoice terpilih.',20,0,'2015-06-14 13:23:23',1,'2015-06-15 11:43:42',1);
 INSERT INTO `cms_types` VALUES (28,'CV Payment','cv-payment','Rekening Koran untuk transaksi pembayaran invoice terpilih.',21,0,'2015-06-15 12:20:04',1,'2015-06-15 12:20:04',1);
@@ -1006,4 +1023,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-18 16:42:44
+-- Dump completed on 2015-06-19 17:40:20

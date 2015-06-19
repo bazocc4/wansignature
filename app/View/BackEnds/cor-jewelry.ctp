@@ -145,7 +145,8 @@
                     var $trytotal = $("input#"+targetID).nextAll('input[type=number]');
                     if($trytotal.length > 0)
                     {
-                        $trytotal.removeAttr('readonly').focus();
+                        $trytotal.removeAttr('readonly');
+                        $trytotal.val( parseFloat($(this).find('td.form-item_weight').text()) ).keyup();
                     }
 
 					if(!e.isTrigger)    $.colorbox.close();

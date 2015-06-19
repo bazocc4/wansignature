@@ -66,6 +66,35 @@
 					$('button#save-button').click();
 				});
                 
+                // onkeyup Additional Charge ...
+                $('span.unit_additional_charge').text('gram');
+                $('input.additional_charge').keyup(function(){
+                    
+                    var source = parseFloat($('span.total_cor_jewelry input[type=hidden]').val()) + parseFloat($('span.total_gold_loss input[type=hidden]').val());
+                    if($('span.additional_cost_gram').length > 0)
+                    {
+                        source += parseFloat( $('span.additional_cost_gram').text() );
+                    }
+                    
+                    var result = ( $.isNumeric( $(this).val() ) ? source * parseFloat($(this).val()) / 100 : 0 );
+                    $('span.total_additional_charge').html(number_format(result,2)+'<input type="hidden" value="'+result+'">');
+                    
+                    var barter = parseFloat($('span.total_payment_jewelry input[type=hidden]').val());
+                    
+                    // update amount too ...
+                    var amount = source + result - barter;
+                    if(amount < 0)
+                    {
+                        $('input.statement[value=Credit]').attr('checked', true);
+                        amount *= -1;
+                    }
+                    else
+                    {
+                        $('input.statement[value=Debit]').attr('checked', true);
+                    }
+                    $('input.amount').val(amount.toFixed(2));
+                });
+                
                 // trigger keyup on some element ...
                 $('input.additional_cost').keyup(function(){
                     var ratevalue = $('input.gold_bar_rate').val();
@@ -73,7 +102,7 @@
                     
                     if($.isNumeric(value) && $.isNumeric(ratevalue))
                     {
-                        var result = (parseFloat(value) / parseFloat(ratevalue)).toFixed(3);
+                        var result = (parseFloat(value) / parseFloat(ratevalue)).toFixed(2);
                         
                         $('span.result_rate').html('= <span class="additional_cost_gram">'+result+'</span> gram Gold Bar.');
                     }
@@ -81,10 +110,25 @@
                     {
                         $('span.result_rate').html('');
                     }
+                    
+                    // trigger additional_charge too ...
+                    $('input.additional_charge').keyup();
+                    
                 }).trigger('keyup');
                 
                 $('input.gold_bar_rate').keyup(function(){
                     $('input.additional_cost').keyup();
+                });
+                
+                // onkeyup Gold Loss ...
+                $('span.unit_gold_loss').text('gram');
+                $('input.gold_loss').keyup(function(){
+                    var cor = parseFloat($('span.total_cor_jewelry input[type=hidden]').val());
+                    var result = ( $.isNumeric( $(this).val() ) ? cor * parseFloat($(this).val()) / 100 : 0 );
+                    $('span.total_gold_loss').html(number_format(result,2)+'<input type="hidden" value="'+result+'">');
+                    
+                    // trigger additional_charge too ...
+                    $('input.additional_charge').keyup();
                 });
 			});
 		</script>

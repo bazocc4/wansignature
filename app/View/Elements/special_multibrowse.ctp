@@ -1,8 +1,19 @@
 <?php
 	if(is_array($data)) extract($data , EXTR_SKIP);
 	$shortkey = substr($key, 5 );
-	$var_stream = $shortkey.'_stream';	
-	$browse_slug = get_slug($shortkey);
+	$var_stream = $shortkey.'_stream';
+
+    $browse_slug = '';
+    $browse_alias = get_slug($shortkey);
+    // CUSTOM BROWSE SLUG ...
+    if($shortkey == 'payment_jewelry')
+    {
+        $browse_slug = 'cor-jewelry';
+    }
+    else
+    {
+        $browse_slug = $browse_alias;
+    }
 
     // unit of additional number ...
     $unit = '';
@@ -31,9 +42,15 @@
 	<label class="control-label" <?php echo (strpos(strtolower($validation), 'not_empty') !== FALSE && !$view_mode?'style="color: red;"':''); ?>>
         <?php echo string_unslug($shortkey); ?>
     </label>
-	<div class="controls <?php echo $browse_slug; ?>-group">
+	<div class="controls <?php echo $browse_alias; ?>-group">
 		<?php
 			$raw_stream = 1;
+            $popupExtensions = array('popup'=>'init');
+
+            if($browse_alias != $browse_slug)
+            {
+                $popupExtensions['alias'] = $browse_alias;
+            }
 			
 			// Check data POST first !!
 			if(!empty($_POST['data'][$model][$counter]['value']) && !$view_mode)
@@ -42,12 +59,13 @@
 				{
 					if(!empty($metavalue))
 					{
-						echo '<div class="row-fluid '.$browse_slug.'-detail bottom-spacer">';					
-						echo '<input REQUIRED id="'.$browse_slug.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$_POST['data'][$model][$counter]['temp'][$metakey].'" readonly="true"/>';
+						echo '<div class="row-fluid '.$browse_alias.'-detail bottom-spacer">';					
+						echo '<input REQUIRED id="'.$browse_alias.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$_POST['data'][$model][$counter]['temp'][$metakey].'" readonly="true"/>';
                         
                         echo '&nbsp;<input REQUIRED type="number" '.$unit_step_min.' class="'.$unit_size.'" placeholder="'.$unit.'" name="data['.$model.']['.$counter.'][total][]" value="'.$_POST['data'][$model][$counter]['total'][$metakey].'">';
                         
-						echo '&nbsp;'.$this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>array('popup'=>'init', 'stream'=>$raw_stream)),array('class'=>'btn btn-info get-from-table'));
+						$popupExtensions['stream'] = $raw_stream;
+                        echo '&nbsp;'.$this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>$popupExtensions),array('class'=>'btn btn-info get-from-table'));
 	                    echo '<input class="'.$shortkey.'" type="hidden" name="data['.$model.']['.$counter.'][value][]" value="'.$metavalue.'"/>';
 	                    echo '&nbsp;<a class="btn btn-danger del-raw" href="javascript:void(0)"><i class="icon-trash icon-white"></i></a>';					
 						echo '</div>';
@@ -83,7 +101,7 @@
                             }
                         }
                         
-						echo '<div class="row-fluid '.$browse_slug.'-detail '.($view_mode?'':'bottom-spacer').'">';
+						echo '<div class="row-fluid '.$browse_alias.'-detail '.($view_mode?'':'bottom-spacer').'">';
                         
                         if($view_mode)
                         {
@@ -109,10 +127,11 @@
                 $richvalue = $metaDetails['Entry']['title'];
             }
 
-            echo '<input REQUIRED id="'.$browse_slug.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$richvalue.'" readonly="true"/>';
+            echo '<input REQUIRED id="'.$browse_alias.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$richvalue.'" readonly="true"/>';
             echo '&nbsp;<input REQUIRED type="number" '.$unit_step_min.' class="'.$unit_size.'" placeholder="'.$unit.'" name="data['.$model.']['.$counter.'][total][]" value="'.$metatotal.'">';
 
-            echo '&nbsp;'.$this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>array('popup'=>'init', 'stream'=>$raw_stream)),array('class'=>'btn btn-info get-from-table'));
+            $popupExtensions['stream'] = $raw_stream;
+            echo '&nbsp;'.$this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>$popupExtensions),array('class'=>'btn btn-info get-from-table'));
             echo '<input class="'.$shortkey.'" type="hidden" name="data['.$model.']['.$counter.'][value][]" value="'.$metaDetails['Entry']['slug'].'"/>';
             echo '&nbsp;<a class="btn btn-danger del-raw" href="javascript:void(0)"><i class="icon-trash icon-white"></i></a>';
         ?>
@@ -164,9 +183,9 @@
 var <?php echo $var_stream; ?> = <?php echo $raw_stream; ?>;
 
 $(document).ready(function(){
-    $('div.<?php echo $browse_slug; ?>-group').closest('div.control-group').find('a.add-raw').click(function(){
-        var content = '<div class="row-fluid <?php echo $browse_slug; ?>-detail bottom-spacer">';            
-        content += '<input REQUIRED id="<?php echo $browse_slug; ?>'+<?php echo $var_stream; ?>+'" class="input-xlarge" type="text" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][temp][]" readonly="true"/>';
+    $('div.<?php echo $browse_alias; ?>-group').closest('div.control-group').find('a.add-raw').click(function(){
+        var content = '<div class="row-fluid <?php echo $browse_alias; ?>-detail bottom-spacer">';            
+        content += '<input REQUIRED id="<?php echo $browse_alias; ?>'+<?php echo $var_stream; ?>+'" class="input-xlarge" type="text" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][temp][]" readonly="true"/>';
 
         content += '&nbsp;<input REQUIRED type="number" <?php echo $unit_step_min; ?> class="<?php echo $unit_size; ?>" placeholder="<?php echo $unit; ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][total][]" readonly="true"/>';
 
@@ -176,12 +195,12 @@ $(document).ready(function(){
             storage += '&storage='+$(this).attr('data-storage')+'&content='+$(this).attr('data-content');
         }
 
-        content += '&nbsp;<a class="btn btn-info get-from-table" href="'+linkpath+'admin/entries/<?php echo $browse_slug; ?>?popup=init&stream='+<?php echo $var_stream; ?>+storage+'">Browse</a>';
+        content += '&nbsp;<a class="btn btn-info get-from-table" href="'+linkpath+'admin/entries/<?php echo $browse_slug; ?>?popup=init<?php echo (empty($popupExtensions['alias'])?'':'&alias='.$popupExtensions['alias']); ?>&stream='+<?php echo $var_stream; ?>+storage+'">Browse</a>';
         content += '<input class="<?php echo $shortkey; ?>" type="hidden" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value][]" />';
         content += '&nbsp;<a class="btn btn-danger del-raw" href="javascript:void(0)"><i class="icon-trash icon-white"></i></a>';
         content += '</div>';
 
-        $('div.<?php echo $browse_slug; ?>-group').append(content);
+        $('div.<?php echo $browse_alias; ?>-group').append(content);
         <?php echo $var_stream; ?>++;
     });
         
@@ -192,20 +211,20 @@ $(document).ready(function(){
             if($view_mode)
             {
                 ?>
-    $('div.<?php echo $browse_slug; ?>-group').html('<div class="view-mode">-</div>');
+    $('div.<?php echo $browse_alias; ?>-group').html('<div class="view-mode">-</div>');
                 <?php
             }
             else
             {
                 ?>
-    $('div.<?php echo $browse_slug; ?>-group').closest('div.control-group').find('a.add-raw').click();
+    $('div.<?php echo $browse_alias; ?>-group').closest('div.control-group').find('a.add-raw').click();
                 <?php
             }
         }
     ?>
     
-    ($('#colorbox').length>0&&$('#colorbox').is(':visible')?$('#colorbox').children().last().children():$(document)).on("click",'div.<?php echo $browse_slug; ?>-group a.del-raw',function(e){
-        $(this).closest('div.<?php echo $browse_slug; ?>-detail').animate({opacity : 0 , height : 0, marginBottom : 0},1000,function(){
+    ($('#colorbox').length>0&&$('#colorbox').is(':visible')?$('#colorbox').children().last().children():$(document)).on("click",'div.<?php echo $browse_alias; ?>-group a.del-raw',function(e){
+        $(this).closest('div.<?php echo $browse_alias; ?>-detail').animate({opacity : 0 , height : 0, marginBottom : 0},1000,function(){
             $(this).find('input[type=number]').val('').trigger('keyup');
             $(this).detach();
         });
@@ -214,9 +233,9 @@ $(document).ready(function(){
     // CALCULATE TOTAL PRICE ...
     if($('span.total_<?php echo $shortkey; ?>').length > 0)
     {
-        $('div.<?php echo $browse_slug; ?>-group').on('keyup', 'input[type=number]', function(){
+        $('div.<?php echo $browse_alias; ?>-group').on('keyup', 'input[type=number]', function(){
             var totalprice = 0;
-            $('div.<?php echo $browse_slug; ?>-group input[type=number]').each(function(){
+            $('div.<?php echo $browse_alias; ?>-group input[type=number]').each(function(){
                 if( $.isNumeric( $(this).val() ) )
                 {
                     totalprice += parseFloat( $(this).val() );
@@ -226,7 +245,11 @@ $(document).ready(function(){
             $('span.total_<?php echo $shortkey; ?>').html(number_format(totalprice,2)+'<input type="hidden" value="'+totalprice+'">');
             
             // update other attribute related ...
-            if($('input.additional_charge').length > 0)
+            if($('input.gold_loss').length > 0)
+            {
+                $('input.gold_loss').keyup();
+            }
+            else if($('input.additional_charge').length > 0)
             {
                 $('input.additional_charge').keyup();
             }

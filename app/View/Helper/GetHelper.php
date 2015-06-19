@@ -654,9 +654,9 @@ class GetHelper extends AppHelper
         {
             $echothis = '<strong>'.$result.'</strong>';
         }
-        else if($shortkey == 'price' || $shortkey == 'harga_beli' || $shortkey == 'harga_jual')
+        else if($shortkey == 'price' || $shortkey == 'barcode' || $shortkey == 'sell_barcode')
         {
-            $echothis = 'Rp.'.str_replace(',', '.', toMoney($result  , true , true) ).',-';
+            $echothis = '<strong>'.toMoney($result  , true , true).' USD</strong>';
             $echothis .= '<input type="hidden" value="'.$result.'">';
         }
         else if($shortkey == 'rate_value' || $shortkey == 'vendor_barcode')
@@ -664,9 +664,9 @@ class GetHelper extends AppHelper
             $echothis = '<strong>'.toMoney($result  , true , true).'</strong>';
             $echothis .= '<input type="hidden" value="'.$result.'">';
         }
-        else if($shortkey == 'weight')
+        else if(strpos($shortkey,'weight') !== FALSE)
         {
-            $echothis = $result.' gr';
+            $echothis = '<strong>'.$result.' gr</strong>';
         }
         else if($shortkey == 'discount')
         {

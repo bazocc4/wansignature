@@ -24,7 +24,6 @@
     else
     {
         $browse_slug = $browse_alias;
-        unset($browse_alias);
     }
 
     $metaDetails = array();
@@ -125,11 +124,11 @@
         ?>
         
         <div class="<?php echo ($view_mode?'hide':''); ?>">
-            <input <?php echo $required; ?> <?php echo 'id="'.(empty($browse_alias)?$browse_slug:$browse_alias).'"'; ?> class="targetID input-large" placeholder="<?php echo $placeholder; ?>" value="<?php echo $metaDetails['Entry']['title']; ?>" type="text" readonly="true"/>
+            <input <?php echo $required; ?> <?php echo 'id="'.$browse_alias.'"'; ?> class="targetID input-large" placeholder="<?php echo $placeholder; ?>" value="<?php echo $metaDetails['Entry']['title']; ?>" type="text" readonly="true"/>
             <?php            
                 $popupExtensions = array('popup'=>'init');
 
-                if(!empty($browse_alias))
+                if($browse_alias != $browse_slug)
                 {
                     $popupExtensions['alias'] = $browse_alias;
                     if($browse_alias == 'wholesaler')

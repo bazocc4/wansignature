@@ -72,6 +72,23 @@
                     $('input.hkd_rate').val('<?php echo $myParentEntry['EntryMeta']['hkd_rate']; ?>');
                 }
                 
+                // onkeyup Amount ...
+                $('input.amount').after(' USD');
+                $('input.amount').keyup(function(){
+                    var hkd_rate = $('input.hkd_rate').val();
+                    var result = $(this).val();
+                    
+                    if($.isNumeric(hkd_rate) && $.isNumeric(result))
+                    {
+                        result = parseFloat(result) * parseFloat(hkd_rate);
+                        $('span.rate_amount').html('= $'+number_format(result,2)+' HKD');
+                    }
+                    else
+                    {
+                        $('span.rate_amount').html('');
+                    }
+                });
+                
                 // onkeyup Additional Charge ...
                 $('span.total_additional_charge').before('$');
                 $('span.unit_additional_charge').text('USD');
@@ -84,7 +101,7 @@
                     
                     // update amount too ...
                     var amount = diamond + result;
-                    $('input.amount').val(amount.toFixed(2));
+                    $('input.amount').val(amount.toFixed(2)).keyup();
                 });
 			});
 		</script>
@@ -269,8 +286,7 @@
 		?>
 		
 		<!-- myTypeSlug is for media upload settings purpose !! -->
-		<input type="hidden" value="<?php echo (empty($myChildType)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>" id="myTypeSlug"/>
-		
+		<input type="hidden" value="<?php echo (empty($myChildType)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>" id="myTypeSlug"/>		
 		<?php
             // get vendor_x ...
             $vendor_x = $this->Get->meta_details($myParentEntry['EntryMeta']['vendor'] , 'vendor');

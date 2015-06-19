@@ -55,13 +55,9 @@
 		$inputsize = 'input-xlarge';
 	}
 	
-	if($shortkey == 'discount' || $shortkey == 'weight' || $shortkey == 'qty' || $shortkey == 'Bunga Cek' || $shortkey == 'loan_interest_rate' || $shortkey == 'additional_charge' || $shortkey == 'prosentase_susut')
+	if($shortkey == 'discount' || $shortkey == 'weight' || $shortkey == 'qty' || $shortkey == 'Bunga Cek' || $shortkey == 'loan_interest_rate' || $shortkey == 'additional_charge' || $shortkey == 'gold_loss')
 	{
 		$inputsize = 'input-mini';
-	}
-	else if($shortkey == "price" || $shortkey == "amount")
-	{
-		$inputsize = 'input-small';
 	}
 ?>
 <div class="control-group" <?php echo (empty($display)?'':'style="display:none"'); ?>>            
@@ -69,13 +65,6 @@
         <?php echo string_unslug($shortkey); ?>
     </label>
 	<div class="controls">
-		<?php
-            // header string !!
-			if($shortkey == "price")
-			{
-				echo 'Rp.';
-			}
-		?>
 		<input <?php echo ($maxchar > 0?'maxlength="'.$maxchar.'"':''); ?> <?php echo ($detail_type=='number'?'step="any" min="0"':''); ?> <?php echo (!empty($readonly)?'readonly="true"':''); ?> <?php echo $required; ?> class="<?php echo $inputsize.' '.$shortkey.' '.$classtitle; ?>" type="<?php echo $detail_type; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo (isset($_POST['data'][$model][$counter]['value'])?$_POST['data'][$model][$counter]['value']:$value); ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value]"/>
 		<?php
             // footer string !!
@@ -83,13 +72,13 @@
 			{
 				echo '% OFF';
 			}
-			else if($shortkey == "price")
+			else if($shortkey == "amount")
 			{
-				echo ',-';
+				echo '<span style="color:red;" class="rate_amount"></span>';
 			}
-			else if($shortkey == 'weight')
+			else if(strpos($shortkey, 'weight') !== FALSE)
 			{
-				echo 'gr';
+				echo 'GR';
 			}
 			else if($shortkey == 'qty')
 			{
@@ -99,7 +88,7 @@
 			{
 				echo '% / month';
 			}
-            else if($shortkey == 'additional_charge' || $shortkey == 'prosentase_susut')
+            else if($shortkey == 'additional_charge' || $shortkey == 'gold_loss')
             {
                 echo '% <span style="color:red;">= <span class="total_'.$shortkey.'"></span> <span class="unit_'.$shortkey.'"></span></span>';
             }

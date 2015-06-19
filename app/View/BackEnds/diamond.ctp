@@ -138,12 +138,11 @@
                     
                     var richvalue = $(this).find("h5.title-code").text() + ' ' + $(this).find('td.form-product_type h5').text();
                     
+                    var usd_result = 0;
                     if($('#myTypeSlug').val() == 'dv-payment')
                     {
-                        var usd_result = '';
-                        
                         var barcode = $(this).find('td.form-vendor_barcode').text();
-                        usd_result = parseInt($(this).find('td.form-vendor_barcode input[type=hidden]').val());
+                        usd_result = parseFloat($(this).find('td.form-vendor_barcode input[type=hidden]').val());
                         
                         var currency = $(this).find('td.form-vendor_currency').text();
                         
@@ -163,6 +162,28 @@
                         }
                         
                         richvalue += ' ['+barcode+' '+currency+' x '+vendor_x+vendor_rate+']';
+                    }
+                    else if($('#myTypeSlug').val() == 'dc-payment')
+                    {
+                        var barcode = $(this).find('td.form-sell_barcode').text();
+                        if(barcode == '-')
+                        {
+                            barcode = $(this).find('td.form-barcode').text();
+                            usd_result = parseFloat($(this).find('td.form-barcode input[type=hidden]').val());
+                        }
+                        else
+                        {
+                            usd_result = parseFloat($(this).find('td.form-sell_barcode input[type=hidden]').val());
+                        }
+                        
+                        var client_x = $(this).find('td.form-client_x').text();
+                        if(client_x == '-')
+                        {
+                            client_x = ( $('#client_x').val()=='' ? 1 : $('#client_x').val() );
+                        }
+                        usd_result *= parseFloat(client_x);
+                        
+                        richvalue += ' ['+barcode+' x '+client_x+']';
                     }
                     
                     $("input#"+targetID).val(richvalue).nextAll("input[type=hidden]").val( $(this).find("input[type=hidden].slug-code").val() );

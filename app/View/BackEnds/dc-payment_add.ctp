@@ -71,6 +71,23 @@
                 {
                     $('input.rp_rate').val('<?php echo $myParentEntry['EntryMeta']['rp_rate']; ?>');
                 }
+                
+                // onkeyup Amount ...
+                $('input.amount').after(' USD');
+                $('input.amount').keyup(function(){
+                    var rp_rate = $('input.rp_rate').val();
+                    var result = $(this).val();
+                    
+                    if($.isNumeric(rp_rate) && $.isNumeric(result))
+                    {
+                        result = parseFloat(result) * parseFloat(rp_rate);
+                        $('span.rate_amount').html('= Rp. '+number_format(result)+',-');
+                    }
+                    else
+                    {
+                        $('span.rate_amount').html('');
+                    }
+                });
 			});
 		</script>
 		<p class="notes important" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>
@@ -255,6 +272,12 @@
 		
 		<!-- myTypeSlug is for media upload settings purpose !! -->
 		<input type="hidden" value="<?php echo (empty($myChildType)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>" id="myTypeSlug"/>
+		<?php
+            // get client_x ...
+            $client_x = $this->Get->meta_details($myParentEntry['EntryMeta']['client'] , 'client');
+        ?>
+		<input type="hidden" id="client_x" value="<?php echo $client_x['EntryMeta']['diamond_sell_x']; ?>">
+		
 	<!-- SAVE BUTTON -->
 		<div class="control-action">
 			<!-- always use submit button to submit form -->

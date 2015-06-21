@@ -73,7 +73,6 @@
                 }
                 
                 // onkeyup Amount ...
-                $('input.amount').after(' GR');
                 $('input.amount').keyup(function(){
                     var gold_price = $('input.gold_price').val();
                     var result = $(this).val();
@@ -87,6 +86,22 @@
                     {
                         $('span.rate_amount').html('');
                     }
+                });
+                
+                // onkeyup Additional Charge ...
+                $('span.unit_additional_charge').text('gram');
+                $('input.additional_charge').keyup(function(){
+                    
+                    var source = parseFloat($('span.total_cor_jewelry input[type=hidden]').val());
+                    
+                    var result = ( $.isNumeric( $(this).val() ) ? source * parseFloat($(this).val()) / 100 : 0 );
+                    $('span.total_additional_charge').html(number_format(result,2));
+                    
+                    var barter = parseFloat($('span.total_payment_jewelry input[type=hidden]').val());
+                    
+                    // update amount too ...
+                    var amount = source + result - barter;
+                    $('input.amount').val(amount.toFixed(2)).keyup();
                 });
 			});
 		</script>
@@ -272,6 +287,19 @@
 		
 		<!-- myTypeSlug is for media upload settings purpose !! -->
 		<input type="hidden" value="<?php echo (empty($myChildType)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>" id="myTypeSlug"/>
+		
+		<?php
+            // get client_x ...
+            $client_x = $this->Get->meta_details($myParentEntry['EntryMeta']['client'] , 'client');
+            $client_x = implode('|', array(
+                $client_x['EntryMeta']['x_125'],
+                $client_x['EntryMeta']['x_100'],
+                $client_x['EntryMeta']['x_110'],
+                $client_x['EntryMeta']['x_115'],
+            ));
+        ?>
+		<input type="hidden" id="client_x" value="<?php echo $client_x; ?>">
+		
 	<!-- SAVE BUTTON -->
 		<div class="control-action">
 			<!-- always use submit button to submit form -->

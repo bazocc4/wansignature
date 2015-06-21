@@ -212,19 +212,6 @@ class Entry extends AppModel {
     
     function _convertEntrySlug($slug)
     {
-        $query = $this->EntryMeta->find('first', array(
-            'conditions' => array(
-                'EntryMeta.key' => 'backup-slug',
-                'EntryMeta.value LIKE' => '%'.chr(10).$slug.chr(10).'%'
-            )
-        ));
-        
-        if(!empty($query))
-        {
-            $result = $this->findById($query['EntryMeta']['entry_id']);
-            $slug = $result['Entry']['slug'];
-        }
-        
         return $slug;
     }
     
@@ -457,27 +444,23 @@ class Entry extends AppModel {
 	{	
 		$counter = 0;
 		$mySlug = $slug;
-        $options = array('conditions'=> array('EntryMeta.key' => 'backup-slug' ));
-        $options_entry = array(); // check for second filter !!
+        $options = array();
 		if(!empty($id))
 		{
-			$options['conditions']['EntryMeta.entry_id <>'] = $options_entry['conditions']['Entry.id <>'] = $id; 
+			$options['conditions']['Entry.id <>'] = $id;
 		}
 		while(TRUE)
 		{
-            $options['conditions']['EntryMeta.value LIKE'] = '%'.chr(10).$mySlug.chr(10).'%';
-            $findSlug = $this->EntryMeta->find('first', $options);
+			$options['conditions']['Entry.slug'] = $mySlug;
+			$findSlug = $this->find('count' , $options);
 			if(empty($findSlug))
 			{
-                // second check !!
-                $options_entry['conditions']['Entry.slug'] = $mySlug;                
-                $findSlug = $this->find('first' , $options_entry);
-                if(empty($findSlug))
-                {
-                    break;
-                }
+				break;
 			}
-            $mySlug = $slug.'-'.(++$counter);
+			else
+			{
+				$mySlug = $slug.'-'.(++$counter);
+			}
 		}
 		return $mySlug;
 	}
@@ -589,34 +572,6 @@ class Entry extends AppModel {
         }
 		
 		$this->updateCountField($this->field('parent_id') , $this->field('entry_type'));
-        
-        // NEW FEATURE 2015 : ADD SLUG HISTORY !!
-        $query = $this->EntryMeta->find('first', array(
-            'conditions' => array(
-                'EntryMeta.entry_id' => $this->id,
-                'EntryMeta.key' => 'backup-slug'
-            )
-        ));
-        
-        if(empty($query))
-        {
-            $input = array();
-            $input['EntryMeta']['entry_id'] = $this->id;
-            $input['EntryMeta']['key'] = 'backup-slug';
-            $input['EntryMeta']['value'] = chr(10).$this->field('slug').chr(10);
-            $this->EntryMeta->create();
-            $this->EntryMeta->save($input);
-        }
-        else
-        {
-            // check if slug already existed or not !!
-            if(strpos( $query['EntryMeta']['value'] , chr(10).$this->field('slug').chr(10) ) === FALSE)
-            {
-                $query['EntryMeta']['value'] .= $this->field('slug').chr(10);
-                $this->EntryMeta->id = $query['EntryMeta']['id'];
-                $this->EntryMeta->saveField('value' , $query['EntryMeta']['value'] );
-            }
-        }
     }
 	
 	/**

@@ -17,8 +17,12 @@
             $labelclass = array(
                 'Cek Lunas' => 'btn btn-mini btn-success text-uppercase',
                 'Cek Titip' => 'btn btn-mini btn-inverse text-uppercase',
+                
                 'Credit' => 'btn btn-mini btn-danger text-uppercase',
                 'Debit' => 'btn btn-mini btn-primary text-uppercase',
+                
+                'Warehouse' => 'btn btn-mini btn-primary text-uppercase',
+                'Exhibition' => 'btn btn-mini btn-inverse text-uppercase',
             );
 
 			$pertama = 1;

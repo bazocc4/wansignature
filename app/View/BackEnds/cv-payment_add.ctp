@@ -77,22 +77,13 @@
                     }
                     
                     var result = ( $.isNumeric( $(this).val() ) ? source * parseFloat($(this).val()) / 100 : 0 );
-                    $('span.total_additional_charge').html(number_format(result,2)+'<input type="hidden" value="'+result+'">');
+                    $('span.total_additional_charge').html(number_format(result,2));
                     
                     var barter = parseFloat($('span.total_payment_jewelry input[type=hidden]').val());
                     
                     // update amount too ...
                     var amount = source + result - barter;
-                    if(amount < 0)
-                    {
-                        $('input.statement[value=Credit]').attr('checked', true);
-                        amount *= -1;
-                    }
-                    else
-                    {
-                        $('input.statement[value=Debit]').attr('checked', true);
-                    }
-                    $('input.amount').val(amount.toFixed(2));
+                    $('input.amount').val(amount.toFixed(2)).keyup();
                 });
                 
                 // trigger keyup on some element ...

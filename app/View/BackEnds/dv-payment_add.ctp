@@ -73,7 +73,6 @@
                 }
                 
                 // onkeyup Amount ...
-                $('input.amount').after(' USD');
                 $('input.amount').keyup(function(){
                     var hkd_rate = $('input.hkd_rate').val();
                     var result = $(this).val();
@@ -96,8 +95,7 @@
                 $('input.additional_charge').keyup(function(){
                     var diamond = parseFloat($('span.total_diamond input[type=hidden]').val());
                     var result = ( $.isNumeric( $(this).val() ) ? diamond * parseFloat($(this).val()) / 100 : 0 );
-                    
-                    $('span.total_additional_charge').html(number_format(result,2)+'<input type="hidden" value="'+result+'">');
+                    $('span.total_additional_charge').html(number_format(result,2));
                     
                     // update amount too ...
                     var amount = diamond + result;

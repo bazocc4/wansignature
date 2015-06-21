@@ -73,7 +73,6 @@
                 }
                 
                 // onkeyup Amount ...
-                $('input.amount').after(' USD');
                 $('input.amount').keyup(function(){
                     var rp_rate = $('input.rp_rate').val();
                     var result = $(this).val();
@@ -87,6 +86,20 @@
                     {
                         $('span.rate_amount').html('');
                     }
+                });
+                
+                // onkeyup Additional Charge ...
+                $('span.total_additional_charge').before('$');
+                $('span.unit_additional_charge').text('USD');
+                
+                $('input.additional_charge').keyup(function(){
+                    var diamond = parseFloat($('span.total_diamond input[type=hidden]').val());
+                    var result = ( $.isNumeric( $(this).val() ) ? diamond * parseFloat($(this).val()) / 100 : 0 );
+                    $('span.total_additional_charge').html(number_format(result,2));
+                    
+                    // update amount too ...
+                    var amount = diamond + result;
+                    $('input.amount').val(amount.toFixed(2)).keyup();
                 });
 			});
 		</script>

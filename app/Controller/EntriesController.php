@@ -168,7 +168,7 @@ class EntriesController extends AppController {
 				$searchEntryMeta = $this->EntryMeta->findAllByValue($value['Entry']['id']);
 				foreach ($searchEntryMeta as $key10 => $value10) 
 				{
-					$testImage = $this->TypeMeta->find('first' , array(
+					$testImage = $this->TypeMeta->find('count' , array(
 						"conditions" => array(
 							"TypeMeta.input_type" => "image",
 							"TypeMeta.key" => $value10['EntryMeta']['key'],
@@ -1059,6 +1059,15 @@ class EntriesController extends AppController {
         // ADDITIONAL FUNCTION HERE AFTER INSERT / UPDATE RECORD !!
         // ...............
         // ===================================================== >>
+        
+        /*
+        note 1: pada saat pengiriman barang retur, sistem akan otomatis mengurangi total pcs,
+                total item sent & total price / weight dari invoice yg berkaitan ...
+        
+        note 2: pada saat bayar invoice, jikalau ada cash amount + payment jewelry dlm transaksi tsb,
+                maka sistem otomatis langsung buat 2 record payment (1 untuk payment original input,
+                dan 1 untuk payment return goods)...
+        */
 	}
 
 	/**

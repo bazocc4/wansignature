@@ -65,7 +65,7 @@
         <?php echo string_unslug($shortkey); ?>
     </label>
 	<div class="controls">
-		<input <?php echo ($maxchar > 0?'maxlength="'.$maxchar.'"':''); ?> <?php echo ($detail_type=='number'?'step="any" min="0"':''); ?> <?php echo (!empty($readonly)?'readonly="true"':''); ?> <?php echo $required; ?> class="<?php echo $inputsize.' '.$shortkey.' '.$classtitle; ?>" type="<?php echo $detail_type; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo (isset($_POST['data'][$model][$counter]['value'])?$_POST['data'][$model][$counter]['value']:$value); ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value]"/>
+		<input <?php echo ($maxchar > 0?'maxlength="'.$maxchar.'"':''); ?> <?php echo ($detail_type=='number'?'step="any" '.($shortkey=='amount'?'':'min="0"'):''); ?> <?php echo (!empty($readonly)?'readonly="true"':''); ?> <?php echo $required; ?> class="<?php echo $inputsize.' '.$shortkey.' '.$classtitle; ?>" type="<?php echo $detail_type; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo (isset($_POST['data'][$model][$counter]['value'])?$_POST['data'][$model][$counter]['value']:$value); ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value]"/>
 		<?php
             // footer string !!
 			if($shortkey == 'discount')
@@ -74,9 +74,26 @@
 			}
 			else if($shortkey == "amount")
 			{
-				echo '<span style="color:red;" class="rate_amount"></span>';
+                $unit_amount = '';
+                $max_balance = '';
+                if(strpos($myType['Type']['slug'], 'dmd') !== FALSE)
+                {
+                    $unit_amount = 'USD';
+                    $max_balance = 'total_price';
+                }
+                else
+                {
+                    $unit_amount = 'GR';
+                    $max_balance = 'total_weight';
+                }
+                
+                echo $unit_amount.' <span style="color:red;" class="rate_amount"></span>';
 			}
-			else if(strpos($shortkey, 'weight') !== FALSE)
+            else if($shortkey == 'total_price' || strpos($shortkey, 'balance') !== FALSE && strpos($myType['Type']['slug'], 'dmd') !== FALSE)
+            {
+                echo 'USD';
+            }
+			else if(strpos($shortkey, 'weight') !== FALSE || strpos($shortkey, 'balance') !== FALSE && strpos($myType['Type']['slug'], 'cor') !== FALSE)
 			{
 				echo 'GR';
 			}
@@ -153,3 +170,47 @@
 	<input type="hidden" value="<?php echo $validation; ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][validation]"/>
 	<input type="hidden" value="<?php echo $p; ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][instruction]"/>
 </div>
+<?php
+    if($shortkey == 'amount')
+    {
+        ?>
+<div class="control-group">
+    <label class="control-label">Balance</label>
+    <div class="controls">
+        <div class="view-mode">
+            <span id="display_balance"></span> <?php echo $unit_amount; ?>
+            <input type="hidden" id="neutral_balance" value="<?php echo (empty($myParentEntry['EntryMeta']['payment_balance'])?'0':$myParentEntry['EntryMeta']['payment_balance']); ?>">
+        </div>
+        <p class="help-block">
+            Pembayaran invoice menjadi <span class="label label-success">LUNAS</span> <strong>APABILA</strong> balance mencapai nilai <span class="label label-success"><?php echo toMoney($myParentEntry['EntryMeta'][$max_balance]  , true , true).' '.$unit_amount.'</span> (Invoice '.string_unslug($max_balance).').'; ?>
+        </p>
+    </div>
+</div>
+<script>
+    $('input.amount').keyup(function(){
+        var result = parseFloat($('#neutral_balance').val());
+        if($('input.statement:first').is(':checked'))
+        {
+            result += parseFloat($(this).val());
+        }
+        else
+        {
+            result -= parseFloat($(this).val());
+        }
+        $('#display_balance').text( number_format(result,2) );
+    });
+    
+    $(document).ready(function(){
+		$('form').submit(function(){
+            var amount = parseFloat($('input.amount').val());
+            if(amount < 0)
+            {
+                $('input.amount').val( amount * -1 );
+                $('input.statement').not(':checked').attr('checked', true);
+            }
+        });
+	});
+</script>
+        <?php
+    }
+?>

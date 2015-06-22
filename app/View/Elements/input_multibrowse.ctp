@@ -54,31 +54,6 @@
                         
 						echo '<div class="row-fluid '.$browse_slug.'-detail '.($view_mode?'':'bottom-spacer').'">';
                         
-                        if($view_mode)
-                        {
-                            echo '<div class="view-mode '.$shortkey.'">';
-                            echo ($metakey+1).'.) '.$metaDetails['Entry']['title'];
-                            
-                            // print additional information too !!
-                            if($metaDetails['Entry']['entry_type'] == 'diamond')
-                            {
-                                $query = $this->Get->meta_details($metaDetails['EntryMeta']['product_type'] , 'product-type');
-                                echo ' / '.strtoupper($query['Entry']['title']);
-                            }
-                            else if($metaDetails['Entry']['entry_type'] == 'cor-jewelry')
-                            {
-                                $query = $this->Get->meta_details($metaDetails['EntryMeta']['product_type'] , 'product-type');
-                                echo ' / '.$query['Entry']['title'].' / '.$query['EntryMeta']['category'];
-                                $query = $this->Get->meta_details($metaDetails['EntryMeta']['product_brand'] , 'product-brand');
-                                echo ' / '.$query['Entry']['title'];
-                            }
-                            
-                            echo '</div>';
-                        }
-                        ?>
-                        
-                    <div class="<?php echo ($view_mode?'hide':''); ?>">
-                    <?php
                         $richvalue = '';
 						if(!empty($metaDetails['EntryMeta']['name']))
 						{
@@ -89,6 +64,32 @@
                             $richvalue = $metaDetails['Entry']['title'];
 						}
                         
+                        // print additional information too !!
+                        if(!empty($metaDetails['EntryMeta']['product_type']))
+                        {
+                            $query = $this->Get->meta_details($metaDetails['EntryMeta']['product_type'], 'product-type');
+                            $richvalue .= ' '.$query['Entry']['title'];
+                            if($query['EntryMeta']['category'] != 'Diamond')
+                            {
+                                $richvalue .= ' / '.$query['EntryMeta']['category'];
+                            }
+                        }
+                        if(!empty($metaDetails['EntryMeta']['product_brand']))
+                        {
+                            $query = $this->Get->meta_details($metaDetails['EntryMeta']['product_brand'], 'product-brand');
+                            $richvalue .= ' / '.$query['Entry']['title'];
+                        }
+                        
+                        if($view_mode)
+                        {
+                            echo '<div class="view-mode '.$shortkey.'">';
+                            echo ($metakey+1).'.) '.$richvalue;
+                            echo '</div>';
+                        }
+                        ?>
+                        
+                    <div class="<?php echo ($view_mode?'hide':''); ?>">
+                    <?php
                         echo '<input REQUIRED id="'.$browse_slug.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$richvalue.'" readonly="true"/>';
                         echo '&nbsp;'.$this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>array('popup'=>'init', 'stream'=>$raw_stream)),array('class'=>'btn btn-info get-from-table'));
                         echo '<input class="'.$shortkey.'" type="hidden" name="data['.$model.']['.$counter.'][value][]" value="'.$metaDetails['Entry']['slug'].'"/>';
@@ -107,7 +108,7 @@
 	</div>
 	
 	<div class="controls">
-		<a data-storage="" data-content="" href="javascript:void(0)" class="add-raw <?php echo ($view_mode?'hide':''); ?>" style="text-decoration: underline;">Add a <?php echo str_replace('_', ' ', $shortkey); ?></a>
+		<a data-storage="" data-content="" href="javascript:void(0)" class="add-raw underline <?php echo ($view_mode?'hide':''); ?>">Add a <?php echo str_replace('_', ' ', $shortkey); ?></a>
 		<p class="help-block">
         
 		    <?php if(!$view_mode): ?>

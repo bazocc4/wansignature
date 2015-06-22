@@ -61,11 +61,36 @@
 	}
 ?>
 <div class="control-group" <?php echo (empty($display)?'':'style="display:none"'); ?>>            
-	<label class="control-label" <?php echo (!empty($required)?'style="color: red;"':''); ?>>
+	<label class="control-label" <?php echo (!empty($required)&&!$view_mode?'style="color: red;"':''); ?>>
         <?php echo string_unslug($shortkey); ?>
     </label>
 	<div class="controls">
+        <?php
+            if($view_mode)
+            {
+                echo '<span class="view-mode '.$shortkey.'">';
+                if(empty($value))
+                {
+                    echo '-';
+                }
+                else
+                {
+                    if($detail_type == 'number')
+                    {
+                        echo toMoney($value , true , true);
+                    }
+                    else
+                    {
+                        echo $value;
+                    }
+                }
+                echo '</span>';
+            }
+        ?>
+    
+	    <span class="<?php echo ($view_mode?'hide':''); ?>">
 		<input <?php echo ($maxchar > 0?'maxlength="'.$maxchar.'"':''); ?> <?php echo ($detail_type=='number'?'step="any" '.($shortkey=='amount'?'':'min="0"'):''); ?> <?php echo (!empty($readonly)?'readonly="true"':''); ?> <?php echo $required; ?> class="<?php echo $inputsize.' '.$shortkey.' '.$classtitle; ?>" type="<?php echo $detail_type; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo (isset($_POST['data'][$model][$counter]['value'])?$_POST['data'][$model][$counter]['value']:$value); ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value]"/>
+        </span>
 		<?php
             // footer string !!
 			if($shortkey == 'discount')
@@ -105,6 +130,10 @@
 			{
 				echo '% / month';
 			}
+            else if($shortkey == 'loan_period')
+            {
+                echo ' month(s)';
+            }
             else if($shortkey == 'additional_charge' || $shortkey == 'gold_loss')
             {
                 echo '% <span style="color:red;">= <span class="total_'.$shortkey.'"></span> <span class="unit_'.$shortkey.'"></span></span>';
@@ -189,13 +218,16 @@
 <script>
     $('input.amount').keyup(function(){
         var result = parseFloat($('#neutral_balance').val());
-        if($('input.statement:first').is(':checked'))
+        if( $.isNumeric($(this).val()) )
         {
-            result += parseFloat($(this).val());
-        }
-        else
-        {
-            result -= parseFloat($(this).val());
+            if($('input.statement:first').is(':checked'))
+            {
+                result += parseFloat($(this).val());
+            }
+            else
+            {
+                result -= parseFloat($(this).val());
+            }
         }
         $('#display_balance').text( number_format(result,2) );
     });

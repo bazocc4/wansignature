@@ -1153,7 +1153,7 @@ class EntriesController extends AppController {
 		// if form submit is taken...
 		if (!empty($this->request->data))
 		{
-			if(empty($lang))
+            if(empty($lang))
 			{
 				$this->request->data['Entry']['title'] = $this->request->data['Entry'][0]['value'];
                 $this->request->data['Entry']['description'] = $this->request->data['Entry'][1]['value'];
@@ -1219,7 +1219,7 @@ class EntriesController extends AppController {
 					$this->Entry->save($this->request->data);
 				
                     // SKIP ENTRYMETA PROCESS ON SOME ENTRY_TYPE !!!
-                if($myEntry['Entry']['entry_type'] != 'surat-jalan')
+                if(!($myEntry['Entry']['entry_type'] == 'surat-jalan' || strpos($myEntry['Entry']['entry_type'], '-payment') !== FALSE ))
                 {
                     $galleryId = $myEntry['Entry']['id'];
                     if($data['gallery'])

@@ -125,7 +125,18 @@
 			$value['model'] = 'Entry';
 			$value['counter'] = 0;
 			$value['input_type'] = 'text';
+            $value['p'] = "Keterangan singkat mengenai transaksi ini.";
 			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['title']);
+			echo $this->element('input_'.$value['input_type'] , $value);
+
+            // Our CKEditor Description Field !!
+			$value = array();
+			$value['key'] = 'form-description';
+			$value['validation'] = '';
+			$value['model'] = 'Entry';
+			$value['counter'] = 1;
+			$value['input_type'] = 'ckeditor';
+			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['description']);
 			echo $this->element('input_'.$value['input_type'] , $value);
 		?>
 		<!-- BEGIN TO LIST META ATTRIBUTES -->
@@ -173,6 +184,13 @@
 						default:
 							break;
 					}
+                    
+                    // view mode ...
+                    if(!empty($myEntry))
+                    {
+                        $value['view_mode'] = true;
+                    }
+                    
 					echo $this->element(($value['key']=='form-diamond'?'special':'input').'_'.$value['input_type'] , $value);
 				}
 			}
@@ -203,16 +221,6 @@
 		<!-- END OF META ATTRIBUTES -->
 		
 		<?php
-			// Our CKEditor Description Field !!
-			$value = array();
-			$value['key'] = 'form-description';
-			$value['validation'] = '';
-			$value['model'] = 'Entry';
-			$value['counter'] = 1;
-			$value['input_type'] = 'ckeditor';
-			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['description']);
-			echo $this->element('input_'.$value['input_type'] , $value);
-
 			// show status field if update (NEW ZPANEL FEATURE) !!
 			$value = array();
 			$value['counter'] = 3;

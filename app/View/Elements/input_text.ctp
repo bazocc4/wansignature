@@ -158,11 +158,6 @@
 	$(document).ready(function(){
 		$('input#cost-currency').change(function(){
             $('span.currency_duplicator').text( $(this).val() );
-            
-            if($(this).val() == '')
-            {
-                $('input.gold_bar_rate').val('').keyup();
-            }
         }).trigger('change');
 	});
 </script>                
@@ -211,7 +206,7 @@
             <input type="hidden" id="neutral_balance" value="<?php echo (empty($myParentEntry['EntryMeta']['payment_balance'])?'0':$myParentEntry['EntryMeta']['payment_balance']); ?>">
         </div>
         <p class="help-block">
-            Pembayaran invoice menjadi <span class="label label-success">LUNAS</span> <strong>APABILA</strong> balance mencapai nilai <span class="label label-success"><?php echo toMoney($myParentEntry['EntryMeta'][$max_balance]  , true , true).' '.$unit_amount.'</span> (Invoice '.string_unslug($max_balance).').'; ?>
+            Pembayaran invoice menjadi <span class="label label-success">LUNAS</span> <strong>APABILA</strong> balance mencapai nilai <?php echo '<span class="label label-success">'.toMoney($myParentEntry['EntryMeta'][$max_balance]  , true , true).' '.$unit_amount.'</span> (Invoice '.string_unslug($max_balance).').'; ?>
         </p>
     </div>
 </div>

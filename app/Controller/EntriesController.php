@@ -265,7 +265,7 @@ class EntriesController extends AppController {
 		// if this action is going to view the CHILD list...
 		if(!empty($this->request->params['entry']))
 		{
-			$myEntry = $this->Entry->findBySlug($this->request->params['entry']);
+			$myEntry = $this->meta_details($this->request->params['entry']);
 			if(!empty($this->request->query['type']))
 			{				
 				$myChildTypeSlug = $this->request->query['type'];
@@ -312,8 +312,20 @@ class EntriesController extends AppController {
 		}
 
 		// this general action is one for all...
+        if(strpos($myChildTypeSlug , '-payment') !== FALSE)
+		{
+			$this->request->params['page'] = 0; // must be one full page !!
+            $_SESSION['order_by'] = 'form-date asc';
+		}
+        
 		$this->_admin_default($myType , $this->request->params['page'] , $myEntry , $this->request->query['key'] , $this->request->query['value'] , $myChildTypeSlug , $this->request->data['search_by'] , $this->request->query['popup'] , strtolower($this->request->query['lang']));
 		$myTypeSlug = (empty($myChildTypeSlug)?$myType['Type']['slug']:$myChildTypeSlug);
+        
+        // CUSTOM VIEW !!
+        if(strpos($myChildTypeSlug , '-payment') !== FALSE)
+        {
+            $myTypeSlug = 'custom-payment';
+        }
 		
 		// send to each appropriate view
 		$str = substr(WWW_ROOT, 0 , strlen(WWW_ROOT)-1); // buang DS trakhir...

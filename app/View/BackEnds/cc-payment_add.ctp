@@ -90,7 +90,7 @@
                 
                 // onkeyup Additional Charge ...
                 $('span.unit_additional_charge').text('gram');
-                $('input.additional_charge').keyup(function(){
+                $('input.additional_charge').keyup(function(e,init){
                     
                     var source = parseFloat($('span.total_cor_jewelry input[type=hidden]').val());
                     
@@ -100,8 +100,12 @@
                     var barter = parseFloat($('span.total_payment_jewelry input[type=hidden]').val());
                     
                     // update amount too ...
-                    var amount = source + result - barter;
-                    $('input.amount').val(amount.toFixed(2)).keyup();
+                    if(init == null)
+                    {
+                        var amount = source + result - barter;
+                        $('input.amount').val(amount.toFixed(2));
+                    }
+                    $('input.amount').keyup();
                 });
 			});
 		</script>

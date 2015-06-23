@@ -83,27 +83,38 @@
                         if($view_mode)
                         {
                             echo '<div class="view-mode '.$shortkey.'">';
-                            echo ($metakey+1).'.) '.$richvalue;
+                            
+                            echo ($metakey+1).'.) ';
+                            if(!empty($metaDetails['Entry']['main_image']))
+                            {
+                                $imgLink = $this->Get->image_link(array('id' => $metaDetails['Entry']['main_image']));
+                                echo '<img src="'.$imgLink['display'].'" />';
+                            }
+                            echo $richvalue;
+                            
                             echo '</div>';
                         }
                         ?>
-                        
-                    <div class="<?php echo ($view_mode?'hide':''); ?>">
-                    <?php
-                        echo '<input REQUIRED id="'.$browse_slug.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$richvalue.'" readonly="true"/>';
-                        echo '&nbsp;'.$this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>array('popup'=>'init', 'stream'=>$raw_stream)),array('class'=>'btn btn-info get-from-table'));
-                        echo '<input class="'.$shortkey.'" type="hidden" name="data['.$model.']['.$counter.'][value][]" value="'.$metaDetails['Entry']['slug'].'"/>';
-                        echo '&nbsp;<a class="btn btn-danger del-raw" href="javascript:void(0)"><i class="icon-trash icon-white"></i></a>';     
-                    ?>
-                    </div>
-                       
+        <div class="<?php echo ($view_mode?'hide':''); ?>">
+        <?php
+            echo '<input REQUIRED id="'.$browse_slug.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$richvalue.'" readonly="true"/>';
+            echo '&nbsp;'.$this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>array('popup'=>'init', 'stream'=>$raw_stream)),array('class'=>'btn btn-info get-from-table'));
+            echo '<input class="'.$shortkey.'" type="hidden" name="data['.$model.']['.$counter.'][value][]" value="'.$metaDetails['Entry']['slug'].'"/>';
+            echo '&nbsp;<a class="btn btn-danger del-raw" href="javascript:void(0)"><i class="icon-trash icon-white"></i></a>';     
+        ?>
+        </div>
                         <?php
-						echo '</div>';
+						echo '</div>'; // end of $browse_alias.'-detail '
 						
 						$raw_stream++;
 					}
 				}
 			}
+
+            if($raw_stream == 1 && $view_mode)
+            {
+                echo '<div class="view-mode">-</div>';
+            }
 		?>
 	</div>
 	
@@ -131,7 +142,7 @@ var <?php echo $var_stream; ?> = <?php echo $raw_stream; ?>;
 
 $(document).ready(function(){
     $('div.<?php echo $browse_slug; ?>-group').closest('div.control-group').find('a.add-raw').click(function(){
-        var content = '<div class="row-fluid <?php echo $browse_slug; ?>-detail bottom-spacer">';            
+        var content = '<div class="row-fluid <?php echo $browse_slug; ?>-detail bottom-spacer <?php echo ($view_mode?'hide':''); ?>">';            
         content += '<input REQUIRED id="<?php echo $browse_slug; ?>'+<?php echo $var_stream; ?>+'" class="input-xlarge" type="text" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][temp][]" readonly="true"/>';            		            
 
         var storage = '';
@@ -153,18 +164,9 @@ $(document).ready(function(){
     <?php
         if($raw_stream == 1)
         {
-            if($view_mode)
-            {
-                ?>
-    $('div.<?php echo $browse_slug; ?>-group').html('<div class="view-mode">-</div>');
-                <?php
-            }
-            else
-            {
-                ?>
-    $('div.<?php echo $browse_slug; ?>-group').closest('div.control-group').find('a.add-raw').click();
-                <?php
-            }
+            ?>
+    $('div.<?php echo $browse_slug; ?>-group').closest('div.control-group').find('a.add-raw').click();            
+            <?php
         }
     ?>
         

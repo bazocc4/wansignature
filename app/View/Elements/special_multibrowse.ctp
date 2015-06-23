@@ -132,14 +132,21 @@
                         if($view_mode)
                         {
                             echo '<div class="view-mode '.$shortkey.'">';
-                            echo ($metakey+1).'.) '.$richvalue;
+                            
+                            echo ($metakey+1).'.) ';
+                            if(!empty($metaDetails['Entry']['main_image']))
+                            {
+                                $imgLink = $this->Get->image_link(array('id' => $metaDetails['Entry']['main_image']));
+                                echo '<img src="'.$imgLink['display'].'" />';
+                            }
+                            echo $richvalue;
                             if(!empty($metatotal))
                             {
                                 echo ' ('.toMoney($metatotal,true,true).' '.$unit.')';
                             }
+                            
                             echo '</div>';
                         }
-                        
 						?>
         <div class="<?php echo ($view_mode?'hide':''); ?>">
         <?php
@@ -153,13 +160,17 @@
         ?>
         </div>			
 						<?php
-						
-						echo '</div>';
+						echo '</div>'; // end of $browse_alias.'-detail '
 						
 						$raw_stream++;
 					}
 				}
 			}
+
+            if($raw_stream == 1 && $view_mode)
+            {
+                echo '<div class="view-mode">-</div>';
+            }
 		?>
 	</div>
 	
@@ -200,7 +211,7 @@ var <?php echo $var_stream; ?> = <?php echo $raw_stream; ?>;
 
 $(document).ready(function(){
     $('div.<?php echo $browse_alias; ?>-group').closest('div.control-group').find('a.add-raw').click(function(){
-        var content = '<div class="row-fluid <?php echo $browse_alias; ?>-detail bottom-spacer">';            
+        var content = '<div class="row-fluid <?php echo $browse_alias; ?>-detail bottom-spacer <?php echo ($view_mode?'hide':''); ?>">';
         content += '<input REQUIRED id="<?php echo $browse_alias; ?>'+<?php echo $var_stream; ?>+'" class="input-xlarge" type="text" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][temp][]" readonly="true"/>';
 
         content += '&nbsp;<input REQUIRED type="number" <?php echo $unit_step_min; ?> class="<?php echo $unit_size; ?>" placeholder="<?php echo $unit; ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][total][]" readonly="true"/>';
@@ -224,18 +235,9 @@ $(document).ready(function(){
     <?php
         if($raw_stream == 1)
         {
-            if($view_mode)
-            {
-                ?>
-    $('div.<?php echo $browse_alias; ?>-group').html('<div class="view-mode">-</div>');
-                <?php
-            }
-            else
-            {
-                ?>
-    $('div.<?php echo $browse_alias; ?>-group').closest('div.control-group').find('a.add-raw').click();
-                <?php
-            }
+            ?>
+    $('div.<?php echo $browse_alias; ?>-group').closest('div.control-group').find('a.add-raw').click();            
+            <?php
         }
     ?>
     
@@ -249,7 +251,7 @@ $(document).ready(function(){
     // CALCULATE TOTAL PRICE ...
     if($('span.total_<?php echo $shortkey; ?>').length > 0)
     {
-        $('div.<?php echo $browse_alias; ?>-group').on('keyup', 'input[type=number]', function(){
+        $('div.<?php echo $browse_alias; ?>-group').on('keyup', 'input[type=number]', function(e, init){
             var totalprice = 0;
             $('div.<?php echo $browse_alias; ?>-group input[type=number]').each(function(){
                 if( $.isNumeric( $(this).val() ) )
@@ -263,13 +265,13 @@ $(document).ready(function(){
             // update other attribute related ...
             if($('input.gold_loss').length > 0)
             {
-                $('input.gold_loss').keyup();
+                $('input.gold_loss').trigger('keyup', [init]);
             }
             else if($('input.additional_charge').length > 0)
             {
-                $('input.additional_charge').keyup();
+                $('input.additional_charge').trigger('keyup', [init]);
             }
-        }).find('input[type=number]:first').trigger('keyup');
+        }).find('input[type=number]:first').trigger('keyup', ['init']);
     }
 });    
 </script>

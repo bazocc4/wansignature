@@ -87,6 +87,12 @@
                 }
                 else
                 {
+                    if(!empty($metaDetails['Entry']['main_image']))
+                    {
+                        $imgLink = $this->Get->image_link(array('id' => $metaDetails['Entry']['main_image']));
+                        echo '<img src="'.$imgLink['display'].'" />';
+                    }
+                    
                     echo $metaDetails['Entry']['title'];
                     
                     // print additional information too !!

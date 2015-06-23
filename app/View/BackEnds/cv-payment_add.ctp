@@ -68,7 +68,7 @@
                 
                 // onkeyup Additional Charge ...
                 $('span.unit_additional_charge').text('gram');
-                $('input.additional_charge').keyup(function(){
+                $('input.additional_charge').keyup(function(e,init){
                     
                     var source = parseFloat($('span.total_cor_jewelry input[type=hidden]').val()) + parseFloat($('span.total_gold_loss input[type=hidden]').val());
                     if($('span.additional_cost_gram').length > 0)
@@ -82,12 +82,16 @@
                     var barter = parseFloat($('span.total_payment_jewelry input[type=hidden]').val());
                     
                     // update amount too ...
-                    var amount = source + result - barter;
-                    $('input.amount').val(amount.toFixed(2)).keyup();
+                    if(init == null)
+                    {
+                        var amount = source + result - barter;
+                        $('input.amount').val(amount.toFixed(2));
+                    }
+                    $('input.amount').keyup();
                 });
                 
                 // trigger keyup on some element ...
-                $('input.additional_cost').keyup(function(){
+                $('input.additional_cost').keyup(function(e,init){
                     var ratevalue = $('input.gold_bar_rate').val();
                     var value = $(this).val();
                     
@@ -103,9 +107,9 @@
                     }
                     
                     // trigger additional_charge too ...
-                    $('input.additional_charge').keyup();
+                    $('input.additional_charge').trigger('keyup', [init]);
                     
-                }).trigger('keyup');
+                }).trigger('keyup', ['init']);
                 
                 $('input.gold_bar_rate').keyup(function(){
                     $('input.additional_cost').keyup();
@@ -113,13 +117,13 @@
                 
                 // onkeyup Gold Loss ...
                 $('span.unit_gold_loss').text('gram');
-                $('input.gold_loss').keyup(function(){
+                $('input.gold_loss').keyup(function(e,init){
                     var cor = parseFloat($('span.total_cor_jewelry input[type=hidden]').val());
                     var result = ( $.isNumeric( $(this).val() ) ? cor * parseFloat($(this).val()) / 100 : 0 );
                     $('span.total_gold_loss').html(number_format(result,2)+'<input type="hidden" value="'+result+'">');
                     
                     // trigger additional_charge too ...
-                    $('input.additional_charge').keyup();
+                    $('input.additional_charge').trigger('keyup', [init]);
                 });
 			});
 		</script>
@@ -151,7 +155,7 @@
 
             // Our CKEditor Description Field !!
 			$value = array();
-			$value['key'] = 'form-description';
+			$value['key'] = 'form-vendor_outstanding';
 			$value['validation'] = '';
 			$value['model'] = 'Entry';
 			$value['counter'] = 1;
@@ -209,6 +213,11 @@
                     if(!empty($myEntry))
                     {
                         $value['view_mode'] = true;
+                        
+                        if($value['key'] == 'form-cost_currency')
+                        {
+                            $value['display'] = 'none';
+                        }
                     }
                     
 					echo $this->element((strpos($value['key'], '_jewelry')!==FALSE?'special':'input').'_'.$value['input_type'] , $value);

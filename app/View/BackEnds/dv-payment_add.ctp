@@ -92,14 +92,18 @@
                 $('span.total_additional_charge').before('$');
                 $('span.unit_additional_charge').text('USD');
                 
-                $('input.additional_charge').keyup(function(){
+                $('input.additional_charge').keyup(function(e,init){
                     var diamond = parseFloat($('span.total_diamond input[type=hidden]').val());
                     var result = ( $.isNumeric( $(this).val() ) ? diamond * parseFloat($(this).val()) / 100 : 0 );
                     $('span.total_additional_charge').html(number_format(result,2));
                     
                     // update amount too ...
-                    var amount = diamond + result;
-                    $('input.amount').val(amount.toFixed(2)).keyup();
+                    if(init == null)
+                    {
+                        var amount = diamond + result;
+                        $('input.amount').val(amount.toFixed(2));
+                    }
+                    $('input.amount').keyup();
                 });
 			});
 		</script>
@@ -131,7 +135,7 @@
 
             // Our CKEditor Description Field !!
 			$value = array();
-			$value['key'] = 'form-description';
+			$value['key'] = 'form-vendor_outstanding';
 			$value['validation'] = '';
 			$value['model'] = 'Entry';
 			$value['counter'] = 1;

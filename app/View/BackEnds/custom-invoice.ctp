@@ -2,6 +2,12 @@
 	$this->Get->create($data);
 	if(is_array($data)) extract($data , EXTR_SKIP);
 
+    // is it Diamond or Cor Jewelry invoice ?
+    $DMD = (strpos($myType['Type']['slug'], 'dmd-')!==FALSE?true:false);
+
+    // is it Vendor or Client invoice ?
+    $VENDOR = (strpos($myType['Type']['slug'], '-vendor-')!==FALSE?true:false);
+
     // initialize $extensionPaging for URL Query ...
     $extensionPaging = $this->request->query;
     unset($extensionPaging['lang']);
@@ -150,10 +156,11 @@
 					$("input#"+targetID).change();
 
 					// update other attribute ...
-                    if($('input#vendor').length > 0)
+                    var partner = '<?php echo ($VENDOR?'vendor':'client'); ?>';
+                    if($('input#'+partner).length > 0)
                     {
-                        var $vendor = $(this).find("td.form-vendor");
-$('input#vendor').val($vendor.find('h5').text()).nextAll('input.vendor').val($vendor.find('input[type=hidden]').val());                        
+                        var $obj_partner = $(this).find("td.form-"+partner);
+$('input#'+partner).val($obj_partner.find('h5').text()).nextAll('input.'+partner).val($obj_partner.find('input[type=hidden]').val());                        
                     }
                     
                     if($('input#warehouse-origin').length > 0)

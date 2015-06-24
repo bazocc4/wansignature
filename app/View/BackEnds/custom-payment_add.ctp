@@ -1,6 +1,13 @@
 <?php
 	$this->Get->create($data);
 	if(is_array($data)) extract($data , EXTR_SKIP);
+
+    // is it Diamond or Cor Jewelry payment ?
+    $DMD = (strpos($myType['Type']['slug'], 'dmd-')!==FALSE?true:false);
+
+    // is it Vendor or Client payment ?
+    $VENDOR = (strpos($myType['Type']['slug'], '-vendor-')!==FALSE?true:false);
+
 	if($isAjax == 0)
 	{
 		echo $this->element('admin_header_add');
@@ -61,41 +68,136 @@
 				
 				// save as draft button !!
 				$('button#save-as-draft').click(function(){
-					// set last status button as draft !!
+					// set last status button as draft & submit form !!
 					$('select.status:last').val('0');
-					$(this).closest('form').find('button[type=submit]:first').click();
+					$('button#save-button').click();
 				});
-				
-				// CUSTOMIZED SCRIPT !!
-                $('input[type=radio].sale_venue').change(function(){
-                    if($(this).is(':checked'))
+                
+                // update empty payment rate ...
+                var amount_key_rate = '';
+                if($('input.rp_rate').length > 0)
+                {
+                    amount_key_rate = 'rp_rate';
+                    if($('input.rp_rate').val() == '')
                     {
-                        if($(this).val() == 'Warehouse')
+                        $('input.rp_rate').val('<?php echo $myParentEntry['EntryMeta']['rp_rate']; ?>');
+                    }
+                }
+                else if($('input.gold_price').length > 0)
+                {
+                    amount_key_rate = 'gold_price';
+                    if($('input.gold_price').val() == '')
+                    {
+                        $('input.gold_price').val('<?php echo $myParentEntry['EntryMeta']['gold_price']; ?>');
+                    }
+                }
+                else if($('input.hkd_rate').length > 0)
+                {
+                    amount_key_rate = 'hkd_rate';
+                    if($('input.hkd_rate').val() == '')
+                    {
+                        $('input.hkd_rate').val('<?php echo $myParentEntry['EntryMeta']['hkd_rate']; ?>');
+                    }
+                }
+                
+                // onkeyup Amount ...
+                if(amount_key_rate.length > 0)
+                {
+                    $('input.amount').keyup(function(){
+                        var amount_rate = $('input.'+amount_key_rate).val();
+                        var result = $(this).val();
+                        if($.isNumeric(amount_rate) && $.isNumeric(result))
                         {
-                    $('input#exhibition').closest('.control-group').hide();
-                    $('input#exhibition').val('').nextAll('input[type=hidden].exhibition').val('');
-                    $('input#warehouse').closest('.control-group').show();
+                            result = parseFloat(result) * parseFloat(amount_rate);
+                            if(amount_key_rate == 'hkd_rate')
+                            {
+                                $('span.rate_amount').html('= $'+number_format(result,2)+' HKD');
+                            }
+                            else // IDR
+                            {
+                                $('span.rate_amount').html('= Rp. '+number_format(result)+',-');
+                            }
                         }
                         else
                         {
-                    $('input#warehouse').closest('.control-group').hide();
-                    $('input#warehouse').val('').nextAll('input[type=hidden].warehouse').val('');
-                    $('input#exhibition').closest('.control-group').show();
+                            $('span.rate_amount').html('');
                         }
-                    }
-                }).trigger('change');
+                    });
+                }
                 
-                <?php
-                    if(empty($myEntry) && empty($this->request->data))
+                // onkeyup Additional Charge ...
+                $('span.unit_additional_charge').text('<?php echo ($DMD?'USD':'gram'); ?>');
+                if($('span.unit_additional_charge').text() == 'USD')
+                {
+                    $('span.total_additional_charge').before('$');
+                }
+                $('input.additional_charge').keyup(function(e,init){
+                    
+                    var source = 0;
+                    if($('span.total_diamond').length > 0)  source += parseFloat($('span.total_diamond input[type=hidden]').val());
+                    if($('span.total_cor_jewelry').length > 0)  source += parseFloat($('span.total_cor_jewelry input[type=hidden]').val());
+                    if($('span.total_gold_loss').length > 0)    source += parseFloat($('span.total_gold_loss input[type=hidden]').val());
+                    if($('span.additional_cost_gram').length > 0)   source += parseFloat( $('span.additional_cost_gram').text() );
+                    
+                    var result = ( $.isNumeric( $(this).val() ) ? source * parseFloat($(this).val()) / 100 : 0 );
+                    $('span.total_additional_charge').html(number_format(result,2));
+                    
+                    var barter = 0;
+                    if($('span.total_payment_jewelry').length > 0)  barter += parseFloat($('span.total_payment_jewelry input[type=hidden]').val());
+                    
+                    // update amount too ...
+                    if(init == null)
                     {
-                        $rprate = $this->Get->meta_details(NULL , 'usd-rate' , NULL , NULL , NULL , NULL , 'idr');
-                        $goldrate = $this->Get->meta_details(NULL , 'usd-rate' , NULL , NULL , NULL , NULL , 'gold bar%');
-                        $result = round($rprate['EntryMeta']['rate_value'] / $goldrate['EntryMeta']['rate_value']);
-                        ?>
-                $('input.gold_price').val('<?php echo $result; ?>');
-                        <?php
+                        var amount = source + result - barter;
+                        $('input.amount').val(amount.toFixed(2));
                     }
-                ?>
+                    $('input.amount').keyup();
+                });
+                
+                // trigger keyup on some element ...
+                if($('input.additional_cost').length > 0)
+                {
+                    $('input.additional_cost').keyup(function(e,init){
+                        var ratevalue = $('input.gold_bar_rate').val();
+                        var value = $(this).val();
+
+                        if($.isNumeric(value) && $.isNumeric(ratevalue))
+                        {
+                            var result = (parseFloat(value) / parseFloat(ratevalue)).toFixed(2);
+
+                            $('span.cost_rate_text').html('= <span class="additional_cost_gram">'+result+'</span> gram Gold Bar.');
+                        }
+                        else
+                        {
+                            $('span.cost_rate_text').html('');
+                        }
+
+                        // trigger additional_charge too ...
+                        $('input.additional_charge').trigger('keyup', [init]);
+
+                    }).trigger('keyup', ['init']);
+                }
+                
+                if($('input.gold_bar_rate').length > 0)
+                {
+                    $('input.gold_bar_rate').keyup(function(){
+                        $('input.additional_cost').keyup();
+                    });
+                }
+                
+                // onkeyup Gold Loss ...
+                if($('input.gold_loss').length > 0)
+                {
+                    $('span.unit_gold_loss').text('gram');
+                    $('input.gold_loss').keyup(function(e,init){
+                        var cor = parseFloat($('span.total_cor_jewelry input[type=hidden]').val());
+                        var result = ( $.isNumeric( $(this).val() ) ? cor * parseFloat($(this).val()) / 100 : 0 );
+                        $('span.total_gold_loss').html(number_format(result,2)+'<input type="hidden" value="'+result+'">');
+
+                        // trigger additional_charge too ...
+                        $('input.additional_charge').trigger('keyup', [init]);
+                    });
+                }
 			});
 		</script>
 		<p class="notes important" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>
@@ -120,7 +222,18 @@
 			$value['model'] = 'Entry';
 			$value['counter'] = 0;
 			$value['input_type'] = 'text';
+            $value['p'] = "Keterangan singkat mengenai transaksi ini.";
 			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['title']);
+			echo $this->element('input_'.$value['input_type'] , $value);
+
+            // Our CKEditor Description Field !!
+			$value = array();
+			$value['key'] = 'form-'.($VENDOR?'vendor':'client').'_outstanding';
+			$value['validation'] = '';
+			$value['model'] = 'Entry';
+			$value['counter'] = 1;
+			$value['input_type'] = 'ckeditor';
+			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['description']);
 			echo $this->element('input_'.$value['input_type'] , $value);
 		?>
 		<!-- BEGIN TO LIST META ATTRIBUTES -->
@@ -169,12 +282,18 @@
 							break;
 					}
                     
-                    // on-the-fly validation ...
-                    if($value['key'] == 'form-warehouse' || $value['key'] == 'form-exhibition')
+                    // view mode ...
+                    if(!empty($myEntry))
                     {
-                        $value['validation'] .= 'not_empty|';
+                        $value['view_mode'] = true;
+                        
+                        if($value['key'] == 'form-cost_currency')
+                        {
+                            $value['display'] = 'none';
+                        }
                     }
-					echo $this->element('input_'.$value['input_type'] , $value);
+                    
+					echo $this->element((strpos($value['key'], ($DMD?'diamond':'_jewelry') )!==FALSE?'special':'input').'_'.$value['input_type'] , $value);
 				}
 			}
 			// HIDE THE BROKEN INPUT TYPE !!!!!!!!!!!!!
@@ -204,16 +323,6 @@
 		<!-- END OF META ATTRIBUTES -->
 		
 		<?php
-			// Our CKEditor Description Field !!
-			$value = array();
-			$value['key'] = 'form-description';
-			$value['validation'] = '';
-			$value['model'] = 'Entry';
-			$value['counter'] = 1;
-			$value['input_type'] = 'ckeditor';
-			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['description']);
-			echo $this->element('input_'.$value['input_type'] , $value);
-
 			// show status field if update (NEW ZPANEL FEATURE) !!
 			$value = array();
 			$value['counter'] = 3;
@@ -286,6 +395,41 @@
 		
 		<!-- myTypeSlug is for media upload settings purpose !! -->
 		<input type="hidden" value="<?php echo (empty($myChildType)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>" id="myTypeSlug"/>
+		
+		<?php
+            // get client / vendor X ...
+            if($VENDOR)
+            {
+                if($DMD)
+                {
+                    $vendor_x = $this->Get->meta_details($myParentEntry['EntryMeta']['vendor'] , 'vendor');
+                    ?>
+        <input type="hidden" id="vendor_x" value="<?php echo $vendor_x['EntryMeta']['capital_x']; ?>">            
+                    <?php
+                }
+            }
+            else // client ...
+            {
+                $client_x = $this->Get->meta_details($myParentEntry['EntryMeta']['client'] , 'client');
+                if($DMD)
+                {
+                    $client_x = $client_x['EntryMeta']['diamond_sell_x'];
+                }
+                else
+                {
+                    $client_x = implode('|', array(
+                        $client_x['EntryMeta']['x_125'],
+                        $client_x['EntryMeta']['x_100'],
+                        $client_x['EntryMeta']['x_110'],
+                        $client_x['EntryMeta']['x_115'],
+                    ));
+                }
+                ?>
+        <input type="hidden" id="client_x" value="<?php echo $client_x; ?>">        
+                <?php
+            }
+        ?>
+		
 	<!-- SAVE BUTTON -->
 		<div class="control-action">
 			<!-- always use submit button to submit form -->

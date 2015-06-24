@@ -165,7 +165,7 @@
             }
             else if($shortkey == 'additional_cost')
             {
-                echo '<span class="currency_duplicator"></span> <span style="color:red" class="result_rate"></span>';
+                echo '<span class="currency_duplicator"></span> <span style="color:red" class="cost_rate_text"></span>';
             }
             else if($shortkey == 'rate_value')
 			{

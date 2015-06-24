@@ -3,10 +3,10 @@
 	if(is_array($data)) extract($data , EXTR_SKIP);
 
     // is it Diamond or Cor Jewelry payment ?
-    $DMD = (strpos($myEntry['Entry']['entry_type'], 'dmd-')!==FALSE?true:false);
+    $DMD = (strpos($myType['Type']['slug'], 'dmd-')!==FALSE?true:false);
 
     // is it Vendor or Client payment ?
-    $VENDOR = (strpos($myEntry['Entry']['entry_type'], '-vendor-')!==FALSE?true:false);
+    $VENDOR = (strpos($myType['Type']['slug'], '-vendor-')!==FALSE?true:false);
 
     // initialize $extensionPaging for URL Query ...
     $extensionPaging = $this->request->query;

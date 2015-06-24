@@ -1,6 +1,13 @@
 <?php
 	$this->Get->create($data);
 	if(is_array($data)) extract($data , EXTR_SKIP);
+
+    // is it Diamond or Cor Jewelry invoice ?
+    $DMD = (strpos($myType['Type']['slug'], 'dmd-')!==FALSE?true:false);
+
+    // is it Vendor or Client invoice ?
+    $VENDOR = (strpos($myType['Type']['slug'], '-vendor-')!==FALSE?true:false);
+
 	if($isAjax == 0)
 	{
 		echo $this->element('admin_header_add');
@@ -65,48 +72,62 @@
 					$('select.status:last').val('0');
 					$('button#save-button').click();
 				});
-                
-                // update empty gold_price ...
-                if($('input.gold_price').val() == '')
+				
+				// CUSTOMIZED SCRIPT !!
+                if($('input[type=radio].sale_venue').length > 0)
                 {
-                    $('input.gold_price').val('<?php echo $myParentEntry['EntryMeta']['gold_price']; ?>');
+                    $('input[type=radio].sale_venue').change(function(){
+                        if($(this).is(':checked'))
+                        {
+                            if($(this).val() == 'Warehouse')
+                            {
+                        $('input#exhibition').closest('.control-group').hide();
+                        $('input#exhibition').val('').nextAll('input[type=hidden].exhibition').val('');
+                        $('input#warehouse').closest('.control-group').show();
+                            }
+                            else
+                            {
+                        $('input#warehouse').closest('.control-group').hide();
+                        $('input#warehouse').val('').nextAll('input[type=hidden].warehouse').val('');
+                        $('input#exhibition').closest('.control-group').show();
+                            }
+                        }
+                    }).trigger('change');
                 }
                 
-                // onkeyup Amount ...
-                $('input.amount').keyup(function(){
-                    var gold_price = $('input.gold_price').val();
-                    var result = $(this).val();
-                    
-                    if($.isNumeric(gold_price) && $.isNumeric(result))
+                <?php
+                    if(empty($myEntry) && empty($this->request->data))
                     {
-                        result = parseFloat(result) * parseFloat(gold_price);
-                        $('span.rate_amount').html('= Rp. '+number_format(result)+',-');
+                        if($VENDOR)
+                        {
+                            if($DMD)
+                            {
+                                $hkdrate = $this->Get->meta_details(NULL , 'usd-rate' , NULL , NULL , NULL , NULL , 'hkd');
+                                ?>
+                $('input.hkd_rate').val('<?php echo $hkdrate['EntryMeta']['rate_value']; ?>');
+                                <?php
+                            }
+                        }
+                        else // client ...
+                        {
+                            $rprate = $this->Get->meta_details(NULL , 'usd-rate' , NULL , NULL , NULL , NULL , 'idr');
+                            if($DMD)
+                            {
+                                ?>
+                $('input.rp_rate').val('<?php echo $rprate['EntryMeta']['rate_value']; ?>');
+                                <?php
+                            }
+                            else // cor ...
+                            {
+                                $goldrate = $this->Get->meta_details(NULL , 'usd-rate' , NULL , NULL , NULL , NULL , 'gold bar%');
+                                $result = round($rprate['EntryMeta']['rate_value'] / $goldrate['EntryMeta']['rate_value']);
+                                ?>
+                $('input.gold_price').val('<?php echo $result; ?>');
+                                <?php
+                            }
+                        }
                     }
-                    else
-                    {
-                        $('span.rate_amount').html('');
-                    }
-                });
-                
-                // onkeyup Additional Charge ...
-                $('span.unit_additional_charge').text('gram');
-                $('input.additional_charge').keyup(function(e,init){
-                    
-                    var source = parseFloat($('span.total_cor_jewelry input[type=hidden]').val());
-                    
-                    var result = ( $.isNumeric( $(this).val() ) ? source * parseFloat($(this).val()) / 100 : 0 );
-                    $('span.total_additional_charge').html(number_format(result,2));
-                    
-                    var barter = parseFloat($('span.total_payment_jewelry input[type=hidden]').val());
-                    
-                    // update amount too ...
-                    if(init == null)
-                    {
-                        var amount = source + result - barter;
-                        $('input.amount').val(amount.toFixed(2));
-                    }
-                    $('input.amount').keyup();
-                });
+                ?>
 			});
 		</script>
 		<p class="notes important" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>
@@ -131,18 +152,7 @@
 			$value['model'] = 'Entry';
 			$value['counter'] = 0;
 			$value['input_type'] = 'text';
-            $value['p'] = "Keterangan singkat mengenai transaksi ini.";
 			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['title']);
-			echo $this->element('input_'.$value['input_type'] , $value);
-
-            // Our CKEditor Description Field !!
-			$value = array();
-			$value['key'] = 'form-client_outstanding';
-			$value['validation'] = '';
-			$value['model'] = 'Entry';
-			$value['counter'] = 1;
-			$value['input_type'] = 'ckeditor';
-			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['description']);
 			echo $this->element('input_'.$value['input_type'] , $value);
 		?>
 		<!-- BEGIN TO LIST META ATTRIBUTES -->
@@ -191,13 +201,12 @@
 							break;
 					}
                     
-                    // view mode ...
-                    if(!empty($myEntry))
+                    // on-the-fly validation ...
+                    if($value['key'] == 'form-warehouse' || $value['key'] == 'form-exhibition')
                     {
-                        $value['view_mode'] = true;
+                        $value['validation'] .= 'not_empty|';
                     }
-                    
-					echo $this->element((strpos($value['key'], '_jewelry')!==FALSE?'special':'input').'_'.$value['input_type'] , $value);
+					echo $this->element('input_'.$value['input_type'] , $value);
 				}
 			}
 			// HIDE THE BROKEN INPUT TYPE !!!!!!!!!!!!!
@@ -227,6 +236,16 @@
 		<!-- END OF META ATTRIBUTES -->
 		
 		<?php
+			// Our CKEditor Description Field !!
+			$value = array();
+			$value['key'] = 'form-description';
+			$value['validation'] = '';
+			$value['model'] = 'Entry';
+			$value['counter'] = 1;
+			$value['input_type'] = 'ckeditor';
+			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['description']);
+			echo $this->element('input_'.$value['input_type'] , $value);
+
 			// show status field if update (NEW ZPANEL FEATURE) !!
 			$value = array();
 			$value['counter'] = 3;
@@ -299,19 +318,6 @@
 		
 		<!-- myTypeSlug is for media upload settings purpose !! -->
 		<input type="hidden" value="<?php echo (empty($myChildType)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>" id="myTypeSlug"/>
-		
-		<?php
-            // get client_x ...
-            $client_x = $this->Get->meta_details($myParentEntry['EntryMeta']['client'] , 'client');
-            $client_x = implode('|', array(
-                $client_x['EntryMeta']['x_125'],
-                $client_x['EntryMeta']['x_100'],
-                $client_x['EntryMeta']['x_110'],
-                $client_x['EntryMeta']['x_115'],
-            ));
-        ?>
-		<input type="hidden" id="client_x" value="<?php echo $client_x; ?>">
-		
 	<!-- SAVE BUTTON -->
 		<div class="control-action">
 			<!-- always use submit button to submit form -->

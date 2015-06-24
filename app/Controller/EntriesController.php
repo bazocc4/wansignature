@@ -216,6 +216,34 @@ class EntriesController extends AppController {
 		header("Location: ".$_SESSION['now']);
 		exit;
 	}
+    
+    function _get_template($myTypeSlug = NULL , $myChildTypeSlug = NULL )
+    {
+        $myTemplate = '';
+        if(empty($myChildTypeSlug))
+        {
+            if(strpos($myTypeSlug , '-invoice') !== FALSE)
+            {
+                $myTemplate = 'custom-invoice';
+            }
+            else
+            {
+                $myTemplate = $myTypeSlug;
+            }
+        }
+        else
+        {
+            if(strpos($myChildTypeSlug , '-payment') !== FALSE)
+            {
+                $myTemplate = 'custom-payment';
+            }
+            else
+            {
+                $myTemplate = $myChildTypeSlug;
+            }
+        }
+        return $myTemplate;
+    }
 	
 	/**
 	 * target route for querying to get list of entries.
@@ -319,22 +347,17 @@ class EntriesController extends AppController {
 		}
         
 		$this->_admin_default($myType , $this->request->params['page'] , $myEntry , $this->request->query['key'] , $this->request->query['value'] , $myChildTypeSlug , $this->request->data['search_by'] , $this->request->query['popup'] , strtolower($this->request->query['lang']));
-		$myTypeSlug = (empty($myChildTypeSlug)?$myType['Type']['slug']:$myChildTypeSlug);
-        
-        // CUSTOM VIEW !!
-        if(strpos($myChildTypeSlug , '-payment') !== FALSE)
-        {
-            $myTypeSlug = 'custom-payment';
-        }
 		
+        $myTemplate = $this->_get_template($myType['Type']['slug'], $myChildTypeSlug);
+        
 		// send to each appropriate view
 		$str = substr(WWW_ROOT, 0 , strlen(WWW_ROOT)-1); // buang DS trakhir...
 		$str = substr($str, 0 , strripos($str, DS)+1); // buang webroot...
-		$src = $str.'View'.str_replace('/', DS, $this->backEndFolder).$myTypeSlug.'.ctp';
+		$src = $str.'View'.str_replace('/', DS, $this->backEndFolder).$myTemplate.'.ctp';
         
         if(file_exists($src))
 		{
-			$this->render($this->backEndFolder.$myTypeSlug);
+			$this->render($this->backEndFolder.$myTemplate);
 		}
 		else
 		{
@@ -383,8 +406,8 @@ class EntriesController extends AppController {
 		
 		// main add function ...
 		$this->_admin_default_add(($myType['Type']['slug']=='pages'?NULL:$myType) , $myEntry , $myChildTypeSlug);
-		
-		$myTemplate = ($myType['Type']['slug']=='pages'?$myEntry['Entry']['slug']:(empty($myChildTypeSlug)?$myType['Type']['slug']:$myChildTypeSlug)).'_add';
+        
+        $myTemplate = $this->_get_template($myType['Type']['slug'], $myChildTypeSlug).'_add';
 		
 		// send to each appropriate view
 		$str = substr(WWW_ROOT, 0 , strlen(WWW_ROOT)-1); // buang DS trakhir...
@@ -447,7 +470,8 @@ class EntriesController extends AppController {
 		// main edit function ...
 		$this->_admin_default_edit(($myType['Type']['slug']=='pages'?NULL:$myType) , $myEntry , $myParentEntry , $myChildTypeSlug , strtolower($this->request->query['lang']));
 		
-		$myTemplate = ($myType['Type']['slug']=='pages'?$myEntry['Entry']['slug']:(empty($myChildTypeSlug)?$myType['Type']['slug']:$myChildTypeSlug)).'_add';		
+		$myTemplate = $this->_get_template($myType['Type']['slug'], $myChildTypeSlug).'_add';
+        
 		// send to each appropriate view
 		$str = substr(WWW_ROOT, 0 , strlen(WWW_ROOT)-1); // buang DS trakhir...
 		$str = substr($str, 0 , strripos($str, DS)+1); // buang webroot...

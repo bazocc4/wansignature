@@ -466,7 +466,7 @@
                                 if(isset($targetMetaKey))
                                 {
                                     // test if value is a date value or not !!
-                                    if(strtotime($entrydetail['EntryMeta'][$targetMetaKey]['value']))
+                                    if(strtotime($entrydetail['EntryMeta'][$targetMetaKey]['value']) && !is_numeric($entrydetail['EntryMeta'][$targetMetaKey]['value']))
                                     {
                                         echo date_converter($entrydetail['EntryMeta'][$targetMetaKey]['value'] , $mySetting['date_format']);
                                     }
@@ -529,7 +529,7 @@
 			if(empty($popup))
 			{
                 echo "<td class='action-btn'>";
-                echo $this->Html->link('<i class="icon-edit icon-white"></i>', $editUrl, array('escape'=>false, 'class'=>'btn btn-primary','data-toggle'=>'tooltip', 'title'=>'CLICK TO EDIT / VIEW DETAIL') );
+                echo $this->Html->link('<i class="icon-edit icon-white"></i>', $editUrl, array('escape'=>false, 'class'=>'btn btn-info','data-toggle'=>'tooltip', 'title'=>'CLICK TO EDIT / VIEW DETAIL') );
                 
 /*
                 if($myType['Type']['slug'] != 'pages')
@@ -539,7 +539,7 @@
                     echo '&nbsp;&nbsp;';
 					if($value['Entry']['status'] == 0)
 					{
-						echo '<a data-toggle="tooltip" title="CLICK TO PUBLISH RECORD" href="javascript:void(0)" onclick="changeLocation(\''.$targetURL.'\')" class="btn btn-info"><i class="icon-ok icon-white"></i></a>';					
+						echo '<a data-toggle="tooltip" title="CLICK TO PUBLISH RECORD" href="javascript:void(0)" onclick="changeLocation(\''.$targetURL.'\')" class="btn btn-success"><i class="icon-ok icon-white"></i></a>';					
 					}
 					else
 					{

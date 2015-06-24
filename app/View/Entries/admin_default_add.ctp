@@ -185,9 +185,9 @@
 			$value['model'] = 'Entry';
 			$value['input_type'] = 'dropdown';
 			$value['list'][0]['id'] = '1';
-			$value['list'][0]['name'] = 'Published';
+			$value['list'][0]['name'] = 'Complete';
 			$value['list'][1]['id'] = '0';
-			$value['list'][1]['name'] = 'Draft';
+			$value['list'][1]['name'] = 'Pending';
             $value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['status']);
 //			$value['display'] = (empty($myEntry)||empty($myType)?'none':'');
             $value['display'] = 'none';
@@ -256,7 +256,7 @@
 			<?php
 				if(empty($myEntry) && !empty($myType))
 				{
-					echo '<button id="save-as-draft" type="button" class="btn btn-inverse hide">Save as Draft</button>';
+					echo '<button id="save-as-draft" type="button" class="btn btn-inverse hide">Save as Pending</button>';
 				}
 
                 $langUrlCancel = '';

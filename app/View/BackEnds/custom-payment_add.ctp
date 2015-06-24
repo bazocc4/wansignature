@@ -46,7 +46,7 @@
 	$myChildTypeLink = (!empty($myParentEntry)&&$myType['Type']['slug']!=$myChildType['Type']['slug']?'?type='.$myChildType['Type']['slug']:'');
 	$myTranslation = ( empty($lang)||empty($myEntry) ? '' : (empty($myChildTypeLink)?'?':'&').'lang='.$lang);
 	$targetSubmit = (empty($myType)?'pages':$myType['Type']['slug']).(empty($myChildType)?'':'/'.$myParentEntry['Entry']['slug']).(empty($myEntry)?'/add':'/edit/'.$myEntry['Entry']['slug']).$myChildTypeLink.$myTranslation;
-	$saveButton = (empty($myEntry)?'Add New':(empty($lang)?'Save Changes':'Add Translation'));
+	$saveButton = (empty($myEntry)?'Add New as Complete Payment':(empty($lang)?'Save Changes':'Add Translation'));
 	echo $this->Form->create('Entry', array('action'=>$targetSubmit,'type'=>'file','class'=>'notif-change form-horizontal fl','inputDefaults' => array('label' =>false , 'div' => false)));	
 ?>
 	<fieldset>
@@ -331,12 +331,17 @@
 			$value['model'] = 'Entry';
 			$value['input_type'] = 'dropdown';
 			$value['list'][0]['id'] = '1';
-			$value['list'][0]['name'] = 'Published';
+			$value['list'][0]['name'] = 'Complete';
 			$value['list'][1]['id'] = '0';
-			$value['list'][1]['name'] = 'Draft';
+			$value['list'][1]['name'] = 'Pending';
+            
             $value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['status']);
-//			$value['display'] = (empty($myEntry)||empty($myType)?'none':'');
-            $value['display'] = 'none';
+			
+            $value['display'] = (empty($myEntry)||empty($myType)?'none':'');
+            if($value['value'] == 1)
+            {
+                $value['view_mode'] = true;
+            }
 			echo $this->element('input_'.$value['input_type'] , $value);
 			
 			// is used gallery function ...
@@ -437,7 +442,7 @@
 			<?php
 				if(empty($myEntry) && !empty($myType))
 				{
-					echo '<button id="save-as-draft" type="button" class="btn btn-inverse hide">Save as Draft</button>';
+					echo '<button id="save-as-draft" type="button" class="btn btn-inverse">Save as Pending Payment</button>';
 				}
 
                 $langUrlCancel = '';

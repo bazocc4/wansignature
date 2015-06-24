@@ -224,6 +224,12 @@
         $('table#myTableList tbody tr').each(function(i,el){
             $(el).find('td.form-date').after( $(el).find('td.main-title') );
             $(el).find('td.form-statement').before( $(el).find('td.form-amount') );
+            
+            // append additional_cost currency ...
+            if($(el).find('td.form-additional_cost').length > 0)
+            {
+                $(el).find('td.form-additional_cost strong').append(' ' + $(el).find('td.form-cost_currency a').text() );
+            }
         });
 	});
 </script>
@@ -279,7 +285,7 @@
 						$entityTitle = $value['key'];
                         $hideKeyQuery = '';
                         $shortkey = substr($entityTitle, 5);
-                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!')
+                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!' || $shortkey == 'hkd_rate' || $shortkey == 'rp_rate' || $shortkey == 'gold_price' || $shortkey == 'cost_currency' || $shortkey == 'gold_bar_rate')
                         {
                             $hideKeyQuery = 'hide';
                         }
@@ -392,7 +398,7 @@
 						$shortkey = substr($value10['key'], 5);
                         $displayValue = $value['EntryMeta'][$shortkey];
                         $hideKeyQuery = '';
-                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!')
+                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!' || $shortkey == 'hkd_rate' || $shortkey == 'rp_rate' || $shortkey == 'gold_price' || $shortkey == 'cost_currency' || $shortkey == 'gold_bar_rate')
                         {
                             $hideKeyQuery = 'hide';
                         }
@@ -404,9 +410,17 @@
                         }
                         else if($value10['input_type'] == 'multibrowse')
 						{
-							$browse_slug = get_slug($shortkey);
+							$browse_slug = '';
+                            if($shortkey == 'payment_jewelry')
+                            {
+                                $browse_slug = 'cor-jewelry';
+                            }
+                            else
+                            {
+                                $browse_slug = get_slug($shortkey);
+                            }
+                            
 							$displayValue = explode('|', $displayValue);
-							
 							$emptybrowse = 0;
 							foreach ($displayValue as $brokekey => $brokevalue) 
 							{
@@ -426,7 +440,7 @@
                                         $outputResult .= ' '.$diamondType[$mydetails['EntryMeta']['product_type']];
                                     }
                                     
-									echo '<p>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).(!empty($broketotal)?' ('.$broketotal.')':'').'</p>';
+									echo '<p>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).(!empty($broketotal)?' ('.$broketotal.' '.($DMD?'USD':'gr').')':'').'</p>';
                                     echo '<input data-total="'.$broketotal.'" type="hidden" value="'.$mydetails['Entry']['slug'].'">';
 								}
 							}
@@ -438,7 +452,17 @@
 						}
                         else if($value10['input_type'] == 'browse')
                         {
-                        	$entrydetail = $this->Get->meta_details($displayValue , get_slug($shortkey));
+                        	$entrytype = '';
+                            if($shortkey == 'cost_currency')
+                            {
+                                $entrytype = 'usd-rate';
+                            }
+                            else
+                            {
+                                $entrytype = get_slug($shortkey);
+                            }
+                            
+                            $entrydetail = $this->Get->meta_details($displayValue , $entrytype);
 							if(empty($entrydetail))
 							{
 								echo $displayValue;
@@ -471,7 +495,7 @@
                                 if(isset($targetMetaKey))
                                 {
                                     // test if value is a date value or not !!
-                                    if(strtotime($entrydetail['EntryMeta'][$targetMetaKey]['value']))
+                                    if(strtotime($entrydetail['EntryMeta'][$targetMetaKey]['value']) && !is_numeric($entrydetail['EntryMeta'][$targetMetaKey]['value']))
                                     {
                                         echo date_converter($entrydetail['EntryMeta'][$targetMetaKey]['value'] , $mySetting['date_format']);
                                     }
@@ -495,19 +519,7 @@
                             {
                                 echo '<strong>'.toMoney($displayValue  , true , true).' '.($DMD?'USD':'gr').'</strong>';
                             }
-                            else if($shortkey == 'hkd_rate')
-                            {
-                                echo '<strong>'.toMoney($displayValue  , true , true).'</strong> HKD / $1 USD';
-                            }
-                            else if($shortkey == 'rp_rate')
-                            {
-                                echo 'Rp <strong>'.toMoney($displayValue  , true , true).',-</strong> / $1 USD';
-                            }
-                            else if($shortkey == 'gold_price')
-                            {
-                                echo 'Rp <strong>'.toMoney($displayValue  , true , true).',-</strong> / 1 gr Gold';
-                            }
-                            else if($shortkey == 'additional_charge')
+                            else if($shortkey == 'additional_charge' || $shortkey == 'gold_loss')
                             {
                                 echo $displayValue.'%';
                             }
@@ -572,13 +584,13 @@
 			if(empty($popup))
 			{
                 echo "<td class='action-btn'>";
-                echo $this->Html->link('<i class="icon-edit icon-white"></i>', $editUrl, array('escape'=>false, 'class'=>'btn btn-primary','data-toggle'=>'tooltip', 'title'=>'CLICK TO EDIT / VIEW DETAIL') );
+                echo $this->Html->link('<i class="icon-edit icon-white"></i>', $editUrl, array('escape'=>false, 'class'=>'btn btn-info','data-toggle'=>'tooltip', 'title'=>'CLICK TO EDIT / VIEW DETAIL') );
                 
                 // update status ...
                 $targetURL = 'entries/change_status/'.$value['Entry']['id'];
                 if($value['Entry']['status'] == 0)
                 {
-                    echo '&nbsp;&nbsp;<a data-toggle="tooltip" title="CLICK TO SET AS PAID" href="javascript:void(0)" onclick="changeLocation(\''.$targetURL.'\')" class="btn btn-info"><i class="icon-ok icon-white"></i></a>';					
+                    echo '&nbsp;&nbsp;<a data-toggle="tooltip" title="CLICK TO SET AS COMPLETE" href="javascript:void(0)" onclick="changeLocation(\''.$targetURL.'\')" class="btn btn-success"><i class="icon-ok icon-white"></i></a>';					
                 }
                 
 				?>

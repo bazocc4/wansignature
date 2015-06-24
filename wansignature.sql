@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.21, for Win32 (x86)
+-- MySQL dump 10.13  Distrib 5.6.24, for Win32 (x86)
 --
 -- Host: localhost    Database: wansignature
 -- ------------------------------------------------------
--- Server version	5.6.21
+-- Server version	5.6.24
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -46,7 +46,7 @@ CREATE TABLE `cms_accounts` (
 
 LOCK TABLES `cms_accounts` WRITE;
 /*!40000 ALTER TABLE `cms_accounts` DISABLE KEYS */;
-INSERT INTO `cms_accounts` VALUES (1,1,1,'Admin Basuki','admin@yahoo.com','169e781bd52860b584879cbe117085da596238f3','2015-06-24 14:33:42','2013-01-04 00:00:00',1,'2014-05-05 15:15:38',1);
+INSERT INTO `cms_accounts` VALUES (1,1,1,'Admin Basuki','admin@yahoo.com','169e781bd52860b584879cbe117085da596238f3','2015-06-24 20:37:37','2013-01-04 00:00:00',1,'2014-05-05 15:15:38',1);
 INSERT INTO `cms_accounts` VALUES (2,2,2,'Andy Basuki','andybasuki88@gmail.com','d82dff1679e0137a0bab60cc67cc6a2ad36f10a0','2015-06-13 11:09:54','2015-06-02 20:19:53',1,'2015-06-02 20:19:53',1);
 /*!40000 ALTER TABLE `cms_accounts` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -76,7 +76,7 @@ CREATE TABLE `cms_entries` (
   `lang_code` varchar(10) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `slug` (`slug`)
-) ENGINE=MyISAM AUTO_INCREMENT=90 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=91 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -138,12 +138,12 @@ INSERT INTO `cms_entries` VALUES (55,'logistic','Souvenir X','souvenir-x','[cont
 INSERT INTO `cms_entries` VALUES (59,'surat-jalan','N123456','n123456','',0,0,0,0,'2015-06-12 00:16:59',1,'2015-06-12 00:16:59',1,59,'en-59');
 INSERT INTO `cms_entries` VALUES (60,'surat-jalan','SRJ005','srj001','SURAT JALAN DITERIMA\r\nTHANKS :)',0,0,1,0,'2015-06-12 13:34:45',1,'2015-06-12 16:27:27',1,60,'en-60');
 INSERT INTO `cms_entries` VALUES (61,'diamond','012115','012115','',89,0,1,0,'2015-06-12 14:32:34',1,'2015-06-23 12:28:39',1,61,'en-61');
-INSERT INTO `cms_entries` VALUES (64,'vendor','Front Sriwijaya','front-sriwijaya','Ancestor vendor.',0,0,1,0,'2015-06-12 16:42:22',1,'2015-06-12 16:42:22',1,64,'en-64');
-INSERT INTO `cms_entries` VALUES (65,'vendor','Elang Wijaya','elang-wijaya','',0,0,1,0,'2015-06-12 16:44:20',1,'2015-06-12 16:44:20',1,65,'en-65');
+INSERT INTO `cms_entries` VALUES (64,'vendor','Front Sriwijaya','front-sriwijaya','Ancestor vendor.',0,0,1,0,'2015-06-12 16:42:22',1,'2015-06-24 20:56:02',1,64,'en-64');
+INSERT INTO `cms_entries` VALUES (65,'vendor','Elang Wijaya','elang-wijaya','',0,0,1,0,'2015-06-12 16:44:20',1,'2015-06-24 20:56:02',1,65,'en-65');
 INSERT INTO `cms_entries` VALUES (66,'dmd-client-invoice','INV / DMD / C001','inv-dmd-c001','',0,0,1,1,'2015-06-12 16:46:13',1,'2015-06-23 11:41:05',1,66,'en-66');
 INSERT INTO `cms_entries` VALUES (67,'cor-client-invoice','INV / COR / C005','inv-cor-c005','',0,0,1,1,'2015-06-12 16:47:21',1,'2015-06-23 13:56:15',1,67,'en-67');
 INSERT INTO `cms_entries` VALUES (68,'dmd-vendor-invoice','INV / DMD / V012','inv-dmd-v012','WAN First Invoice.',0,0,1,2,'2015-06-12 16:48:32',1,'2015-06-22 11:20:48',1,68,'en-68');
-INSERT INTO `cms_entries` VALUES (69,'cor-vendor-invoice','INV / COR / C021','inv-cor-c021','',0,0,1,1,'2015-06-12 16:49:03',1,'2015-06-23 11:20:00',1,69,'en-69');
+INSERT INTO `cms_entries` VALUES (69,'cor-vendor-invoice','INV / COR / C021','inv-cor-c021','',0,0,1,2,'2015-06-12 16:49:03',1,'2015-06-24 23:07:10',1,69,'en-69');
 INSERT INTO `cms_entries` VALUES (73,'surat-jalan','SRJ FIN 007','srj-fin-007','SRJ selesai :)\r\nThank You.',0,0,1,0,'2015-06-13 01:20:46',1,'2015-06-13 12:51:23',1,73,'en-73');
 INSERT INTO `cms_entries` VALUES (74,'surat-jalan','SRJ RTR 001','srj-rtr-001','SRJ done for a moment.',0,0,1,0,'2015-06-13 01:58:37',1,'2015-06-13 12:43:14',1,74,'en-74');
 INSERT INTO `cms_entries` VALUES (75,'usd-rate','USD','usd','United States Dollar.',0,0,1,0,'2015-06-14 11:01:57',1,'2015-06-14 11:01:57',1,75,'en-75');
@@ -157,6 +157,7 @@ INSERT INTO `cms_entries` VALUES (87,'cc-payment','Client Original C005 - bayar 
 INSERT INTO `cms_entries` VALUES (86,'dc-payment','Diamond C001','diamond-c001','permbayaran client diamond pertama\r\nThanks\r\nGBU.',0,66,1,0,'2015-06-23 11:41:04',1,'2015-06-23 11:41:04',1,86,'en-86');
 INSERT INTO `cms_entries` VALUES (88,'media','heart_diamond','heart-diamond',NULL,0,0,1,0,'2015-06-23 12:26:50',1,'2015-06-23 12:26:50',1,88,'en-88');
 INSERT INTO `cms_entries` VALUES (89,'media','ring_diamond','ring-diamond',NULL,0,0,1,0,'2015-06-23 12:26:50',1,'2015-06-23 12:26:50',1,89,'en-89');
+INSERT INTO `cms_entries` VALUES (90,'cv-payment','Second payment C021','second-payment-c021','This is\r\nVendor Outstanding\r\nThank You\r\nGBU :)',0,69,1,0,'2015-06-24 23:07:09',1,'2015-06-24 23:07:09',1,90,'en-90');
 /*!40000 ALTER TABLE `cms_entries` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -173,7 +174,7 @@ CREATE TABLE `cms_entry_metas` (
   `key` varchar(500) NOT NULL,
   `value` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=839 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=852 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -376,7 +377,7 @@ INSERT INTO `cms_entry_metas` VALUES (477,74,'form-logistic','');
 INSERT INTO `cms_entry_metas` VALUES (479,75,'form-rate_value','1');
 INSERT INTO `cms_entry_metas` VALUES (815,3,'form-loan_interest_rate','5.75');
 INSERT INTO `cms_entry_metas` VALUES (482,7,'form-loan_interest_rate','6');
-INSERT INTO `cms_entry_metas` VALUES (489,69,'count-cv-payment','1');
+INSERT INTO `cms_entry_metas` VALUES (489,69,'count-cv-payment','2');
 INSERT INTO `cms_entry_metas` VALUES (776,83,'form-additional_cost','500');
 INSERT INTO `cms_entry_metas` VALUES (775,83,'form-gold_bar_rate','235.04');
 INSERT INTO `cms_entry_metas` VALUES (774,83,'form-cost_currency','cny');
@@ -486,6 +487,19 @@ INSERT INTO `cms_entry_metas` VALUES (829,61,'form-report_type','SR');
 INSERT INTO `cms_entry_metas` VALUES (830,61,'form-client_x','0.29');
 INSERT INTO `cms_entry_metas` VALUES (837,44,'form-vendor_x','0.230');
 INSERT INTO `cms_entry_metas` VALUES (838,44,'form-report_type','SR');
+INSERT INTO `cms_entry_metas` VALUES (839,90,'form-date','06/24/2015');
+INSERT INTO `cms_entry_metas` VALUES (840,90,'form-statement','Debit');
+INSERT INTO `cms_entry_metas` VALUES (841,90,'form-type','Cash');
+INSERT INTO `cms_entry_metas` VALUES (842,90,'form-cor_jewelry','g123160_4.41');
+INSERT INTO `cms_entry_metas` VALUES (843,90,'form-gold_loss','15');
+INSERT INTO `cms_entry_metas` VALUES (844,90,'form-cost_currency','cny');
+INSERT INTO `cms_entry_metas` VALUES (845,90,'form-gold_bar_rate','235.04');
+INSERT INTO `cms_entry_metas` VALUES (846,90,'form-additional_cost','1500');
+INSERT INTO `cms_entry_metas` VALUES (847,90,'form-payment_jewelry','10003906_3.47');
+INSERT INTO `cms_entry_metas` VALUES (848,90,'form-amount','8');
+INSERT INTO `cms_entry_metas` VALUES (849,90,'form-bank','hsbc-1');
+INSERT INTO `cms_entry_metas` VALUES (850,90,'form-checks_status','Cek Titip');
+INSERT INTO `cms_entry_metas` VALUES (851,90,'form-checks_date','06/20/2015');
 /*!40000 ALTER TABLE `cms_entry_metas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1001,4 +1015,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-24 17:40:02
+-- Dump completed on 2015-06-25  0:28:39

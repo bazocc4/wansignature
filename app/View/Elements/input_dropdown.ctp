@@ -17,13 +17,22 @@
             if($view_mode)
             {
                 echo '<div class="view-mode '.$shortkey.'">';
+                
+                $value = $list[array_search($value, array_column($list, 'id') )]['name'];
                 if(empty($value))
                 {
                     echo '-';
                 }
                 else
                 {
-                    echo $value;
+                    if($shortkey == 'status')
+                    {
+                        echo '<span class="label label-success">'.$value.'</span>';
+                    }
+                    else
+                    {
+                        echo $value;
+                    }
                 }
                 echo '</div>';
             }

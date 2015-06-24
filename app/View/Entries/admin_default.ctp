@@ -284,8 +284,8 @@
                         if($myType['Type']['slug'] != 'pages')
                         {
                             ?>
-                    <option value="active">Publish</option>
-					<option value="disable">Draft</option>                            
+                    <option value="active">Complete</option>
+					<option value="disable">Pending</option>                            
                             <?php
                         }
 */
@@ -439,7 +439,7 @@
                                 if(isset($targetMetaKey))
                                 {
                                     // test if value is a date value or not !!
-                                    if(strtotime($entrydetail['EntryMeta'][$targetMetaKey]['value']))
+                                    if(strtotime($entrydetail['EntryMeta'][$targetMetaKey]['value']) && !is_numeric($entrydetail['EntryMeta'][$targetMetaKey]['value']))
                                     {
                                         echo date_converter($entrydetail['EntryMeta'][$targetMetaKey]['value'] , $mySetting['date_format']);
                                     }
@@ -488,9 +488,9 @@
 			<span class="label <?php echo $value['Entry']['status']==0?'label-important':'label-success'; ?>">
 				<?php
 					if($value['Entry']['status'] == 0)
-						echo "Draft";
+						echo "Pending";
 					else
-						echo "Published";
+						echo "Complete";
 				?>
 			</span>
 -->
@@ -502,7 +502,7 @@
 			if(empty($popup))
 			{
                 echo "<td class='action-btn'>";
-                echo $this->Html->link('<i class="icon-edit icon-white"></i>', $editUrl, array('escape'=>false, 'class'=>'btn btn-primary','data-toggle'=>'tooltip', 'title'=>'CLICK TO EDIT / VIEW DETAIL') );
+                echo $this->Html->link('<i class="icon-edit icon-white"></i>', $editUrl, array('escape'=>false, 'class'=>'btn btn-info','data-toggle'=>'tooltip', 'title'=>'CLICK TO EDIT / VIEW DETAIL') );
                 
 /*
                 if($myType['Type']['slug'] != 'pages')
@@ -512,12 +512,12 @@
                     echo '&nbsp;&nbsp;';
 					if($value['Entry']['status'] == 0)
 					{
-						echo '<a data-toggle="tooltip" title="CLICK TO PUBLISH RECORD" href="javascript:void(0)" onclick="changeLocation(\''.$targetURL.'\')" class="btn btn-info"><i class="icon-ok icon-white"></i></a>';					
+						echo '<a data-toggle="tooltip" title="CLICK TO SET AS COMPLETE" href="javascript:void(0)" onclick="changeLocation(\''.$targetURL.'\')" class="btn btn-success"><i class="icon-ok icon-white"></i></a>';					
 					}
 					else
 					{
-						$confirm = 'Are you sure to set '.strtoupper($value['Entry']['title']).' as draft ?';
-						echo '<a data-toggle="tooltip" title="CLICK TO DRAFT RECORD" href="javascript:void(0)" onclick="show_confirm(\''.$confirm.'\',\''.$targetURL.'\')" class="btn btn-warning"><i class="icon-ban-circle icon-white"></i></a>';
+						$confirm = 'Are you sure to set '.strtoupper($value['Entry']['title']).' as pending ?';
+						echo '<a data-toggle="tooltip" title="CLICK TO SET AS PENDING" href="javascript:void(0)" onclick="show_confirm(\''.$confirm.'\',\''.$targetURL.'\')" class="btn btn-warning"><i class="icon-ban-circle icon-white"></i></a>';
 					}
 				}
 */

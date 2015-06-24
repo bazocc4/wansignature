@@ -659,7 +659,7 @@ class GetHelper extends AppHelper
             $echothis = '<strong>'.toMoney($result  , true , true).' USD</strong>';
             $echothis .= '<input type="hidden" value="'.$result.'">';
         }
-        else if($shortkey == 'rate_value' || $shortkey == 'vendor_barcode')
+        else if($shortkey == 'rate_value' || $shortkey == 'vendor_barcode' || $shortkey == 'additional_cost')
         {
             $echothis = '<strong>'.toMoney($result  , true , true).'</strong>';
             $echothis .= '<input type="hidden" value="'.$result.'">';

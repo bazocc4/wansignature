@@ -315,7 +315,7 @@ class EntriesController extends AppController {
 				{
 					$this->change_status($value, 1 , 'localcall');
 				}
-				$this->Session->setFlash('Your selection data status has been <strong>activated</strong> successfully.','success');
+				$this->Session->setFlash('Your selection data status has been set as <strong>COMPLETE</strong> successfully.','success');
 			}
 			else if($this->request->data['action'] == 'disable')
 			{
@@ -323,7 +323,7 @@ class EntriesController extends AppController {
 				{
 					$this->change_status($value, 0 , 'localcall');
 				}
-				$this->Session->setFlash('Your selection data status has been <strong>disabled</strong> successfully.','success');
+				$this->Session->setFlash('Your selection data status has been set as <strong>PENDING</strong> successfully.','success');
 			}
 			else if($this->request->data['action'] == 'delete')
 			{

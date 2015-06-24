@@ -659,7 +659,7 @@ class GetHelper extends AppHelper
             $echothis = '<strong>'.toMoney($result  , true , true).' USD</strong>';
             $echothis .= '<input type="hidden" value="'.$result.'">';
         }
-        else if($shortkey == 'rate_value' || $shortkey == 'vendor_barcode' || $shortkey == 'amount')
+        else if($shortkey == 'rate_value' || $shortkey == 'vendor_barcode')
         {
             $echothis = '<strong>'.toMoney($result  , true , true).'</strong>';
             $echothis .= '<input type="hidden" value="'.$result.'">';
@@ -672,17 +672,9 @@ class GetHelper extends AppHelper
         {
             $echothis = $result.'% OFF';
         }
-        else if(strpos($shortkey , 'stock') !== FALSE)    
+        else if($shortkey == 'qty' || strpos($shortkey , 'stock') !== FALSE)    
         {
-            $echothis = '<h5>'.$result.' pcs</h5>';
-        }
-        else if($shortkey == 'loan_interest_rate')
-        {
-            $echothis = $result.'% / month';
-        }
-        else if($shortkey == 'statement')
-        {
-            $echothis = '<span class="label '.($result=='Debit'?'label-info':'label-important').'">'.$result.'</span>';
+            $echothis = '<h5>'.$result.' pc</h5>';
         }
         
 		return $echothis;

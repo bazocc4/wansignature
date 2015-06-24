@@ -292,6 +292,9 @@
                             case 'multidate':
                                 $datefield = 'date-field';
                                 break;
+                            case 'multibrowse':
+                                $datefield = 'product-field';
+                                break;
                         }
                         
                         echo "<th ".($value['input_type'] == 'textarea' || $value['input_type'] == 'ckeditor'?"style='min-width:200px;'":"")." class='".$hideKeyQuery." ".$datefield."'>";
@@ -301,23 +304,12 @@
                         if($shortkey == 'statement')
                         {
                             echo '<th>balance</th>';
+                            echo '<th>status</th>';
                         }
 					}
 				}
 			}
-        
-            // show gallery count !!
-            if($gallery)
-            {
-                echo '<th>Gallery Count</th>';
-            }
 		?>		
-		<th>
-            <?php
-                $entityTitle = "status";
-                echo $this->Html->link(string_unslug($entityTitle).($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' asc'?" desc":" asc") ));
-            ?>
-        </th>
 		<th class="date-field">
             <?php
                 $entityTitle = "modified";
@@ -408,19 +400,7 @@
                         echo "<td class='".$value10['key']." ".$hideKeyQuery."'>";
                         if(empty($displayValue))
                         {
-                        	if($value10['input_type'] == 'gallery' && !empty($value['EntryMeta']['count-'.$value10['key']]))
-                        	{
-                        		$queryURL = array('anchor' => $shortkey );
-                        		if( !empty($myEntry) && $myType['Type']['slug']!=$myChildType['Type']['slug'] )
-                        		{
-                        			$queryURL['type'] = $myChildType['Type']['slug'];
-                        		}
-                        		echo '<span class="badge badge-info">'.(empty($popup)?$this->Html->link($value['EntryMeta']['count-'.$value10['key']].' <i class="icon-picture icon-white"></i>',array('action'=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']) , 'edit' , $value['Entry']['slug'] , '?' => $queryURL ), array('escape'=>false, 'data-toggle'=>'tooltip','title' => 'Click to see all images.')):$value['EntryMeta']['count-'.$value10['key']].' <i class="icon-picture icon-white"></i>').'</span>';
-                        	}
-                        	else
-                        	{
-                        		echo '-';	
-                        	}
+                        	echo '-';
                         }
                         else if($value10['input_type'] == 'multibrowse')
 						{
@@ -439,8 +419,14 @@
 								if(!empty($mydetails))
 								{
 									$emptybrowse = 1;
-									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']).(!empty($broketotal)?' ('.$broketotal.')':'');
-									echo '<p>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).'</p>';
+									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']);
+                                    
+                                    if($shortkey == 'diamond')
+                                    {
+                                        $outputResult .= ' '.$diamondType[$mydetails['EntryMeta']['product_type']];
+                                    }
+                                    
+									echo '<p>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).(!empty($broketotal)?' ('.$broketotal.')':'').'</p>';
                                     echo '<input data-total="'.$broketotal.'" type="hidden" value="'.$mydetails['Entry']['slug'].'">';
 								}
 							}
@@ -457,6 +443,13 @@
 							{
 								echo $displayValue;
 							}
+                            else if($shortkey == 'bank')
+                            {
+                                $imgLink = $this->Get->image_link(array('id' => $entrydetail['Entry']['main_image']));
+                                echo '<div class="thumbs">';
+                                echo '<img src="'.$imgLink['display'].'" alt="'.$entrydetail['Entry']['title'].'">';
+                                echo '</div>';
+                            }
 							else
 							{
 								$outputResult = (empty($entrydetail['EntryMeta']['name'])?$entrydetail['Entry']['title']:$entrydetail['EntryMeta']['name']);
@@ -497,48 +490,78 @@
                         }
                         else
                         {
-                        	echo $this->Get->outputConverter($value10['input_type'] , $displayValue , $myImageTypeList , $shortkey);
+                            // SUPER CUSTOMIZED OUTPUT STYLE ...
+                            if($shortkey == 'amount')
+                            {
+                                echo '<strong>'.toMoney($displayValue  , true , true).' '.($DMD?'USD':'gr').'</strong>';
+                            }
+                            else if($shortkey == 'hkd_rate')
+                            {
+                                echo '<strong>'.toMoney($displayValue  , true , true).'</strong> HKD / $1 USD';
+                            }
+                            else if($shortkey == 'rp_rate')
+                            {
+                                echo 'Rp <strong>'.toMoney($displayValue  , true , true).',-</strong> / $1 USD';
+                            }
+                            else if($shortkey == 'gold_price')
+                            {
+                                echo 'Rp <strong>'.toMoney($displayValue  , true , true).',-</strong> / 1 gr Gold';
+                            }
+                            else if($shortkey == 'additional_charge')
+                            {
+                                echo $displayValue.'%';
+                            }
+                            else if($shortkey == 'loan_period')
+                            {
+                                echo '<strong>'.$displayValue.' mo.</strong>';
+                            }
+                            else if($shortkey == 'loan_interest_rate')
+                            {
+                                echo $displayValue.'% / month';
+                            }
+                            else if($shortkey == 'statement')
+                            {
+                                echo '<span class="label '.($displayValue=='Debit'?'label-info':'label-important').'">'.$displayValue.'</span>';
+                            }
+                            else if($shortkey == 'checks_status')
+                            {
+                                echo '<span class="label '.($displayValue=='Cek Lunas'?'label-success':'label-inverse').'">'.$displayValue.'</span>';
+                            }
+                            else
+                            {
+                                echo $this->Get->outputConverter($value10['input_type'] , $displayValue , $myImageTypeList , $shortkey);
+                            }
                         }                        
                         echo "</td>";
                         
                         if($shortkey == 'statement')
                         {
                             echo "<td class='form-balance'>";
-                            $walking_balance += ($value['EntryMeta']['statement']=='Debit'?1:-1) * $value['EntryMeta']['amount'] * ($VENDOR?1:-1);
+                            if($value['Entry']['status'] == 1)
+                            {
+                                $walking_balance += ($value['EntryMeta']['statement']=='Debit'?1:-1) * $value['EntryMeta']['amount'] * ($VENDOR?1:-1);
+                            }
 				            echo '<strong>'.toMoney( $walking_balance , true , true).' '.($DMD?'USD':'gr').'</strong>';
                             echo "</td>";
-                        }
-					}
-				}
-			}
-        
-            // show gallery count !!
-            if($gallery)
-            {
-                echo "<td>";
-                if(empty($value['EntryMeta']['count-'.$value['Entry']['entry_type']]))
-                {
-                    echo "-";
-                }
-                else
-                {
-                    echo "<span class='label label-inverse'>&nbsp;";
-                    echo $value['EntryMeta']['count-'.$value['Entry']['entry_type']]." <i class='icon-picture icon-white'></i>";
-                    echo "&nbsp;</span>";
-                }
-                echo "</td>";
-            }
-		?>
-		<td>
+                            
+                            // echo payment status too ...
+                            ?>
+        <td>
 			<span class="label <?php echo $value['Entry']['status']==0?'label-important':'label-success'; ?>">
 				<?php
 					if($value['Entry']['status'] == 0)
 						echo "Pending";
 					else
-						echo "Paid";
+						echo "Complete";
 				?>
 			</span>
 		</td>
+                            <?php
+                        }
+					}
+				}
+			}
+		?>
 		<td><?php echo date_converter($value['Entry']['modified'], $mySetting['date_format'] , $mySetting['time_format']); ?></td>
 		<td style='min-width: 0px;' <?php echo (empty($popup)?'':'class="offbutt"'); ?>>
             <span class="label label-inverse">

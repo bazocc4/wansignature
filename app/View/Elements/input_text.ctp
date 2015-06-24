@@ -55,7 +55,7 @@
 		$inputsize = 'input-xlarge';
 	}
 	
-	if($shortkey == 'discount' || $shortkey == 'weight' || $shortkey == 'qty' || $shortkey == 'Bunga Cek' || $shortkey == 'loan_interest_rate' || $shortkey == 'additional_charge' || $shortkey == 'gold_loss')
+	if($shortkey == 'discount' || $shortkey == 'weight' || $shortkey == 'qty' || $shortkey == 'Bunga Cek' || $shortkey == 'loan_interest_rate' || $shortkey == 'additional_charge' || $shortkey == 'gold_loss' || strpos($shortkey , 'stock') !== FALSE)
 	{
 		$inputsize = 'input-mini';
 	}
@@ -122,9 +122,9 @@
 			{
 				echo 'GR';
 			}
-			else if($shortkey == 'qty')
+			else if($shortkey == 'qty' || strpos($shortkey , 'stock') !== FALSE)
 			{
-				echo 'unit(s)';
+				echo 'pcs';
 			}
             else if($shortkey == 'Bunga Cek' || $shortkey == 'loan_interest_rate')
 			{
@@ -179,10 +179,6 @@
 	});
 </script>                
                 <?php
-			}
-            else if(strpos($shortkey , 'stock') !== FALSE)
-			{
-				echo 'pcs';
 			}
 		?>
 		<p class="help-block">

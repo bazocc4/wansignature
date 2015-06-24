@@ -243,6 +243,9 @@
                             case 'multidate':
                                 $datefield = 'date-field';
                                 break;
+                            case 'multibrowse':
+                                $datefield = 'product-field';
+                                break;
                         }
                         
                         echo "<th ".($value['input_type'] == 'textarea' || $value['input_type'] == 'ckeditor'?"style='min-width:200px;'":"")." class='".$hideKeyQuery." ".$datefield."'>";
@@ -409,8 +412,9 @@
 								if(!empty($mydetails))
 								{
 									$emptybrowse = 1;
-									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']).(!empty($broketotal)?' ('.$broketotal.' pcs)':'');
-                                    echo '<p '.($this->request->query['content'] == $brokevalue?'style="color:red"':'').'>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).'</p>';
+									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']);
+                                    
+                                    echo '<p '.($this->request->query['content'] == $brokevalue?'style="color:red"':'').'>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).(!empty($broketotal)?' ('.$broketotal.' pc)':'').'</p>';
                                     echo '<input data-total="'.$broketotal.'" type="hidden" value="'.$mydetails['Entry']['slug'].'">';
 								}
 							}
@@ -492,7 +496,7 @@
             }
 		?>
 		
-		<td class="form-total_stock"><h5><?php echo $totalstock; ?> pcs</h5></td>
+		<td class="form-total_stock"><h5><?php echo $totalstock; ?> pc</h5></td>
 		
 		<td><?php echo date_converter($value['Entry']['modified'], $mySetting['date_format'] , $mySetting['time_format']); ?></td>
 		<td style='min-width: 0px;' <?php echo (empty($popup)?'':'class="offbutt"'); ?>>

@@ -101,4 +101,16 @@ class EntryMeta extends AppModel {
 			}
 		}
 	}
+    
+    function get_diamond_type()
+    {
+        $query = $this->findAllByKeyAndValue('form-category', 'Diamond');
+        $result = array();
+        
+        foreach($query as $key => $value)
+        {
+            $result[$value['Entry']['slug']] = $value['Entry']['title'];
+        }
+        return $result;
+    }
 }

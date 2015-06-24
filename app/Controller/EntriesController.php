@@ -346,8 +346,14 @@ class EntriesController extends AppController {
             $_SESSION['order_by'] = 'form-date asc';
 		}
         
+        // query diamond product_type ...
+        if($myType['Type']['slug'] == 'surat-jalan' || $myChildTypeSlug == 'dv-payment' || $myChildTypeSlug == 'dc-payment')
+        {
+            $this->set('diamondType', $this->EntryMeta->get_diamond_type() );
+        }
+        
 		$this->_admin_default($myType , $this->request->params['page'] , $myEntry , $this->request->query['key'] , $this->request->query['value'] , $myChildTypeSlug , $this->request->data['search_by'] , $this->request->query['popup'] , strtolower($this->request->query['lang']));
-		
+        
         $myTemplate = $this->_get_template($myType['Type']['slug'], $myChildTypeSlug);
         
 		// send to each appropriate view

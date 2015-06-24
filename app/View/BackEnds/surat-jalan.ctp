@@ -270,14 +270,24 @@
                         }
                         
                         $datefield = '';
-                        switch($value['input_type'])
+                        if($shortkey == 'logistic')
                         {
-                            case 'datepicker':
-                            case 'datetimepicker':
-                            case 'multidate':
-                            case 'multibrowse':
-                                $datefield = 'date-field';
-                                break;
+                            $datefield = 'product-field';
+                        }
+                        else if($shortkey == 'diamond')
+                        {
+                            $datefield = 'date-field';
+                        }
+                        else
+                        {
+                            switch($value['input_type'])
+                            {
+                                case 'datepicker':
+                                case 'datetimepicker':
+                                case 'multidate':
+                                    $datefield = 'date-field';
+                                    break;
+                            }
                         }
                         
                         echo "<th ".($value['input_type'] == 'textarea' || $value['input_type'] == 'ckeditor'?"style='min-width:200px;'":"")." class='".$hideKeyQuery." ".$datefield."'>";
@@ -442,8 +452,14 @@
 								if(!empty($mydetails))
 								{
 									$emptybrowse = 1;
-									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']).(!empty($broketotal)?' ('.$broketotal.' pcs)':'');
-                                    echo '<p>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).'</p>';
+									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']);
+                                    
+                                    if($shortkey == 'diamond')
+                                    {
+                                        $outputResult .= ' '.$diamondType[$mydetails['EntryMeta']['product_type']];
+                                    }
+                                    
+                                    echo '<p>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).(!empty($broketotal)?' ('.$broketotal.' pc)':'').'</p>';
                                     echo '<input type="hidden" value="'.$mydetails['Entry']['slug'].'">';
 								}
 							}

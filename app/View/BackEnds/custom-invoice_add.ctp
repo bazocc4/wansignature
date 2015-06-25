@@ -82,20 +82,21 @@
                             if($(this).val() == 'Warehouse')
                             {
                         $('input#exhibition').closest('.control-group').hide();
-                        $('input#exhibition').val('').nextAll('input[type=hidden].exhibition').val('');
-                        $('input#warehouse').closest('.control-group').show();
+						$('input#exhibition').val('').nextAll('input[type=hidden].exhibition').val('');
+						$('input#warehouse').closest('.control-group').show();
                             }
                             else
                             {
                         $('input#warehouse').closest('.control-group').hide();
-                        $('input#warehouse').val('').nextAll('input[type=hidden].warehouse').val('');
-                        $('input#exhibition').closest('.control-group').show();
+						$('input#warehouse').val('').nextAll('input[type=hidden].warehouse').val('');
+						$('input#exhibition').closest('.control-group').show();
                             }
                         }
                     }).trigger('change');
                 }
                 
                 <?php
+                    // initialize empty rate at very first stage ...
                     if(empty($myEntry) && empty($this->request->data))
                     {
                         if($VENDOR)
@@ -128,6 +129,36 @@
                         }
                     }
                 ?>
+                
+                // Auto calculate Total Weight for Cor Client ...
+                var $sold = $('input[type=number][class^="sold_1"]');
+                if($sold.length > 0)
+                {
+                    $('input[type=number][class^="sold_1"], input[type=number][class^="x_1"], input.disc_adjustment').keyup(function(){
+                        var result = 0;
+                        $sold.each(function(i,el){
+                            var value = $(el).val();
+                            if($.isNumeric(value))
+                            {
+                                var multiplier = $('input[type=number][class^="x_1"]:eq('+i+')').val();
+                                if(!$.isNumeric(multiplier))
+                                {
+                                    multiplier = 1;
+                                }
+                                
+                                result += parseFloat(value) * parseFloat(multiplier);
+                            }
+                        });
+                        
+                        var discount = $('input.disc_adjustment').val();
+                        if($.isNumeric(discount))
+                        {
+                            result -= parseFloat(discount);
+                        }
+                        
+                        $('input.total_weight').val(result.toFixed(2));
+                    });
+                }
 			});
 		</script>
 		<p class="notes important" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>
@@ -206,6 +237,18 @@
                     {
                         $value['validation'] .= 'not_empty|';
                     }
+                    
+                    // view mode ...
+                    if(!empty($myEntry))
+                    {
+                        $value['view_mode'] = true;
+                        
+                        if($value['key'] == 'form-sale_venue')
+                        {
+                            $value['display'] = 'none';
+                        }
+                    }
+                    
 					echo $this->element('input_'.$value['input_type'] , $value);
 				}
 			}

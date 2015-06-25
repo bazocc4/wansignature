@@ -415,18 +415,18 @@
             }
             else // client ...
             {
-                $client_x = $this->Get->meta_details($myParentEntry['EntryMeta']['client'] , 'client');
                 if($DMD)
                 {
+                    $client_x = $this->Get->meta_details($myParentEntry['EntryMeta']['client'] , 'client');
                     $client_x = $client_x['EntryMeta']['diamond_sell_x'];
                 }
                 else
                 {
                     $client_x = implode('|', array(
-                        $client_x['EntryMeta']['x_125'],
-                        $client_x['EntryMeta']['x_100'],
-                        $client_x['EntryMeta']['x_110'],
-                        $client_x['EntryMeta']['x_115'],
+                        $myParentEntry['EntryMeta']['x_125'],
+                        $myParentEntry['EntryMeta']['x_100'],
+                        $myParentEntry['EntryMeta']['x_110'],
+                        $myParentEntry['EntryMeta']['x_115'],
                     ));
                 }
                 ?>

@@ -1261,7 +1261,7 @@ class EntriesController extends AppController {
 					$this->Entry->save($this->request->data);
 				
                     // SKIP ENTRYMETA PROCESS ON SOME ENTRY_TYPE !!!
-                if(!($myEntry['Entry']['entry_type'] == 'surat-jalan' || strpos($myEntry['Entry']['entry_type'], '-payment') !== FALSE ))
+                if(!($myEntry['Entry']['entry_type'] == 'surat-jalan' || strpos($myType['Type']['slug'], '-invoice') !== FALSE ))
                 {
                     $galleryId = $myEntry['Entry']['id'];
                     if($data['gallery'])

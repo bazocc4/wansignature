@@ -2,6 +2,9 @@
 	if(is_array($data)) extract($data , EXTR_SKIP);
 	$shortkey = substr($key, 5 );
 	$validation = strtolower($validation);
+
+    // is it Diamond or Cor Jewelry group ?
+    $DMD = (strpos($myType['Type']['slug'], 'dmd-')!==FALSE?true:false);
 	
 	$required = "";
 	if(strpos($validation, 'not_empty') !== FALSE)
@@ -55,7 +58,7 @@
 		$inputsize = 'input-xlarge';
 	}
 	
-	if($shortkey == 'discount' || $shortkey == 'weight' || $shortkey == 'qty' || $shortkey == 'Bunga Cek' || $shortkey == 'loan_interest_rate' || $shortkey == 'additional_charge' || $shortkey == 'gold_loss' || strpos($shortkey , 'stock') !== FALSE)
+	if($shortkey == 'qty' || $shortkey == 'Bunga Cek' || $shortkey == 'loan_interest_rate' || $shortkey == 'additional_charge' || $shortkey == 'gold_loss' || strpos($shortkey , 'stock') !== FALSE)
 	{
 		$inputsize = 'input-mini';
 	}
@@ -89,19 +92,15 @@
         ?>
     
 	    <span class="<?php echo ($view_mode?'hide':''); ?>">
-		<input <?php echo ($maxchar > 0?'maxlength="'.$maxchar.'"':''); ?> <?php echo ($detail_type=='number'?'step="any" '.($shortkey=='amount'?'':'min="0"'):''); ?> <?php echo (!empty($readonly)?'readonly="true"':''); ?> <?php echo $required; ?> class="<?php echo $inputsize.' '.$shortkey.' '.$classtitle; ?>" type="<?php echo $detail_type; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo (isset($_POST['data'][$model][$counter]['value'])?$_POST['data'][$model][$counter]['value']:$value); ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value]"/>
+		<input <?php echo ($maxchar > 0?'maxlength="'.$maxchar.'"':''); ?> <?php echo ($detail_type=='number'?'step="any" '.($shortkey=='amount'?'':'min="0"'):''); ?> <?php echo (!empty($readonly)?'readonly="true"':''); ?> <?php echo $required; ?> class="<?php echo $shortkey.' '.$inputsize.' '.$classtitle; ?>" type="<?php echo $detail_type; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo (isset($_POST['data'][$model][$counter]['value'])?$_POST['data'][$model][$counter]['value']:$value); ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value]"/>
         </span>
 		<?php
             // footer string !!
-			if($shortkey == 'discount')
-			{
-				echo '% OFF';
-			}
-			else if($shortkey == "amount")
+			if($shortkey == "amount")
 			{
                 $unit_amount = '';
                 $max_balance = '';
-                if(strpos($myType['Type']['slug'], 'dmd') !== FALSE)
+                if($DMD)
                 {
                     $unit_amount = 'USD';
                     $max_balance = 'total_price';
@@ -114,15 +113,15 @@
                 
                 echo $unit_amount.' <span style="color:red;" class="rate_amount"></span>';
 			}
-            else if($shortkey == 'total_price' || strpos($shortkey, 'balance') !== FALSE && strpos($myType['Type']['slug'], 'dmd') !== FALSE)
+            else if($shortkey == 'total_price' || $DMD && (strpos($shortkey, 'balance') !== FALSE || $shortkey == 'disc_adjustment') )
             {
                 echo 'USD';
             }
-			else if(strpos($shortkey, 'weight') !== FALSE || strpos($shortkey, 'balance') !== FALSE && strpos($myType['Type']['slug'], 'cor') !== FALSE)
+			else if(strpos($shortkey, 'weight') !== FALSE || strpos($shortkey, 'sold_') !== FALSE || !$DMD && (strpos($shortkey, 'balance') !== FALSE || $shortkey == 'disc_adjustment') )
 			{
 				echo 'GR';
 			}
-			else if($shortkey == 'qty' || strpos($shortkey , 'stock') !== FALSE)
+			else if($shortkey == 'qty' || strpos($shortkey , 'stock') !== FALSE || $shortkey == 'total_item_sent' || $shortkey == 'total_pcs')
 			{
 				echo 'pcs';
 			}

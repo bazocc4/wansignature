@@ -145,23 +145,25 @@
                         var item_weight = gram_result;
                         gram_result = parseFloat(gram_result);
                         
-                        var client_x = $(this).find('td.form-client_x').text();
-                        if(client_x == '-')
+                        // search client X from invoice first ...
+                        var pecah_client_x = $('#client_x').val().split('|');
+                        var index_client_x = {
+                            "Italy (125%)" : 0,
+                            "Korea (100%)" : 1,
+                            "999 Simple (110%)" : 2,
+                            "999 3D (115%)" : 3,
+                        };
+
+                        var client_x = pecah_client_x[index_client_x[$(this).find('td.form-product_type p').text()]];
+                        if(!$.isNumeric(client_x))
                         {
-                            var pecah_client_x = $('#client_x').val().split('|');
-                            var index_client_x = {
-                                "Italy (125%)" : 0,
-                                "Korea (100%)" : 1,
-                                "999 Simple (110%)" : 2,
-                                "999 3D (115%)" : 3,
-                            };
-                            
-                            client_x = pecah_client_x[index_client_x[$(this).find('td.form-product_type p').text()]];
+                            client_x = $(this).find('td.form-client_x').text();
                             if(!$.isNumeric(client_x))
                             {
                                 client_x = 1;
                             }
                         }
+                        
                         gram_result *= parseFloat(client_x);
                         
                         richvalue += ' ['+item_weight+' x '+client_x+']';

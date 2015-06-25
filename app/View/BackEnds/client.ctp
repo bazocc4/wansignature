@@ -160,6 +160,18 @@
                         {                            $('input#wholesaler').val(wholesaler.text()).nextAll('input[type=hidden].wholesaler').val(wholesaler.next('input[type=hidden]').val());
                         }
 					}
+                    
+                    if($('input[type=number][class^="x_1"]').length > 0)
+                    {
+                        var $mytr = $(this);
+                        $('input[type=number][class^="x_1"]').each(function(i,el){
+                            var value = $mytr.find('td[class^="form-x_1"]:eq('+i+')').text();
+                            if($.isNumeric(value))
+                            {
+                                $(el).val(value);
+                            }
+                        });
+                    }
 
 					if(!e.isTrigger)    $.colorbox.close();
 				}

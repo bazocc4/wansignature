@@ -654,7 +654,7 @@ class GetHelper extends AppHelper
         {
             $echothis = '<strong>'.$result.'</strong>';
         }
-        else if($shortkey == 'price' || $shortkey == 'barcode' || $shortkey == 'sell_barcode')
+        else if($shortkey == 'total_price' || $shortkey == 'barcode' || $shortkey == 'sell_barcode')
         {
             $echothis = '<strong>'.toMoney($result  , true , true).' USD</strong>';
             $echothis .= '<input type="hidden" value="'.$result.'">';
@@ -664,15 +664,11 @@ class GetHelper extends AppHelper
             $echothis = '<strong>'.toMoney($result  , true , true).'</strong>';
             $echothis .= '<input type="hidden" value="'.$result.'">';
         }
-        else if(strpos($shortkey,'weight') !== FALSE)
+        else if(strpos($shortkey,'weight') !== FALSE || strpos($shortkey,'sold_1') !== FALSE)
         {
             $echothis = '<strong>'.$result.' gr</strong>';
         }
-        else if($shortkey == 'discount')
-        {
-            $echothis = $result.'% OFF';
-        }
-        else if($shortkey == 'qty' || strpos($shortkey , 'stock') !== FALSE)    
+        else if($shortkey == 'qty' || strpos($shortkey , 'stock') !== FALSE || $shortkey == 'total_pcs' || $shortkey == 'total_item_sent')    
         {
             $echothis = '<h5>'.$result.' pc</h5>';
         }

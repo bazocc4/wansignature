@@ -296,15 +296,15 @@
                         
                         if($shortkey == 'exhibition_destination')
                         {
-                            echo '<th>destination</th>';
+                            echo '<th class="product-field">destination</th>';
                         }
                         else if($shortkey == 'cor_vendor_invoice')
                         {
-                            echo '<th>invoice</th>';
+                            echo '<th class="date-field">invoice</th>';
                         }
                         else if($shortkey == 'exhibition_origin')
                         {
-                            echo '<th>origin</th>';
+                            echo '<th class="product-field">origin</th>';
                         }
 					}
 				}
@@ -497,34 +497,41 @@
                                 echo '<input type="hidden" value="'.$entrydetail['Entry']['slug'].'">';
                                 
                                 echo '<p>';                                
-                                // Try to use Primary EntryMeta first !!
-                                $targetMetaKey = NULL;
-                                foreach($entrydetail['EntryMeta'] as $metakey => $metavalue)
+                                if($entrydetail['Entry']['entry_type'] == 'exhibition')
                                 {
-                                    if(substr($metavalue['key'] , 0 , 5) == 'form-')
-                                    {
-                                        $targetMetaKey = $metakey;
-                                        break;
-                                    }
-                                }
-                                
-                                if(isset($targetMetaKey))
-                                {
-                                    // test if value is a date value or not !!
-                                    if(strtotime($entrydetail['EntryMeta'][$targetMetaKey]['value']) && !is_numeric($entrydetail['EntryMeta'][$targetMetaKey]['value']))
-                                    {
-                                        echo date_converter($entrydetail['EntryMeta'][$targetMetaKey]['value'] , $mySetting['date_format']);
-                                    }
-                                    else
-                                    {
-                                        echo $entrydetail['EntryMeta'][$targetMetaKey]['value'];
-                                    }
+                                    echo (!empty($entrydetail['EntryMeta']['start_date'])?date_converter($entrydetail['EntryMeta']['start_date'], $mySetting['date_format']):'[start date]').' s/d '.(!empty($entrydetail['EntryMeta']['end_date'])?date_converter($entrydetail['EntryMeta']['end_date'], $mySetting['date_format']):'[end date]');
                                 }
                                 else
                                 {
-                                    $description = nl2br($entrydetail['Entry']['description']);
-                            	    echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description);
-                                }                                
+                                    // Try to use Primary EntryMeta first !!
+                                    $targetMetaKey = NULL;
+                                    foreach($entrydetail['EntryMeta'] as $metakey => $metavalue)
+                                    {
+                                        if(substr($metavalue['key'] , 0 , 5) == 'form-')
+                                        {
+                                            $targetMetaKey = $metakey;
+                                            break;
+                                        }
+                                    }
+
+                                    if(isset($targetMetaKey))
+                                    {
+                                        // test if value is a date value or not !!
+                                        if(strtotime($entrydetail['EntryMeta'][$targetMetaKey]['value']) && !is_numeric($entrydetail['EntryMeta'][$targetMetaKey]['value']))
+                                        {
+                                            echo date_converter($entrydetail['EntryMeta'][$targetMetaKey]['value'] , $mySetting['date_format']);
+                                        }
+                                        else
+                                        {
+                                            echo $entrydetail['EntryMeta'][$targetMetaKey]['value'];
+                                        }
+                                    }
+                                    else
+                                    {
+                                        $description = nl2br($entrydetail['Entry']['description']);
+                                        echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description);
+                                    }
+                                }
                                 echo '</p>';
 							}
                         }

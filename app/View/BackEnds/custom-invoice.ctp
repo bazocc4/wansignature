@@ -215,7 +215,7 @@ $('input#warehouse-origin').val($warehouse.find('h5').text()).nextAll('input.war
 				}
 			}
 		?>
-		<th>
+		<th class="date-field">
 		    <?php
                 echo $this->Html->link($titlekey.' ('.$totalList.')'.($_SESSION['order_by'] == 'title ASC'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == 'title DESC'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$_SESSION['order_by'] == 'title ASC'?"z_to_a":"a_to_z"));
             ?>
@@ -247,18 +247,31 @@ $('input#warehouse-origin').val($warehouse.find('h5').text()).nextAll('input.war
                         }
                         
                         $datefield = '';
-                        switch($value['input_type'])
+                        if($shortkey == 'warehouse' || $shortkey == 'exhibition')
                         {
-                            case 'datepicker':
-                            case 'datetimepicker':
-                            case 'multidate':
-                                $datefield = 'date-field';
-                                break;
+                            $datefield = 'product-field';
+                        }
+                        else
+                        {
+                            switch($value['input_type'])
+                            {
+                                case 'datepicker':
+                                case 'datetimepicker':
+                                case 'multidate':
+                                    $datefield = 'date-field';
+                                    break;
+                            }
                         }
                         
                         echo "<th ".($value['input_type'] == 'textarea' || $value['input_type'] == 'ckeditor'?"style='min-width:200px;'":"")." class='".$hideKeyQuery." ".$datefield."'>";
                         echo $this->Html->link(string_unslug($shortkey).($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' asc'?" desc":" asc") ));
 						echo "</th>";
+                        
+                        if($shortkey == 'date')
+                        {
+                            echo '<th>payment status</th>';
+                            echo '<th>delivery status</th>';
+                        }
 					}
 				}
 			}
@@ -323,7 +336,7 @@ $('input#warehouse-origin').val($warehouse.find('h5').text()).nextAll('input.war
 		$orderlist .= $value['Entry']['sort_order'].",";
 	?>	
 	<tr class="orderlist" alt="<?php echo $value['Entry']['id']; ?>">
-		<td class="main-title">
+		<td>
 			<?php
 				if($imageUsed == 1)
 				{
@@ -426,7 +439,17 @@ $('input#warehouse-origin').val($warehouse.find('h5').text()).nextAll('input.war
 						}
                         else if($value10['input_type'] == 'browse')
                         {
-                        	$entrydetail = $this->Get->meta_details($displayValue , get_slug($shortkey));
+                            $entrytype = '';
+                            if($shortkey == 'wholesaler')
+                            {
+                                $entrytype = 'client';
+                            }
+                            else
+                            {
+                                $entrytype = get_slug($shortkey);
+                            }
+                            
+                        	$entrydetail = $this->Get->meta_details($displayValue , $entrytype);
 							if(empty($entrydetail))
 							{
 								echo $displayValue;
@@ -437,43 +460,110 @@ $('input#warehouse-origin').val($warehouse.find('h5').text()).nextAll('input.war
 								echo '<h5>'.(empty($popup)?$this->Html->link($outputResult,array("controller"=>"entries","action"=>$entrydetail['Entry']['entry_type']."/edit/".$entrydetail['Entry']['slug']),array('target'=>'_blank')):$outputResult).'</h5>';
                                 echo '<input type="hidden" value="'.$entrydetail['Entry']['slug'].'">';
                                 
-                                echo '<p>';                                
-                                // Try to use Primary EntryMeta first !!
-                                $targetMetaKey = NULL;
-                                foreach($entrydetail['EntryMeta'] as $metakey => $metavalue)
+                                echo '<p>';
+                                if($entrydetail['Entry']['entry_type'] == 'exhibition')
                                 {
-                                    if(substr($metavalue['key'] , 0 , 5) == 'form-')
-                                    {
-                                        $targetMetaKey = $metakey;
-                                        break;
-                                    }
-                                }
-                                
-                                if(isset($targetMetaKey))
-                                {
-                                    // test if value is a date value or not !!
-                                    if(strtotime($entrydetail['EntryMeta'][$targetMetaKey]['value']) && !is_numeric($entrydetail['EntryMeta'][$targetMetaKey]['value']))
-                                    {
-                                        echo date_converter($entrydetail['EntryMeta'][$targetMetaKey]['value'] , $mySetting['date_format']);
-                                    }
-                                    else
-                                    {
-                                        echo $entrydetail['EntryMeta'][$targetMetaKey]['value'];
-                                    }
+                                    echo (!empty($entrydetail['EntryMeta']['start_date'])?date_converter($entrydetail['EntryMeta']['start_date'], $mySetting['date_format']):'[start date]').' s/d '.(!empty($entrydetail['EntryMeta']['end_date'])?date_converter($entrydetail['EntryMeta']['end_date'], $mySetting['date_format']):'[end date]');
                                 }
                                 else
                                 {
-                                    $description = nl2br($entrydetail['Entry']['description']);
-                            	    echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description);
-                                }                                
+                                    // Try to use Primary EntryMeta first !!
+                                    $targetMetaKey = NULL;
+                                    foreach($entrydetail['EntryMeta'] as $metakey => $metavalue)
+                                    {
+                                        if(substr($metavalue['key'] , 0 , 5) == 'form-')
+                                        {
+                                            $targetMetaKey = $metakey;
+                                            break;
+                                        }
+                                    }
+
+                                    if(isset($targetMetaKey))
+                                    {
+                                        // test if value is a date value or not !!
+                                        if(strtotime($entrydetail['EntryMeta'][$targetMetaKey]['value']) && !is_numeric($entrydetail['EntryMeta'][$targetMetaKey]['value']))
+                                        {
+                                            echo date_converter($entrydetail['EntryMeta'][$targetMetaKey]['value'] , $mySetting['date_format']);
+                                        }
+                                        else
+                                        {
+                                            echo $entrydetail['EntryMeta'][$targetMetaKey]['value'];
+                                        }
+                                    }
+                                    else
+                                    {
+                                        $description = nl2br($entrydetail['Entry']['description']);
+                                        echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description);
+                                    }
+                                }                     
                                 echo '</p>';
 							}
                         }
                         else
                         {
-                        	echo $this->Get->outputConverter($value10['input_type'] , $displayValue , $myImageTypeList , $shortkey);
+                            // SUPER CUSTOMIZED OUTPUT STYLE ...
+                            if($shortkey == 'sale_venue')
+                            {
+                                echo '<span class="label '.($displayValue=='Warehouse'?'label-info':'label-inverse').'">'.$displayValue.'</span>';
+                            }
+                            else if($shortkey == 'hkd_rate')
+                            {
+                                echo '<strong>'.toMoney($displayValue  , true , true).'</strong> HKD / $1 USD';
+                                echo '<input type="hidden" value="'.$displayValue.'">';
+                            }
+                            else if($shortkey == 'rp_rate')
+                            {
+                                echo 'Rp <strong>'.toMoney($displayValue  , true , true).',-</strong> / $1 USD';
+                                echo '<input type="hidden" value="'.$displayValue.'">';
+                            }
+                            else if($shortkey == 'gold_price')
+                            {
+                                echo 'Rp <strong>'.toMoney($displayValue  , true , true).',-</strong> / 1 gr Gold';
+                                echo '<input type="hidden" value="'.$displayValue.'">';
+                            }
+                            else if($shortkey == 'disc_adjustment' || $shortkey == 'payment_balance' || $shortkey == 'additional_cost')
+                            {
+                                if($DMD)
+                                {
+                                    echo '<strong>'.toMoney($displayValue  , true , true).' USD</strong>';
+                                    echo '<input type="hidden" value="'.$displayValue.'">';
+                                }
+                                else
+                                {
+                                    echo '<strong>'.$displayValue.' gr</strong>';
+                                }
+                            }
+                            else
+                            {
+                                echo $this->Get->outputConverter($value10['input_type'] , $displayValue , $myImageTypeList , $shortkey);
+                            }
                         }                        
                         echo "</td>";
+                        
+                        if($shortkey == 'date')
+                        {
+                            echo "<td class='form-payment_status'>";
+                            if($value['EntryMeta']['payment_balance'] >= $value['EntryMeta'][$DMD?'total_price':'total_weight'])
+                            {
+                                echo '<span class="label label-success">Complete</span>';
+                            }
+                            else
+                            {
+                                echo '<span class="label label-important">Pending</span>';
+                            }
+                            echo "</td>";
+                            
+                            echo "<td class='form-delivery_status'>";
+                            if($value['EntryMeta']['total_item_sent'] >= $value['EntryMeta']['total_pcs'])
+                            {
+                                echo '<span class="label label-success">Accepted</span>';
+                            }
+                            else
+                            {
+                                echo '<span class="label label-important">On Process</span>';
+                            }
+                            echo "</td>";
+                        }
 					}
 				}
 			}

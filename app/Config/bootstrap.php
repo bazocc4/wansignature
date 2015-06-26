@@ -595,6 +595,7 @@ back-up project files into zip file.
 */
 function Zip($source, $destination)
 {
+    set_time_limit(0);
 	ini_set('memory_limit', '-1'); // unlimited memory limit to process backup files.
 
 	if (!extension_loaded('zip') || !file_exists($source)) {

@@ -1,7 +1,7 @@
 <?php
 class EntriesController extends AppController {
 	public $name = 'Entries';
-    public $components = array('RequestHandler','Session','Validation','Auth');
+    public $components = array('RequestHandler','Session','Validation','Auth','PhpExcel');
 	public $helpers = array('Form', 'Html', 'Js', 'Time', 'Get','Text','Rss');
 	
 	private $backEndFolder = '/BackEnds/';
@@ -10,6 +10,16 @@ class EntriesController extends AppController {
 	public function beforeFilter(){
         parent::beforeFilter();
 		$this->Auth->allow('index');
+    }
+    
+    public function download_diamond()
+    {
+        // download diamond command here ...
+    }
+    
+    public function download_jewelry()
+    {
+        // download cor jewelry command here ...
     }
 	
 	function index() // front End view !!
@@ -244,6 +254,40 @@ class EntriesController extends AppController {
         }
         return $myTemplate;
     }
+    
+    /**
+	 * Bulk inject process to certain module from uploaded excel file.
+	 * @param array $filepath contains fullpath of excel file.
+	 * @return void
+	 * @public
+	 **/
+    function upload_diamond($filepath)
+    {
+        /**  Define how many rows we want for each "chunk" and other helper variable  **/
+        $chunkSize = $counterRow = 500;
+        $maxCols = 10;
+        
+        // BEGIN MAIN PROCESS !!
+        $this->PhpExcel->setExcelReader($filepath);
+        /**  Loop to read our worksheet in "chunk size" blocks  **/
+        for ($startRow = 4; $counterRow >= $chunkSize ; $startRow += $chunkSize)
+        {
+            $this->PhpExcel->loadWorksheet($filepath , $startRow , $chunkSize , $startRow <= $chunkSize );
+            for($counterRow = 0 ; $counterRow < $chunkSize && ($value = $this->PhpExcel->getTableData($maxCols)) ; ++$counterRow )
+            {
+                dpr($value);
+            }
+            $this->PhpExcel->freeMemory();
+        }
+        // END OF MAIN PROCESS !!
+        
+        exit;
+    }
+    
+    function upload_jewelry($filepath)
+    {
+        
+    }
 	
 	/**
 	 * target route for querying to get list of entries.
@@ -304,7 +348,31 @@ class EntriesController extends AppController {
 			}
 		}
 
-		// ========== FORM SUBMIT BULK ACTION ============
+		// ==================================== >> UPLOAD BATCH PROCESS FILE !!
+        if(!empty($this->request->data['fileurl']))
+		{
+            error_reporting(E_ALL ^ E_NOTICE);
+            if(empty($this->request->data['fileurl']['error']) && !empty($this->request->data['fileurl']['tmp_name']))
+            {
+                set_time_limit(0);
+                ini_set('memory_limit', '-1'); // unlimited memory limit to process batch.
+                
+                if($myType['Type']['slug'] == 'diamond')
+                {
+                    $this->upload_diamond($this->request->data['fileurl']['tmp_name']);
+                }
+                else if($myType['Type']['slug'] == 'cor-jewelry')
+                {
+                    $this->upload_jewelry($this->request->data['fileurl']['tmp_name']);
+                }
+                $this->Session->setFlash('Batch Process from uploaded excel file has been executed successfully.','success');
+            }
+            else
+            {
+                $this->Session->setFlash('Batch Process <strong>could not be executed</strong> due to some error from uploaded excel file.<br>Please contact the administrator and try again.','failed');
+            }
+		}
+        // ========== FORM SUBMIT BULK ACTION ============
 		if(!empty($this->request->data['action']))
 		{
 			$pecah = explode(',', $this->request->data['record']);
@@ -798,9 +866,6 @@ class EntriesController extends AppController {
 		
 		// for image input type reason...
 		$data['myImageTypeList'] = $this->EntryMeta->embedded_img_meta('type');
-		
-		// IS ALLOWING ORDER CHANGE OR NOT ??
-		$data['isOrderChange'] = 0;
 		
 		// --------------------------------------------- LANGUAGE OPTION LINK ------------------------------------------ //
 		if(!empty($myEntry) && count($this->mySetting['language']) > 1)

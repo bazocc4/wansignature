@@ -69,26 +69,7 @@
                 }
             }
         
-			<?php if($isOrderChange == 1): ?>
-				// table sortable
-				$("table.list tbody").sortable({ opacity: 0.6, cursor: 'move',
-					stop: function(event, ui) {
-						var tmp = '';
-						// construct
-						$('table.list tbody tr.orderlist').each(function(){
-							tmp += $(this).attr('alt') + ',';
-						});
-						$.ajaxSetup({cache: false});
-						$.post(site+'entries/reorder_list',{
-							src_order: $('input[type=hidden]#determine').val(),
-							dst_order: tmp,
-                            lang: $('a#lang_identifier').text().toLowerCase()
-						});
-					}
-				});
-			<?php else: ?>
-				$('table#myTableList tr').css('cursor' , 'default');
-			<?php endif; ?>
+			$('table#myTableList tr').css('cursor' , 'default');
 
 			// submit bulk action checkbox !!
 			if($('form#global-action').length > 0)
@@ -471,7 +452,15 @@
                         }
                         else
                         {
-                        	echo $this->Get->outputConverter($value10['input_type'] , $displayValue , $myImageTypeList , $shortkey);
+                            // SUPER CUSTOMIZED OUTPUT STYLE ...
+                            if($shortkey == 'logistic_type')
+                            {
+                                echo '<span class="label '.($displayValue=='Supporting'?'label-inverse':'label-important').'">'.$displayValue.'</span>';
+                            }
+                            else
+                            {
+                                echo $this->Get->outputConverter($value10['input_type'] , $displayValue , $myImageTypeList , $shortkey);
+                            }
                         }                        
                         echo "</td>";
 					}

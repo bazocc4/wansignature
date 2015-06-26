@@ -672,6 +672,18 @@ class GetHelper extends AppHelper
         {
             $echothis = '<h5>'.$result.' pc</h5>';
         }
+        else if($shortkey == 'loan_interest_rate')
+        {
+            $echothis = $result.'% / month';
+        }
+        else
+        {
+            // last check based on numeric type or not ...
+            if(is_numeric($result))
+            {
+                $echothis = '<strong>'.$result.'</strong>';
+            }
+        }
         
 		return $echothis;
 	}

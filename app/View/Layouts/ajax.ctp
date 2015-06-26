@@ -22,7 +22,7 @@
     $(document).ready(function(){
         // initialize bootstrap tooltip !!
         $('[data-toggle=tooltip]').not('[data-original-title]').tooltip({
-            container: 'body',
+            container: ($('#cboxContent').length>0&&$('#cboxContent').is(':visible')?'#cboxContent':'body'),
             html: true,
         }).each(function(){
             $(this).attr('title' , $(this).attr('alt') );

@@ -24,6 +24,9 @@
                 
                 'Warehouse' => 'btn btn-mini btn-primary text-uppercase',
                 'Exhibition' => 'btn btn-mini btn-inverse text-uppercase',
+                
+                'Supporting' => 'btn btn-mini btn-inverse text-uppercase',
+                'Souvenir' => 'btn btn-mini btn-danger text-uppercase',
             );
 
 			$value = isset($_POST['data'][$model][$counter]['value'])?$_POST['data'][$model][$counter]['value']:$value;

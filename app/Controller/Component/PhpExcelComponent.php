@@ -12,6 +12,7 @@ class PhpExcelComponent extends Component {
      * @var PHPExcel
      */
     protected $_xls;
+    protected $_objReader;
 
     /**
      * Pointer to current row
@@ -48,6 +49,14 @@ class PhpExcelComponent extends Component {
 
         return $this;
     }
+    
+    public function setExcelReader($inputPath) {
+        // load vendor classes
+        App::import('Vendor', 'phpexcel');
+        
+        $inputFileType = PHPExcel_IOFactory::identify($inputPath);
+        $this->_objReader = PHPExcel_IOFactory::createReader($inputFileType);
+    }
 
     /**
      * Create new worksheet from existing file
@@ -55,13 +64,40 @@ class PhpExcelComponent extends Component {
      * @param string $file path to excel file to load
      * @return $this for method chaining
      */
-    public function loadWorksheet($file , $startrow = 1) {
+    public function loadWorksheet($file , $startRow = 1, $chunkSize = 0, $import = TRUE , $sheet = 0) {
         // load vendor classes
-        App::import('Vendor', 'phpexcel');
+        if($import)    App::import('Vendor', 'phpexcel');
+        
+        if($chunkSize > 0 && !empty($this->_objReader))
+        {
+            // load ChunkReadFilter class ...
+            if($import)     App::import('Vendor', 'chunkreadfilter');
+            
+            /**  Create a new Instance of our Read Filter, passing in the limits on which rows we want to read  **/
+	        $chunkFilter = new ChunkReadFilter($startRow,$chunkSize);
+            
+            /**  Tell the Reader that we want to use the new Read Filter that we've just Instantiated  **/
+	        $this->_objReader->setReadFilter($chunkFilter);
+        }
 
-        $this->_xls = PHPExcel_IOFactory::load($file);
-        $this->setActiveSheet(0);
-        $this->_row = $startrow;
+        $this->_xls = ( empty($this->_objReader) ? PHPExcel_IOFactory::load($file) : $this->_objReader->load($file) );
+        
+        if(isset($chunkFilter))
+        {
+            $this->setActiveSheet($sheet , TRUE);
+            
+            if($import)
+            {
+                $spreadsheetInfo = $this->_objReader->listWorksheetInfo($file);
+                $this->_maxRow = $spreadsheetInfo[$sheet]['totalRows'];
+            }
+        }
+        else // general use...
+        {
+            $this->setActiveSheet($sheet);
+        }
+        
+        $this->_row = $startRow;
 
         return $this;
     }
@@ -88,9 +124,16 @@ class PhpExcelComponent extends Component {
      * @param int $sheet
      * @return $this for method chaining
      */
-    public function setActiveSheet($sheet) {
-        $this->_maxRow = $this->_xls->setActiveSheetIndex($sheet)->getHighestRow();
-        $this->_row = 1;
+    public function setActiveSheet($sheet , $strict = FALSE) {
+        if($strict)
+        {
+            $this->_xls->setActiveSheetIndex($sheet);
+        }
+        else
+        {
+            $this->_maxRow = $this->_xls->setActiveSheetIndex($sheet)->getHighestRow();
+            $this->_row = 1;
+        }
 
         return $this;
     }
@@ -356,7 +399,9 @@ class PhpExcelComponent extends Component {
      * @return void
      */
     public function freeMemory() {
+        // This must be called before unsetting to prevent memory leaks
         $this->_xls->disconnectWorksheets();
+        // Again, unset variables to free up memory
         unset($this->_xls);
     }
     

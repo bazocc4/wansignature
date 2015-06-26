@@ -24,6 +24,33 @@
 		echo $this->element('admin_header', array('extensionPaging' => $extensionPaging));
 		echo '<div class="inner-content '.(empty($popup)?'':'layout-content-popup').'" id="inner-content">';
 		echo '<div class="autoscroll" id="ajaxed">';
+        ?>
+		<script type="text/javascript" language="javascript">
+			function checkfile(sender) 
+			{
+			    var validExts = new Array(".xls",".xlsx");
+			    var fileExt = sender.value;
+			    fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
+			    if (validExts.indexOf(fileExt) < 0) {
+			    	
+			      alert("Invalid file selected, valid files are of " +
+			               validExts.toString() + " types.");
+			               
+			      $(sender).val("");
+			               
+			      return false;
+			    }
+			    else return true;
+			}
+			
+			$(document).ready(function(){
+				// modify element header view !!
+				$('div.inner-header > div:last').prepend("<a data-toggle='tooltip' href='"+site+"entries/download_jewelry' title='Download Cor Jewelry List' class='btn btn-inverse right-btn fr'><i class='icon-download-alt icon-white'></i> Download</a>");
+				
+				$('div.inner-header > div:last > div:last').before("<div class='btn-group'><form accept='application/vnd.ms-excel' accept-charset='utf-8' method='post' enctype='multipart/form-data' action='#' style='margin:0 0 10px 0;'><input REQUIRED type='file' accept='.xls,.xlsx' name='data[fileurl]' onchange='checkfile(this);'><input class='btn' type='submit' value='Upload'></form></div>"); 
+			});
+		</script>
+		<?php
 	}
 	else
 	{
@@ -69,26 +96,7 @@
                 }
             }
         
-			<?php if($isOrderChange == 1): ?>
-				// table sortable
-				$("table.list tbody").sortable({ opacity: 0.6, cursor: 'move',
-					stop: function(event, ui) {
-						var tmp = '';
-						// construct
-						$('table.list tbody tr.orderlist').each(function(){
-							tmp += $(this).attr('alt') + ',';
-						});
-						$.ajaxSetup({cache: false});
-						$.post(site+'entries/reorder_list',{
-							src_order: $('input[type=hidden]#determine').val(),
-							dst_order: tmp,
-                            lang: $('a#lang_identifier').text().toLowerCase()
-						});
-					}
-				});
-			<?php else: ?>
-				$('table#myTableList tr').css('cursor' , 'default');
-			<?php endif; ?>
+			$('table#myTableList tr').css('cursor' , 'default');
 
 			// submit bulk action checkbox !!
 			if($('form#global-action').length > 0)

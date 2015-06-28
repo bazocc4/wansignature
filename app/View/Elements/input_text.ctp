@@ -117,7 +117,7 @@
             {
                 echo 'USD';
             }
-			else if(strpos($shortkey, 'weight') !== FALSE || strpos($shortkey, 'sold_') !== FALSE || !$DMD && (strpos($shortkey, 'balance') !== FALSE || $shortkey == 'disc_adjustment') )
+			else if(strpos($shortkey, 'weight') !== FALSE || strpos($shortkey, 'sold_1') !== FALSE || !$DMD && (strpos($shortkey, 'balance') !== FALSE || $shortkey == 'disc_adjustment') )
 			{
 				echo 'GR';
 			}

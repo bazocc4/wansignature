@@ -258,37 +258,50 @@ class EntriesController extends AppController {
     /**
 	 * Bulk inject process to certain module from uploaded excel file.
 	 * @param array $filepath contains fullpath of excel file.
+     * @param array $myTypeSlug contains type slug of module related.
 	 * @return void
 	 * @public
 	 **/
-    function upload_diamond($filepath)
+    function read_excel($filepath, $myTypeSlug)
     {
         /**  Define how many rows we want for each "chunk" and other helper variable  **/
-        $chunkSize = $counterRow = 500;
-        $maxCols = 10;
+        $chunkSize = $counterRow = 100;
+        $maxCols = 71;
+        $printSpace = array('', '&nbsp;','&nbsp;&nbsp;', '&nbsp;&nbsp;&nbsp;', '&nbsp;&nbsp;&nbsp;&nbsp;');
+        $intervalSpace = count($printSpace) - 1;
         
         // BEGIN MAIN PROCESS !!
         $this->PhpExcel->setExcelReader($filepath);
         /**  Loop to read our worksheet in "chunk size" blocks  **/
-        for ($startRow = 4; $counterRow >= $chunkSize ; $startRow += $chunkSize)
+        for ($startRow = 4, $counterChunk = 0; $counterRow >= $chunkSize ; $startRow += $chunkSize, ++$counterChunk)
         {
-            $this->PhpExcel->loadWorksheet($filepath , $startRow , $chunkSize , $startRow <= $chunkSize );
+            // Firstly, print loading process ...
+            dpr('Processing Excel record : '.$startRow.' - '.($startRow + $chunkSize - 1).' '.$printSpace[abs( (floor($counterChunk / $intervalSpace) % 2) * $intervalSpace - ($counterChunk % $intervalSpace) )].'... Please wait a moment ...');
+            scrollBottomWithFlush();
+            
+            // begin load worksheet ...
+            $this->PhpExcel->loadWorksheet($filepath , $startRow , $chunkSize , empty($counterChunk) );
             for($counterRow = 0 ; $counterRow < $chunkSize && ($value = $this->PhpExcel->getTableData($maxCols)) ; ++$counterRow )
             {
-                dpr($value);
+                // trim all value first !!
+                $value = array_map('trim', $value);
+                
+                if($myTypeSlug == 'diamond')
+                {
+                    $this->EntryMeta->upload_diamond($value, $this->mySetting);
+                }
+                else if($myTypeSlug == 'cor-jewelry')
+                {
+                    $this->EntryMeta->upload_jewelry($value, $this->mySetting);
+                }
             }
             $this->PhpExcel->freeMemory();
+            
+            exit;
         }
         // END OF MAIN PROCESS !!
-        
-        exit;
     }
     
-    function upload_jewelry($filepath)
-    {
-        
-    }
-	
 	/**
 	 * target route for querying to get list of entries.
 	 * @return void
@@ -356,16 +369,9 @@ class EntriesController extends AppController {
             {
                 set_time_limit(0);
                 ini_set('memory_limit', '-1'); // unlimited memory limit to process batch.
-                
-                if($myType['Type']['slug'] == 'diamond')
-                {
-                    $this->upload_diamond($this->request->data['fileurl']['tmp_name']);
-                }
-                else if($myType['Type']['slug'] == 'cor-jewelry')
-                {
-                    $this->upload_jewelry($this->request->data['fileurl']['tmp_name']);
-                }
+                $this->read_excel($this->request->data['fileurl']['tmp_name'], $myType['Type']['slug']);
                 $this->Session->setFlash('Batch Process from uploaded excel file has been executed successfully.','success');
+                redirectUsingScript($_SERVER['REQUEST_URI']);
             }
             else
             {

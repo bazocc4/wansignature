@@ -119,6 +119,20 @@ function dpr($text)
 	echo '</pre>';
 }
 
+function scrollBottomWithFlush()
+{
+    echo '<script>window.scrollTo(0,document.body.scrollHeight);</script>';
+    ob_flush();
+    flush();
+}
+
+function redirectUsingScript($url)
+{
+    echo '<script type="text/javascript">window.location.href="'.$url.'";</script>';
+    echo '<noscript><meta http-equiv="refresh" content="0;url='.$url.'" /></noscript>';
+    exit;
+}
+
 /**
 	* convert formated string to display string
 	* @param string $str contains string want to be converted
@@ -324,8 +338,7 @@ function orderby_metavalue($data = array() , $metatable = NULL , $metakey , $sor
 			$tempvalue = (empty($metatable)?$value[$metakey]:$value[$metatable][$metakey]);
 			
 			// test if element value is a date value or not !!
-			$temptime = strtotime($tempvalue);
-			if($temptime !== FALSE)
+			if(!is_numeric($tempvalue) && ($temptime = strtotime($tempvalue)) )
 			{
 				$tempvalue = date('Y-m-d H:i:s' , $temptime);
 			}
@@ -390,9 +403,10 @@ function convertExcelVersion($inputPath,$outputPath)
 	* convert Excel Date to PHP Date Timestamp
     * @public
 	**/
-function excelDateToDate($readDate){
+function excelDateToDate($readDate, &$result = NULL){
     $phpexcepDate = floor($readDate)-25569; //to offset to Unix epoch
-    return strtotime("+$phpexcepDate days", mktime(0,0,0,1,1,1970));
+    $result = strtotime("+$phpexcepDate days", mktime(0,0,0,1,1,1970));
+    return $result;
 }
 
 /**

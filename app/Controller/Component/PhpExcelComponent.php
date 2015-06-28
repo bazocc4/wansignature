@@ -13,6 +13,7 @@ class PhpExcelComponent extends Component {
      */
     protected $_xls;
     protected $_objReader;
+    protected $_chunkFilter;
 
     /**
      * Pointer to current row
@@ -56,6 +57,7 @@ class PhpExcelComponent extends Component {
         
         $inputFileType = PHPExcel_IOFactory::identify($inputPath);
         $this->_objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $this->_objReader->setReadDataOnly(true);
     }
 
     /**
@@ -70,19 +72,30 @@ class PhpExcelComponent extends Component {
         
         if($chunkSize > 0 && !empty($this->_objReader))
         {
-            // load ChunkReadFilter class ...
-            if($import)     App::import('Vendor', 'chunkreadfilter');
+            if($import)
+            {
+                // load vendor classes
+                App::import('Vendor', 'chunkreadfilter');
             
-            /**  Create a new Instance of our Read Filter, passing in the limits on which rows we want to read  **/
-	        $chunkFilter = new ChunkReadFilter($startRow,$chunkSize);
+                /**  Create a new Instance of our Read Filter  **/ 
+                $this->_chunkFilter = new ChunkReadFilter();
+                
+                /**  Tell the Reader that we want to use the Read Filter  **/ 
+	            $this->_objReader->setReadFilter($this->_chunkFilter);
+            }
             
-            /**  Tell the Reader that we want to use the new Read Filter that we've just Instantiated  **/
-	        $this->_objReader->setReadFilter($chunkFilter);
+            /**  Tell the Read Filter which rows we want this iteration  **/ 
+            $this->_chunkFilter->setRows($startRow,$chunkSize);
         }
 
         $this->_xls = ( empty($this->_objReader) ? PHPExcel_IOFactory::load($file) : $this->_objReader->load($file) );
         
-        if(isset($chunkFilter))
+        // general use...
+        if(empty($this->_chunkFilter))
+        {
+            $this->setActiveSheet($sheet);
+        }
+        else // using more precision maxRow fetching ...
         {
             $this->setActiveSheet($sheet , TRUE);
             
@@ -91,10 +104,6 @@ class PhpExcelComponent extends Component {
                 $spreadsheetInfo = $this->_objReader->listWorksheetInfo($file);
                 $this->_maxRow = $spreadsheetInfo[$sheet]['totalRows'];
             }
-        }
-        else // general use...
-        {
-            $this->setActiveSheet($sheet);
         }
         
         $this->_row = $startRow;
@@ -341,7 +350,7 @@ class PhpExcelComponent extends Component {
         $data = array();
 
         for ($col = 0; $col < $max; $col++)
-            $data[] = $this->_xls->getActiveSheet()->getCellByColumnAndRow($col, $this->_row)->getValue();
+            $data[] = $this->_xls->getActiveSheet()->getCellByColumnAndRow($col, $this->_row)->getCalculatedValue();
 
         $this->_row++;
 

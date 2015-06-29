@@ -273,6 +273,10 @@ class EntriesController extends AppController {
         $printSpace = array('', '&nbsp;','&nbsp;&nbsp;', '&nbsp;&nbsp;&nbsp;', '&nbsp;&nbsp;&nbsp;&nbsp;');
         $intervalSpace = count($printSpace) - 1;
         
+        // save just created invoice (slug) from Excel !!
+        $_SESSION['vendor_invoice_code'] = array();
+        $_SESSION['client_invoice_code'] = array();
+        
         // BEGIN MAIN PROCESS !!
         $this->PhpExcel->setExcelReader($filepath);
         /**  Loop to read our worksheet in "chunk size" blocks  **/
@@ -303,6 +307,9 @@ class EntriesController extends AppController {
             exit;
         }
         // END OF MAIN PROCESS !!
+        
+        unset($_SESSION['vendor_invoice_code']);
+        unset($_SESSION['client_invoice_code']);
     }
     
 	/**

@@ -175,8 +175,13 @@ class EntryMeta extends AppModel {
         }
     }
     
-    function push_general_entry(&$title, $entry_type, $complete = FALSE)
+    function push_general_entry(&$title, $entry_type, $complete = FALSE, $terms = array())
     {
+        if(empty($title))
+        {
+            return FALSE;
+        }
+        
         $query = array();
         if($complete)
         {
@@ -196,6 +201,12 @@ class EntryMeta extends AppModel {
         // check existence ...
         if(empty($query))
         {
+            if(count($terms) != count(array_filter($terms)))
+            {
+                $title = '';
+                return FALSE;
+            }
+            
             $input = array();
             $input['Entry']['entry_type'] = $entry_type;
             $input['Entry']['title'] = $title;
@@ -219,9 +230,7 @@ class EntryMeta extends AppModel {
     {
 /*
         if(isset($obj[ $entity = '' ]))
-        {
-            
-        }
+        {}
 */
         if(isset($obj['barcode']))
         {
@@ -254,45 +263,10 @@ class EntryMeta extends AppModel {
             $this->push_general_entry($obj[$entity], $entity);
         }
         
-        if(isset($obj[ $entity = 'vendor_invoice_code' ]))
+        if( isset($obj[ $entity = 'vendor' ]) )
         {
-            $query = $this->push_general_entry($obj[$entity], $entity, TRUE);
-            if(empty($query))
-            {
-                // invoice date ...
-                $invdate = '';
-                if(isset($obj['vendor_invoice_date']))
-                {
-                    if(empty($obj['vendor_invoice_date']))
-                    {
-                        $obj['vendor_invoice_date'] = date('m/d/Y');
-                    }
-                    $invdate = $obj['vendor_invoice_date'];
-                }
-                else
-                {
-                    $invdate = date('m/d/Y');
-                }
-                
-                $input = array();
-                $input['EntryMeta']['entry_id'] = $this->Entry->id;
-                $input['EntryMeta']['key'] = 'form-date';
-                $input['EntryMeta']['value'] = $invdate;
-                $this->EntryMeta->create();
-                $this->EntryMeta->save($input);
-            }
-            else // origin query existed ...
-            {
-                if(isset($obj['vendor_invoice_date']))
-                {
-                    $obj['vendor_invoice_date'] = $query['EntryMeta']['date'];
-                }
-            }
-        }
-        
-        if(isset($obj[ $entity = 'vendor' ]))
-        {
-            if(empty($this->push_general_entry($obj[$entity], $entity)))
+            $query = $this->push_general_entry($obj[$entity], $entity);
+            if($query !== FALSE && empty($query))
             {
                 if($myTypeSlug == 'diamond' && !empty($obj['vendor_x']))
                 {
@@ -305,6 +279,72 @@ class EntryMeta extends AppModel {
                 }
             }
         }
+        
+        if(isset($obj[ $entity = 'vendor_invoice_code' ]))
+        {
+            $query = $this->push_general_entry($obj[$entity], $entity, TRUE, array(
+                $obj['vendor'], $obj['warehouse']
+            ));
+            if($query !== FALSE)
+            {
+                if(empty($query))
+                {
+                    // register $_SESSION ...
+                    array_push($_SESSION['vendor_invoice_code'], $obj[$entity] );
+
+                    // invoice date ...
+                    $invdate = '';
+                    if(isset($obj['vendor_invoice_date']))
+                    {
+                        if(empty($obj['vendor_invoice_date']))
+                        {
+                            $obj['vendor_invoice_date'] = date('m/d/Y');
+                        }
+                        $invdate = $obj['vendor_invoice_date'];
+                    }
+                    else
+                    {
+                        $invdate = date('m/d/Y');
+                    }
+
+                    $input = array();
+                    $input['EntryMeta']['entry_id'] = $this->Entry->id;
+                    $input['EntryMeta']['key'] = 'form-date';
+                    $input['EntryMeta']['value'] = $invdate;
+                    $this->EntryMeta->create();
+                    $this->EntryMeta->save($input);
+
+                    // invoice vendor ...
+                    $input['EntryMeta']['key'] = 'form-vendor';
+                    $input['EntryMeta']['value'] = $obj['vendor'];
+                    $this->EntryMeta->create();
+                    $this->EntryMeta->save($input);
+                    
+                    // invoice warehouse ...
+                    $input['EntryMeta']['key'] = 'form-warehouse';
+                    $input['EntryMeta']['value'] = $obj['warehouse'];
+                    $this->EntryMeta->create();
+                    $this->EntryMeta->save($input);
+
+                }
+                else // origin query existed ...
+                {
+                    if(isset($obj['vendor_invoice_date']))
+                    {
+                        $obj['vendor_invoice_date'] = $query['EntryMeta']['date'];
+                    }
+                    
+                    $obj['vendor'] = $query['EntryMeta']['vendor'];
+                    
+                    if(empty($obj['warehouse']))
+                    {
+                        $obj['warehouse'] = $query['EntryMeta']['warehouse'];
+                    }
+                }
+            }
+        }
+        
+        
     }
     
     function upload_diamond($value = array(), $mySetting = array())

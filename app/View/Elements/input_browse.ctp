@@ -21,6 +21,14 @@
     {
         $browse_slug = 'usd-rate';
     }
+    else if($shortkey == 'vendor_invoice_code')
+    {
+        $browse_slug = ( $myType['Type']['slug'] == 'diamond' ? 'dmd-vendor-invoice' : 'cor-vendor-invoice' );
+    }
+    else if($shortkey == 'client_invoice_code')
+    {
+        $browse_slug = ( $myType['Type']['slug'] == 'diamond' ? 'dmd-client-invoice' : 'cor-client-invoice' );
+    }
     else
     {
         $browse_slug = $browse_alias;
@@ -110,7 +118,7 @@
                     }
                     else if($metaDetails['Entry']['entry_type'] == 'vendor')
                     {
-                        echo ' / '.strtoupper($metaDetails['EntryMeta']['kode_vendor']).' / '.nl2br($metaDetails['EntryMeta']['alamat']).' / '.$metaDetails['EntryMeta']['telepon'];
+                        echo ' / '.nl2br($metaDetails['EntryMeta']['alamat']).' / '.$metaDetails['EntryMeta']['telepon'];
                     }
                     else if(strpos($metaDetails['Entry']['entry_type'] , '-invoice') !== FALSE)
                     {

@@ -335,7 +335,7 @@ $('input#warehouse-origin').val($warehouse.find('h5').text()).nextAll('input.war
 					if($descriptionUsed == 1 && !empty($value['Entry']['description']))
 					{
 						$description = nl2br($value['Entry']['description']);
-						echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description);
+						echo (strlen($description) > 30? '<a href="#" data-placement="right" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description);
 					}
 				?>
 			</p>

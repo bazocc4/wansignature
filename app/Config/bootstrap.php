@@ -347,7 +347,7 @@ function orderby_metavalue($data = array() , $metatable = NULL , $metakey , $sor
 		}
 	}
 	
-	array_multisort($valuesort , ($sortorder == "ASC"?SORT_ASC:SORT_DESC) , $keysort);
+	array_multisort(array_map('trim', $valuesort) , ($sortorder == "ASC"?SORT_ASC:SORT_DESC) , $keysort);
 	return array_map(function($value) use ($data){ return $data[$value]; } , $keysort);
 }
 

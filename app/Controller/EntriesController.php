@@ -264,6 +264,9 @@ class EntriesController extends AppController {
 	 **/
     function read_excel($filepath, $myTypeSlug)
     {
+        set_time_limit(0); // unlimited time limit execution.
+        ini_set('memory_limit', '-1'); // unlimited memory limit to process batch.
+                
         /**  Define how many rows we want for each "chunk" and other helper variable  **/
         $chunkSize = $counterRow = 100;
         $maxCols = 71;
@@ -367,8 +370,6 @@ class EntriesController extends AppController {
             error_reporting(E_ALL ^ E_NOTICE);
             if(empty($this->request->data['fileurl']['error']) && !empty($this->request->data['fileurl']['tmp_name']))
             {
-                set_time_limit(0);
-                ini_set('memory_limit', '-1'); // unlimited memory limit to process batch.
                 $this->read_excel($this->request->data['fileurl']['tmp_name'], $myType['Type']['slug']);
                 $this->Session->setFlash('Batch Process from uploaded excel file has been executed successfully.','success');
                 redirectUsingScript($_SERVER['REQUEST_URI']);

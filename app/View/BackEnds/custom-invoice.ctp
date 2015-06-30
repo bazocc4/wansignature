@@ -232,6 +232,10 @@ $('input#warehouse-origin').val($warehouse.find('h5').text()).nextAll('input.war
                         {
                             $datefield = 'product-field';
                         }
+                        else if($shortkey == 'vendor')
+                        {
+                            $datefield = 'date-field';
+                        }
                         else
                         {
                             switch($value['input_type'])

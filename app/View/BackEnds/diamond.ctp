@@ -24,33 +24,37 @@
 		echo $this->element('admin_header', array('extensionPaging' => $extensionPaging));
 		echo '<div class="inner-content '.(empty($popup)?'':'layout-content-popup').'" id="inner-content">';
 		echo '<div class="autoscroll" id="ajaxed">';
-        ?>
-		<script type="text/javascript" language="javascript">
-			function checkfile(sender) 
-			{
-			    var validExts = new Array(".xls",".xlsx");
-			    var fileExt = sender.value;
-			    fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
-			    if (validExts.indexOf(fileExt) < 0) {
-			    	
-			      alert("Invalid file selected, valid files are of " +
-			               validExts.toString() + " types.");
-			               
-			      $(sender).val("");
-			               
-			      return false;
-			    }
-			    else return true;
-			}
-			
-			$(document).ready(function(){
-				// modify element header view !!
-				$('div.inner-header > div:last').prepend("<a data-toggle='tooltip' href='"+site+"entries/download_diamond' title='Download Diamond List' class='btn btn-inverse right-btn fr'><i class='icon-download-alt icon-white'></i> Download</a>");
-				
-				$('div.inner-header > div:last > div:last').before("<div class='btn-group'><form accept='application/vnd.ms-excel' accept-charset='utf-8' method='post' enctype='multipart/form-data' action='#' style='margin:0 0 10px 0;'><input REQUIRED type='file' accept='.xls,.xlsx' name='data[fileurl]' onchange='checkfile(this);'><input class='btn' type='submit' value='Upload'></form></div>"); 
-			});
-		</script>
-		<?php
+        
+        if(empty($popup))
+        {
+            ?>
+            <script type="text/javascript" language="javascript">
+                function checkfile(sender) 
+                {
+                    var validExts = new Array(".xls",".xlsx");
+                    var fileExt = sender.value;
+                    fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
+                    if (validExts.indexOf(fileExt) < 0) {
+
+                      alert("Invalid file selected, valid files are of " +
+                               validExts.toString() + " types.");
+
+                      $(sender).val("");
+
+                      return false;
+                    }
+                    else return true;
+                }
+
+                $(document).ready(function(){
+                    // modify element header view !!
+                    $('div.inner-header > div:last').prepend("<a data-toggle='tooltip' href='"+site+"entries/download_diamond' title='Download Diamond List' class='btn btn-inverse right-btn fr'><i class='icon-download-alt icon-white'></i> Download</a>");
+
+                    $('div.inner-header > div:last > div:last').before("<div class='btn-group'><form accept='application/vnd.ms-excel' accept-charset='utf-8' method='post' enctype='multipart/form-data' action='#' style='margin:0 0 10px 0;'><input REQUIRED type='file' accept='.xls,.xlsx' name='data[fileurl]' onchange='checkfile(this);'><input class='btn' type='submit' value='Upload'></form></div>"); 
+                });
+            </script>
+            <?php
+        }
 	}
 	else
 	{
@@ -164,8 +168,8 @@
                         var vendor_rate = '';
                         if(currency == 'HKD')
                         {
-                            vendor_rate = ($.isNumeric($('input.hkd_rate').val())?$('input.hkd_rate').val():1);
-                            usd_result /= parseFloat(vendor_rate);                            
+                            vendor_rate = ($.isNumeric($('input.hkd_rate').val())?$('input.hkd_rate').val():7.75);
+                            usd_result /= parseFloat(vendor_rate);
                             vendor_rate = ' / '+vendor_rate;
                         }
                         

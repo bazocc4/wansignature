@@ -19,7 +19,7 @@
 	font-style: normal;
 }
 
-div.loading {width: 100%; height: 400px; overflow: hidden; background: transparent url('../../img/loading.gif') center center no-repeat;}
+div.loading {width: 100%; height: 400px; overflow: hidden; background: transparent url('../../img/loading.gif') 50% 100px no-repeat;}
 
 /*bootstrap tweaked*/
 .btn.active {

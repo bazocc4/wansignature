@@ -4,7 +4,7 @@
 	$validation = strtolower($validation);
 
     // is it Diamond or Cor Jewelry group ?
-    $DMD = (strpos($myType['Type']['slug'], 'dmd-')!==FALSE?true:false);
+    $DMD = ( strpos($myType['Type']['slug'], 'cor-')===FALSE ? true : false );
 	
 	$required = "";
 	if(strpos($validation, 'not_empty') !== FALSE)

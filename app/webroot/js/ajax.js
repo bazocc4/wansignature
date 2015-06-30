@@ -382,7 +382,13 @@ function openRequestedSinglePopup(strUrl , targetName)
 		
 		$.ajaxSetup({cache: false});
 		ajax_con.empty();
-		ajax_con.html(spinner).load(url , ajax_params , function(){
+        if($('input#searchMe').length > 0)  $('input#searchMe').focus();
+		ajax_con.html(spinner).load(url , ajax_params , function( response, status, xhr ){
+            if(status == "error")
+            {
+                ajax_con.html("<h2 style='height:200px;' class='alert alert-danger'>Sorry, but there was an error: " + xhr.status + " " + xhr.statusText + ".<br>Please refresh this page and try again.</h2>");
+                return false;
+            }
 			if(!(setpaging == 'media' || $("div.layout-header-popup").length > 0))
 			{
 				history.pushState(null, '', url);

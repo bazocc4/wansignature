@@ -165,7 +165,7 @@ class EntryMeta extends AppModel {
         $input['EntryMeta']['entry_id'] = $query['Entry']['id'];
         foreach($obj as $objKey => $objValue )
         {
-            if(!empty($objValue))
+            if(!empty($objValue) && substr($objKey, 0, 5) != 'form-')
             {
                 $input['EntryMeta']['key'] = 'form-'.$objKey;
                 $input['EntryMeta']['value'] = $objValue;
@@ -301,7 +301,7 @@ class EntryMeta extends AppModel {
         
         if(isset($obj[ $entity = 'vendor_invoice_code' ]))
         {
-            $query = $this->push_general_entry($obj[$entity], ($myTypeSlug=='diamond'?'dmd-vendor-invoice':'cor-vendor-invoice') , TRUE, array($obj['vendor'], $obj['warehouse']), $obj['vendor_note']);
+            $query = $this->push_general_entry($obj[$entity], ($myTypeSlug=='diamond'?'dmd-vendor-invoice':'cor-vendor-invoice') , TRUE, array($obj['vendor'], $obj['warehouse'], (empty($obj['return_date'])?1:0) ), $obj['vendor_note']);
             if($query !== FALSE)
             {
                 if(empty($query))
@@ -453,18 +453,85 @@ class EntryMeta extends AppModel {
             }
         }
         
-        if(isset($obj[ $entity = 'client' ]))
+        if( isset($obj[ $entity = 'wholesaler' ]) )
         {
-            
+            $query = $this->push_general_entry($obj[$entity], $entity, TRUE);
+            if($query !== FALSE)
+            {
+                $input = array();
+                $input['EntryMeta']['entry_id'] = ( empty($query) ? $this->Entry->id : $query['Entry']['id'] );
+                    
+                // kode pelanggan ...
+                if(!empty($obj['form-kode_pelanggan']) && empty($query['EntryMeta']['kode_pelanggan']))
+                {
+                    $input['EntryMeta']['key'] = 'form-kode_pelanggan';
+                    $input['EntryMeta']['value'] = $obj['form-kode_pelanggan'];
+                    $this->EntryMeta->create();
+                    $this->EntryMeta->save($input);
+                }
+                
+                // pernah ambil dari WH mana saja ...
+                if(!empty($obj['warehouse']))
+                {
+                    if(empty($query['EntryMeta']['warehouse']))
+                    {
+                        $input['EntryMeta']['key'] = 'form-warehouse';
+                        $input['EntryMeta']['value'] = $obj['warehouse'];
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save($input);
+                    }
+                    else // update record ...
+                    {
+                        foreach($query['EntryMeta'] as $tempKey => $tempValue)
+                        {
+                            if($tempValue['key'] == 'form-warehouse')
+                            {
+                                $this->EntryMeta->id = $tempValue['id'];
+                                $this->EntryMeta->saveField('value', $tempValue['value'].'|'.$obj['warehouse'] );
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                if(empty($query))
+                {
+                    // kategori pelanggan ...
+                    $input['EntryMeta']['key'] = 'form-kategori';
+                    $input['EntryMeta']['value'] = 'Wholesaler';
+                    $this->EntryMeta->create();
+                    $this->EntryMeta->save($input);
+                    
+                    // client X
+                    if($myTypeSlug == 'diamond')
+                    {
+                        $wholesale_x = ( empty($obj['form-diamond_sell_x']) ? $obj['client_x'] : $obj['form-diamond_sell_x'] );
+                        if(!empty($wholesale_x))
+                        {
+                            $input['EntryMeta']['key'] = 'form-diamond_sell_x';
+                            $input['EntryMeta']['value'] = $wholesale_x;
+                            $this->EntryMeta->create();
+                            $this->EntryMeta->save($input);
+                        }
+                    }
+                }
+            }
         }
+        
+        if(isset($obj[ $entity = '' ]))
+        {}
     }
     
     function upload_diamond($value = array(), $mySetting = array())
     {
-        if(!is_numeric($value[1]))
+        $test_title = intval($value[1]);
+        if(empty($test_title))
         {
             return false; // skip record ...
         }
+        
+        // renew title !!
+        $value[1] = substr( $test_title + 1000000 , 1);
         
         // grouping value ...
         $dmd = array(
@@ -504,8 +571,10 @@ class EntryMeta extends AppModel {
             
             /* EVERYTHING ABOUT WAN TRANSACTIONS */
             'wholesaler'            => $value[47],
-            'client_x'              => ( is_numeric($value[51]) ? round(floatval($value[51]), 2) : round(floatval($value[48]), 2) ),
+            'form-diamond_sell_x'   => round(floatval($value[48]), 2),
+            'form-kode_pelanggan'   => strtoupper($value[49]),
             'client'                => $value[50],
+            'client_x'              => round(floatval($value[51]), 2),
             'client_invoice_date'   => ( excelDateToDate($value[53], $rawDate) ? date('m/d/Y', $rawDate ) : '' ),
             'client_invoice_code'   => strtoupper($value[54]),
             'total_sold_price'      => round(floatval( str_ireplace( array('USD','US',',') , '', $value[55] ) ), 2),

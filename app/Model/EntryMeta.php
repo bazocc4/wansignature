@@ -449,7 +449,7 @@ class EntryMeta extends AppModel {
         
         if( isset($obj[ $entity = 'wholesaler' ]) )
         {
-            $query = $this->push_general_entry($obj[$entity], $entity, TRUE);
+            $query = $this->push_general_entry($obj[$entity], 'client', TRUE);
             if($query !== FALSE)
             {
                 $input = array();

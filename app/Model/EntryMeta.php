@@ -221,10 +221,9 @@ class EntryMeta extends AppModel {
         else
         {
             $title = $query['Entry']['slug'];
-            
-            if(!empty($description))
+            $this->Entry->id = $query['Entry']['id'];
+            if(!empty($description) && stripos($query['Entry']['description'], $description) === FALSE)
             {
-                $this->Entry->id = $query['Entry']['id'];
                 $this->Entry->saveField('description', $query['Entry']['description'].chr(10).$description);
             }
         }
@@ -274,9 +273,14 @@ class EntryMeta extends AppModel {
             $query = $this->push_general_entry($obj[$entity], $entity, TRUE);
             if($query !== FALSE)
             {
-                if(empty($query))
+                // get / push capital X
+                if($myTypeSlug == 'diamond')
                 {
-                    if($myTypeSlug == 'diamond' && !empty($obj['vendor_x']))
+                    if(empty($obj['vendor_x']) && !empty($query['EntryMeta']['capital_x']) )
+                    {
+                        $obj['vendor_x'] = $query['EntryMeta']['capital_x'];
+                    }
+                    else if(!empty($obj['vendor_x']) && empty($query['EntryMeta']['capital_x']))
                     {
                         $input = array();
                         $input['EntryMeta']['entry_id'] = $this->Entry->id;
@@ -284,16 +288,6 @@ class EntryMeta extends AppModel {
                         $input['EntryMeta']['value'] = $obj['vendor_x'];
                         $this->EntryMeta->create();
                         $this->EntryMeta->save($input);
-                    }
-                }
-                else // get capital X
-                {
-                    if($myTypeSlug == 'diamond')
-                    {
-                        if(empty($obj['vendor_x']) && !empty($query['EntryMeta']['capital_x']) )
-                        {
-                            $obj['vendor_x'] = $query['EntryMeta']['capital_x'];
-                        }
                     }
                 }
             }
@@ -459,7 +453,7 @@ class EntryMeta extends AppModel {
             if($query !== FALSE)
             {
                 $input = array();
-                $input['EntryMeta']['entry_id'] = ( empty($query) ? $this->Entry->id : $query['Entry']['id'] );
+                $input['EntryMeta']['entry_id'] = $this->Entry->id;
                     
                 // kode pelanggan ...
                 if(!empty($obj['form-kode_pelanggan']) && empty($query['EntryMeta']['kode_pelanggan']))
@@ -482,28 +476,19 @@ class EntryMeta extends AppModel {
                     }
                     else // update record ...
                     {
-                        foreach($query['EntryMeta'] as $tempKey => $tempValue)
+                        // check WH already existed or not ...
+                        if(strpos( '|'.$query['EntryMeta']['warehouse'].'|', '|'.$obj['warehouse'].'|' ) === FALSE)
                         {
-                            if($tempValue['key'] == 'form-warehouse')
-                            {
-                                $this->EntryMeta->id = $tempValue['id'];
-                                $this->EntryMeta->saveField('value', $tempValue['value'].'|'.$obj['warehouse'] );
-                                break;
-                            }
+                            $this->EntryMeta->id = $query['EntryMeta'][array_search('form-warehouse', array_column($query['EntryMeta'], 'key'))]['id'];
+                            $this->EntryMeta->saveField('value', $query['EntryMeta']['warehouse'].'|'.$obj['warehouse'] );
                         }
                     }
                 }
                 
-                if(empty($query))
+                // client X
+                if($myTypeSlug == 'diamond')
                 {
-                    // kategori pelanggan ...
-                    $input['EntryMeta']['key'] = 'form-kategori';
-                    $input['EntryMeta']['value'] = 'Wholesaler';
-                    $this->EntryMeta->create();
-                    $this->EntryMeta->save($input);
-                    
-                    // client X
-                    if($myTypeSlug == 'diamond')
+                    if(empty($query['EntryMeta']['diamond_sell_x']))
                     {
                         $wholesale_x = ( empty($obj['form-diamond_sell_x']) ? $obj['client_x'] : $obj['form-diamond_sell_x'] );
                         if(!empty($wholesale_x))
@@ -515,11 +500,264 @@ class EntryMeta extends AppModel {
                         }
                     }
                 }
+                
+                if(empty($query))
+                {
+                    // kategori pelanggan ...
+                    $input['EntryMeta']['key'] = 'form-kategori';
+                    $input['EntryMeta']['value'] = 'Wholesaler';
+                    $this->EntryMeta->create();
+                    $this->EntryMeta->save($input);
+                }
             }
         }
         
-        if(isset($obj[ $entity = '' ]))
-        {}
+        if(isset($obj[ $entity = 'client_x' ]))
+        {
+            if(empty($obj[$entity]))    $obj[$entity] = $obj['form-diamond_sell_x'];
+        }
+        
+        if(isset($obj[ $entity = 'client' ]))
+        {
+            $query = $this->push_general_entry($obj[$entity], $entity, TRUE);
+            if($query !== FALSE)
+            {
+                $input = array();
+                $input['EntryMeta']['entry_id'] = $this->Entry->id;
+                
+                // pernah ambil dari WH mana saja ...
+                if(!empty($obj['warehouse']))
+                {
+                    if(empty($query['EntryMeta']['warehouse']))
+                    {
+                        $input['EntryMeta']['key'] = 'form-warehouse';
+                        $input['EntryMeta']['value'] = $obj['warehouse'];
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save($input);
+                    }
+                    else // update record ...
+                    {
+                        // check WH already existed or not ...
+                        if(strpos( '|'.$query['EntryMeta']['warehouse'].'|', '|'.$obj['warehouse'].'|' ) === FALSE)
+                        {
+                            $this->EntryMeta->id = $query['EntryMeta'][array_search('form-warehouse', array_column($query['EntryMeta'], 'key'))]['id'];
+                            $this->EntryMeta->saveField('value', $query['EntryMeta']['warehouse'].'|'.$obj['warehouse'] );
+                        }
+                    }
+                }
+                
+                // client X
+                if($myTypeSlug == 'diamond')
+                {
+                    if(empty($query['EntryMeta']['diamond_sell_x']) && !empty($obj['client_x']))
+                    {
+                        $input['EntryMeta']['key'] = 'form-diamond_sell_x';
+                        $input['EntryMeta']['value'] = $obj['client_x'];
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save($input);
+                    }
+                    else if(!empty($query['EntryMeta']['diamond_sell_x']) && empty($obj['client_x']))
+                    {
+                        $obj['client_x'] = $query['EntryMeta']['diamond_sell_x'];
+                    }
+                }
+                
+                // wholesaler ...
+                if(empty($query['EntryMeta']['wholesaler']) && !empty($obj['wholesaler']))
+                {
+                    $input['EntryMeta']['key'] = 'form-wholesaler';
+                    $input['EntryMeta']['value'] = $obj['wholesaler'];
+                    $this->EntryMeta->create();
+                    $this->EntryMeta->save($input);
+                }
+                else if(!empty($query['EntryMeta']['wholesaler']) && empty($obj['wholesaler']))
+                {
+                    $obj['wholesaler'] = $query['EntryMeta']['wholesaler'];
+                }
+                
+                if(empty($query))
+                {
+                    // kategori pelanggan ...
+                    $input['EntryMeta']['key'] = 'form-kategori';
+                    $input['EntryMeta']['value'] = (empty($obj['wholesaler'])?'End User':'Retailer');
+                    $this->EntryMeta->create();
+                    $this->EntryMeta->save($input);
+                }
+            }
+            else // ambil wholesaler sbg client ...
+            {
+                $obj['client'] = $obj['wholesaler'];
+                unset($obj['wholesaler']);
+            }
+        }
+        
+        if(isset($obj[ $entity = 'client_invoice_code' ]))
+        {
+            $query = $this->push_general_entry($obj[$entity], ($myTypeSlug=='diamond'?'dmd-client-invoice':'cor-client-invoice') , TRUE, array($obj['client'], $obj['warehouse'] ), $obj['form-description']);
+            if($query !== FALSE)
+            {
+                $input = array();
+                $input['EntryMeta']['entry_id'] = $this->Entry->id;
+                
+                // invoice wholesaler ...
+                if(empty($query['EntryMeta']['wholesaler']))
+                {
+                    if(!empty($obj['wholesaler']))
+                    {
+                        $input['EntryMeta']['key'] = 'form-wholesaler';
+                        $input['EntryMeta']['value'] = $obj['wholesaler'];
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save($input);
+                    }
+                }
+                else
+                {
+                    $obj['wholesaler'] = $query['EntryMeta']['wholesaler'];
+                }
+                
+                if(empty($query))
+                {
+                    // register $_SESSION ...
+                    if(empty($obj['client_invoice_pcs']) && empty($obj['client_invoice_sold_24k']))
+                    {
+                        array_push($_SESSION['client_invoice_code'], $obj[$entity] );
+                    }
+
+                    // invoice date ...
+                    $invdate = '';
+                    if(isset($obj['client_invoice_date']))
+                    {
+                        if(empty($obj['client_invoice_date']))
+                        {
+                            $obj['client_invoice_date'] = date('m/d/Y');
+                        }
+                        $invdate = $obj['client_invoice_date'];
+                    }
+                    else
+                    {
+                        $invdate = date('m/d/Y');
+                    }
+                    
+                    $input['EntryMeta']['key'] = 'form-date';
+                    $input['EntryMeta']['value'] = $invdate;
+                    $this->EntryMeta->create();
+                    $this->EntryMeta->save($input);
+
+                    // invoice client ...
+                    $input['EntryMeta']['key'] = 'form-client';
+                    $input['EntryMeta']['value'] = $obj['client'];
+                    $this->EntryMeta->create();
+                    $this->EntryMeta->save($input);
+                    
+                    // invoice sale venue ...
+                    $input['EntryMeta']['key'] = 'form-sale_venue';
+                    $input['EntryMeta']['value'] = 'Warehouse';
+                    $this->EntryMeta->create();
+                    $this->EntryMeta->save($input);
+                    
+                    // invoice warehouse ...
+                    $input['EntryMeta']['key'] = 'form-warehouse';
+                    $input['EntryMeta']['value'] = $obj['warehouse'];
+                    $this->EntryMeta->create();
+                    $this->EntryMeta->save($input);
+                    
+                    // invoice total Pcs ...
+                    $input['EntryMeta']['key'] = 'form-total_pcs';
+                    $input['EntryMeta']['value'] = ( empty($obj['client_invoice_pcs']) ? 1 : $obj['client_invoice_pcs'] );
+                    $this->EntryMeta->create();
+                    $this->EntryMeta->save($input);
+                    
+                    // invoice total Item Sent (with same value as total PCS) ...
+                    $input['EntryMeta']['key'] = 'form-total_item_sent';
+                    $this->EntryMeta->create();
+                    $this->EntryMeta->save($input);
+                    
+                    if($myTypeSlug == 'diamond')
+                    {
+                        // IDR rate ...
+                        if(empty($obj['rp_rate']))
+                        {
+                            // query database rate ...
+                            $query_rate = $this->Entry->meta_details(NULL , 'usd-rate' , NULL , NULL , NULL , NULL , 'IDR');
+                            $obj['rp_rate'] = ( empty($query_rate) ? 12800 : $query_rate['EntryMeta']['rate_value'] );
+                        }
+                        $input['EntryMeta']['key'] = 'form-rp_rate';
+                        $input['EntryMeta']['value'] = $obj['rp_rate'];
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save($input);
+                        
+                        // Total Price ...
+                        if(empty($obj['total_sold_price']))
+                        {
+                            $obj['total_sold_price'] = ( empty($obj['sell_barcode']) ? $obj['barcode'] : $obj['sell_barcode'] ) * (empty($obj['client_x'])?1:$obj['client_x']);
+                        }
+                        $input['EntryMeta']['key'] = 'form-total_price';
+                        $input['EntryMeta']['value'] = $obj['total_sold_price'];
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save($input);
+                        
+                        // invoice payment balance (CUSTOM CASE: even if 0, record must be created) ...
+                        $input['EntryMeta']['key'] = 'form-payment_balance';
+                        $input['EntryMeta']['value'] = $obj['sold_price_usd'] + round($obj['sold_price_rp'] / $obj['rp_rate'], 2);
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save($input);
+                    }
+                }
+                else // origin query existed ...
+                {
+                    if(isset($obj['client_invoice_date']))
+                    {
+                        $obj['client_invoice_date'] = $query['EntryMeta']['date'];
+                    }
+                    
+                    $obj['client'] = $query['EntryMeta']['client'];
+                    
+                    if(empty($obj['warehouse']))
+                    {
+                        $obj['warehouse'] = $query['EntryMeta']['warehouse'];
+                    }
+                    
+                    if(isset($obj['rp_rate']) && empty($obj['rp_rate']))
+                    {
+                        $obj['rp_rate'] = $query['EntryMeta']['rp_rate'];
+                    }
+                    
+                    if(in_array($obj['client_invoice_code'], $_SESSION['client_invoice_code']))
+                    {
+                        foreach($query['EntryMeta'] as $tempKey => $tempValue)
+                        {
+                            if($tempValue['key'] == 'form-total_pcs' || $tempValue['key'] == 'form-total_item_sent')
+                            {
+                                $this->EntryMeta->id = $tempValue['id'];
+                                $this->EntryMeta->saveField('value', $tempValue['value'] + 1);
+                            }
+                            else if($tempValue['key'] == 'form-total_price')
+                            {
+                                if(empty($obj['total_sold_price']))
+                                {
+                                    $obj['total_sold_price'] = ( empty($obj['sell_barcode']) ? $obj['barcode'] : $obj['sell_barcode'] ) * (empty($obj['client_x'])?1:$obj['client_x']);
+                                }
+
+                                $this->EntryMeta->id = $tempValue['id'];
+                                $this->EntryMeta->saveField('value', $tempValue['value'] + $obj['total_sold_price']);
+                            }
+                            else if($tempValue['key'] == 'form-payment_balance')
+                            {
+                                if($myTypeSlug == 'diamond')
+                                {
+                                    $paybal = $obj['sold_price_usd'] + round($obj['sold_price_rp'] / $obj['rp_rate'], 2);
+                                    if(!empty($paybal))
+                                    {
+                                        $this->EntryMeta->id = $tempValue['id'];
+                                        $this->EntryMeta->saveField('value', $tempValue['value'] + $paybal);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } // end of entity client_invoice_code ...
     }
     
     function upload_diamond($value = array(), $mySetting = array())
@@ -581,6 +819,7 @@ class EntryMeta extends AppModel {
             'sold_price_usd'        => round(floatval( str_ireplace( array('USD','US',',') , '', $value[56] ) ), 2),
             'sold_price_rp'         => intval($value[57]),
             'rp_rate'               => intval($value[58]),
+            'form-description'      => $value[59], // client outstanding ...
             
             /* TYPE OF PAYMENT */
             'payment_credit_card'   => $value[60],
@@ -598,7 +837,7 @@ class EntryMeta extends AppModel {
         $this->sync_product($dmd, 'diamond');
         
         // push product to database ...
-        $this->push_product($dmd, 'diamond', $value[1] , $value[59]);
+        $this->push_product($dmd, 'diamond', $value[1] , $dmd['form-description']);
     }
     
     function upload_jewelry($value = array(), $mySetting = array())

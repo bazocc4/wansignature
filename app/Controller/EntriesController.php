@@ -268,7 +268,7 @@ class EntriesController extends AppController {
         ini_set('memory_limit', '-1'); // unlimited memory limit to process batch.
                 
         /**  Define how many rows we want for each "chunk" and other helper variable  **/
-        $chunkSize = $counterRow = 100;
+        $chunkSize = $counterRow = 50;
         $maxCols = 71;
         $printSpace = array('', '&nbsp;','&nbsp;&nbsp;', '&nbsp;&nbsp;&nbsp;', '&nbsp;&nbsp;&nbsp;&nbsp;');
         $intervalSpace = count($printSpace) - 1;
@@ -303,11 +303,10 @@ class EntriesController extends AppController {
                 }
             }
             $this->PhpExcel->freeMemory();
-            
-            exit;
         }
         // END OF MAIN PROCESS !!
         
+        // unset temp $_SESSION ...
         unset($_SESSION['vendor_invoice_code']);
         unset($_SESSION['client_invoice_code']);
     }

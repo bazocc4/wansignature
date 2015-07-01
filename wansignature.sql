@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.24, for Win32 (x86)
+-- MySQL dump 10.13  Distrib 5.6.21, for Win32 (x86)
 --
 -- Host: localhost    Database: wansignature
 -- ------------------------------------------------------
--- Server version	5.6.24
+-- Server version	5.6.21
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -46,7 +46,7 @@ CREATE TABLE `cms_accounts` (
 
 LOCK TABLES `cms_accounts` WRITE;
 /*!40000 ALTER TABLE `cms_accounts` DISABLE KEYS */;
-INSERT INTO `cms_accounts` VALUES (1,1,1,'Admin Basuki','admin@yahoo.com','169e781bd52860b584879cbe117085da596238f3','2015-06-30 20:00:30','2013-01-04 00:00:00',1,'2014-05-05 15:15:38',1);
+INSERT INTO `cms_accounts` VALUES (1,1,1,'Admin Basuki','admin@yahoo.com','169e781bd52860b584879cbe117085da596238f3','2015-07-01 09:15:43','2013-01-04 00:00:00',1,'2013-01-04 00:00:00',1);
 INSERT INTO `cms_accounts` VALUES (2,2,2,'Andy Basuki','andybasuki88@gmail.com','d82dff1679e0137a0bab60cc67cc6a2ad36f10a0','2015-06-13 11:09:54','2015-06-02 20:19:53',1,'2015-06-02 20:19:53',1);
 /*!40000 ALTER TABLE `cms_accounts` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -817,7 +817,7 @@ INSERT INTO `cms_type_metas` VALUES (1372,14,'form-payment_credit_card','','text
 INSERT INTO `cms_type_metas` VALUES (1373,14,'form-payment_cicilan','','textarea','','Payment from client using bank installment (HSBC / PERMATA / CITI) 3 / 6 / 12 months.');
 INSERT INTO `cms_type_metas` VALUES (1374,14,'form-payment_cash','','textarea','','Payment from client using cash / bank transfer / debit card.');
 INSERT INTO `cms_type_metas` VALUES (1375,14,'form-payment_checks','','textarea','','Payment from client using bank checks.');
-INSERT INTO `cms_type_metas` VALUES (1376,14,'form-payment_balance','','text','','Total payment balance on this client invoice.');
+INSERT INTO `cms_type_metas` VALUES (1376,14,'form-payment_balance','','text','is_numeric|','Current payment balance on this client invoice (USD).');
 INSERT INTO `cms_type_metas` VALUES (1377,14,'form-prev_sold_price','','text','','Previous sold price.');
 INSERT INTO `cms_type_metas` VALUES (1378,14,'form-prev_barcode','','text','','Previous barcode / price tag.');
 INSERT INTO `cms_type_metas` VALUES (934,27,'category','invoice',NULL,NULL,NULL);
@@ -877,7 +877,7 @@ INSERT INTO `cms_type_metas` VALUES (1282,23,'form-sold_115','','text','is_numer
 INSERT INTO `cms_type_metas` VALUES (1283,23,'form-x_115','','text','is_numeric|','<strong>X 115</strong> factor (999 3D).');
 INSERT INTO `cms_type_metas` VALUES (1284,23,'form-disc_adjustment','','text','is_numeric|','Special discount adjustment for this invoice (gram).');
 INSERT INTO `cms_type_metas` VALUES (1157,20,'form-payment_balance','','text','is_numeric|','Current payment balance to vendor (USD).');
-INSERT INTO `cms_type_metas` VALUES (1165,21,'form-payment_balance','','text','is_numeric|','Current payment balance to vendor (gram).');
+INSERT INTO `cms_type_metas` VALUES (1165,21,'form-payment_balance','','text','is_numeric|','Current payment 24K balance to vendor (gram).');
 INSERT INTO `cms_type_metas` VALUES (1253,22,'form-client','','browse','not_empty|','');
 INSERT INTO `cms_type_metas` VALUES (1254,22,'form-wholesaler','','browse','','The wholesaler of selected client.');
 INSERT INTO `cms_type_metas` VALUES (1252,22,'form-date','','datepicker','not_empty|','Issued invoice date.');
@@ -898,7 +898,7 @@ INSERT INTO `cms_type_metas` VALUES (1263,22,'form-total_price','','text','is_nu
 INSERT INTO `cms_type_metas` VALUES (1264,22,'form-payment_balance','','text','is_numeric|','Current payment balance from client (USD).');
 INSERT INTO `cms_type_metas` VALUES (1265,22,'form-additional_cost','','text','is_numeric|','Total additional cost for this invoice (USD).');
 INSERT INTO `cms_type_metas` VALUES (1285,23,'form-total_weight','','text','is_numeric|not_empty|','Total weight of jewelries sold <strong>after discount adjustment</strong> (gram).');
-INSERT INTO `cms_type_metas` VALUES (1286,23,'form-payment_balance','','text','is_numeric|','Current payment balance from client (gram).');
+INSERT INTO `cms_type_metas` VALUES (1286,23,'form-payment_balance','','text','is_numeric|','Current payment 24K balance from client (gram).');
 INSERT INTO `cms_type_metas` VALUES (1287,23,'form-additional_cost','','text','is_numeric|','Total additional cost for this invoice (gram).');
 INSERT INTO `cms_type_metas` VALUES (1347,14,'form-vendor','','browse','','Pihak vendor yang menyediakan produk ini.');
 INSERT INTO `cms_type_metas` VALUES (1340,14,'form-exhibition','','browse','','Exhibition di mana produk ini sedang dipamerkan.');
@@ -912,8 +912,7 @@ INSERT INTO `cms_type_metas` VALUES (1379,14,'form-prev_sold_note','','textarea'
 INSERT INTO `cms_type_metas` VALUES (1406,17,'form-payment_cash','','textarea','','Payment from client using cash / bank transfer / debit card.');
 INSERT INTO `cms_type_metas` VALUES (1407,17,'form-payment_credit_card','','textarea','','Payment from client using credit card.');
 INSERT INTO `cms_type_metas` VALUES (1408,17,'form-payment_return_goods','','textarea','','Payment from client using return goods.');
-INSERT INTO `cms_type_metas` VALUES (1409,17,'form-total_payment_24k','','text','','Total payment 24K that should be paid by client (gram).');
-INSERT INTO `cms_type_metas` VALUES (1410,17,'form-payment_balance','','text','','Total payment balance on this client invoice.');
+INSERT INTO `cms_type_metas` VALUES (1410,17,'form-payment_balance','','text','is_numeric|','Current payment 24K balance on this client invoice (gram).');
 INSERT INTO `cms_type_metas` VALUES (1411,17,'form-transaction_history','','textarea','','');
 /*!40000 ALTER TABLE `cms_type_metas` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -1059,4 +1058,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-30 22:15:44
+-- Dump completed on 2015-07-01 16:48:00

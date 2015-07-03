@@ -36,8 +36,11 @@
 		{
 			$("a#<?php echo $myType['Type']['slug']; ?>").addClass("active");
 		}
-		$('input#searchMe').change(function(){
-			$('a.searchMeLink').click();
+		$('input#searchMe').keyup(function(e){
+            var code = e.keyCode || e.which;
+            if(code == 13) { //Enter keycode
+               $('a.searchMeLink').click();
+            }
 		});
 
 		// create margin-bottom !!

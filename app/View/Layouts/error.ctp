@@ -3,9 +3,9 @@
   <head>
 	<?php echo $this->Html->charset(); ?>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="author" content="<?php echo $mySetting['title']; ?>">
-	<meta name="tagline" content="<?php echo $mySetting['tagline']; ?>">
-	<meta name="description" content="<?php echo $mySetting['description']; ?>">	
+	<meta name="author" content="<?php echo $this->mySetting['title']; ?>">
+	<meta name="tagline" content="<?php echo $this->mySetting['tagline']; ?>">
+	<meta name="description" content="<?php echo $this->mySetting['description']; ?>">	
 	<title><?php echo $title_for_layout; ?></title>
 
 <!-- 		FAVICON IMAGE -->

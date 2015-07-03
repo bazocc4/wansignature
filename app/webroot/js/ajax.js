@@ -374,15 +374,14 @@ function openRequestedSinglePopup(strUrl , targetName)
 		{
 			ajax_params['search_by'] = ($('input#searchMe').val().length==0?' ':$('input#searchMe').val());
 		}
-		
-		if(myobj.attr('alt') != null && myobj.attr('alt').length>0 && altforurl==null)
+		else if(myobj.attr('alt') != null && myobj.attr('alt').length>0 && altforurl==null)
 		{
 			ajax_params['order_by'] = myobj.attr('alt');
 		}
 		
 		$.ajaxSetup({cache: false});
 		ajax_con.empty();
-        if($('input#searchMe').length > 0)  $('input#searchMe').focus();
+        if($('input#searchMe').length > 0 && $.isEmptyObject(ajax_params))  $('input#searchMe').focus();
 		ajax_con.html(spinner).load(url , ajax_params , function( response, status, xhr ){
             if(status == "error")
             {

@@ -1,7 +1,7 @@
 <?php
 class EntryMeta extends AppModel {
 	var $name = 'EntryMeta';
-	var $validate = array(
+    var $validate = array(
 		'entry_id' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
@@ -46,9 +46,9 @@ class EntryMeta extends AppModel {
 	
 	public function __construct( $id = false, $table = NULL, $ds = NULL )
 	{
-		parent::__construct($id, $table, $ds);
-		
-		// set needed database model ...
+        parent::__construct($id, $table, $ds);
+        
+        // set needed database model ...
 		$this->Type = ClassRegistry::init('Type');
 		$this->TypeMeta = ClassRegistry::init('TypeMeta');
 		$this->Entry = ClassRegistry::init('Entry');

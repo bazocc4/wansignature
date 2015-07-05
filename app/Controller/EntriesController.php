@@ -599,7 +599,7 @@ class EntriesController extends AppController {
 		if(!empty($popup) || $this->request->is('ajax'))
 		{
 			$this->layout = 'ajax';
-			$data['stream'] = (isset($this->request->query['stream'])?$this->request->query['stream']:NULL);            
+			$data['stream'] = (isset($this->request->query['stream'])?$this->request->query['stream']:NULL);
             $data['alias'] = (isset($this->request->query['alias'])?$this->request->query['alias']:NULL);
 		}	
 		if ($this->request->is('ajax') && empty($popup) || $popup == "ajax" || !empty($searchMe)) 
@@ -621,14 +621,18 @@ class EntriesController extends AppController {
 					$_SESSION['searchMe'] = $searchMe;
 				}
 			}
-			$_SESSION['lang'] = strtolower(empty($lang)?(empty($_SESSION['lang'])||empty($this->request->params['admin'])?substr($this->mySetting['language'][0], 0,2):$_SESSION['lang']):$lang);
 		} 
 		else 
 		{
 			$data['isAjax'] = 0;
 			unset($_SESSION['searchMe']);
-			$_SESSION['lang'] = strtolower(empty($lang)?substr($this->mySetting['language'][0], 0,2):$lang);
 		}
+        
+        // USING ENGLISH LANGUAGE ONLY !!
+        if(empty($_SESSION['lang']))
+        {
+            $_SESSION['lang'] = 'en';
+        }
         
 		$data['myType'] = $myType;
 		$data['paging'] = $paging;
@@ -650,10 +654,11 @@ class EntriesController extends AppController {
                 if(substr($value['key'],0,5) == 'form-' && stripos($_SESSION['order_by'] , $value['key'] ) !== FALSE)
                 {
                     $innerFieldMeta = $value['input_type'];
+                    $innerFieldMetaNumeric = strpos($value['validation'], 'is_numeric'); // for order by type !!
                     break;
                 }                    
             }
-            if(!$innerFieldMeta)
+            if(empty($innerFieldMeta))
             {
                 unset($_SESSION['order_by']);
             }
@@ -690,8 +695,7 @@ class EntriesController extends AppController {
 			}
 		}
 		
-		// our list conditions... ----------------------------------------------------------------------------------////
-		$joinEntryMeta = false;
+		// our list conditions... --------------------------------------------------------------////
 		if(empty($myEntry))
 		{
 			$options['conditions'] = array('Entry.entry_type' => $myType['Type']['slug']);
@@ -710,147 +714,162 @@ class EntriesController extends AppController {
 
 		if($myType['Type']['slug'] != 'media')
 		{
-			$options['conditions']['Entry.lang_code LIKE'] = $_SESSION['lang'].'-%';
 			$data['language'] = $_SESSION['lang'];
 		}
-
-		if( !empty($myMetaKey) )
-		{
-			$joinEntryMeta = true;            
-            if(!empty($myMetaValue))
-            {
-                $options['conditions']['SUBSTR(EntryMeta.key , 6)'] = $myMetaKey;
-                
-                $myMetaNot = '';
-                if(substr($myMetaValue , 0 , 1) == '!')
-                {
-                    $myMetaValue = substr($myMetaValue , 1);
-                    $myMetaNot = 'NOT';
-                }
-                
-                $options['conditions']['REPLACE(REPLACE(EntryMeta.value , "-" , "_"),"_"," ") '.$myMetaNot.' LIKE'] = '%'.string_unslug($myMetaValue).'%';
-            }
-            else
-            {
-                $options['conditions']['NOT'] = array(
-                    array('SUBSTR(EntryMeta.key , 6)' => $myMetaKey)
-                );
-            }
-		}
-
-		// ========================================= >>
-		// NEW FUNCTION JOIN !!
-		// ========================================= >>
-		if(!empty($_SESSION['searchMe']))
-		{	
-			if(empty($options['conditions']['OR']))
-			{
-				$options['conditions']['OR'] = array();
-			}
-			array_push($options['conditions']['OR'] , array('Entry.title LIKE' => '%'.$_SESSION['searchMe'].'%') );
-			array_push($options['conditions']['OR'] , array('Entry.description LIKE' => '%'.$_SESSION['searchMe'].'%') );
-			array_push($options['conditions']['OR'] , array('ParentEntry.title LIKE' => '%'.$_SESSION['searchMe'].'%') );
-			if($this->mySetting['table_view']=='complex')
-			{
-				$joinEntryMeta = true;
-				array_push($options['conditions']['OR'] , array('REPLACE(REPLACE(EntryMeta.value , "-" , "_"),"_"," ") LIKE' => '%'.string_unslug($_SESSION['searchMe']).'%') );
-			}
-		}
-
-		if($joinEntryMeta)
-		{
-			$options['joins'] = array(array(
-				'table' => 'entry_metas',
-	            'alias' => 'EntryMeta',
-	            'type' => 'LEFT',
-	            'conditions' => array(
-	                'Entry.id = EntryMeta.entry_id'
-	            )
-			));
-			$options['group'] = array('Entry.id');
-		}
-
-		// ========================================= >>
+        
+        // ========================================= >>
 		// FIND LAST MODIFIED !!
 		// ========================================= >>
 		$tempOpt = $options;
 		$tempOpt['order'] = array('Entry.modified DESC');
-		$lastModified = $this->Entry->find('first' , $tempOpt);
-		$data['lastModified'] = $lastModified;		
-		
+		$data['lastModified'] = $this->Entry->find('first' , $tempOpt);
+        
 		// ================================================================ >>
 		// check for description or image is used for this entry or not ??
 		// ================================================================ >>
 		$data['descriptionUsed'] = 1;
 		
 		$tempOpt = $options;
-		$tempOpt['conditions']['Entry.main_image >'] = 0;
+        array_push($tempOpt['conditions'], array('Entry.main_image >' => 0));
 		$checkSQL = $this->Entry->find('count' , $tempOpt);		
 		$data['imageUsed'] = (empty($checkSQL)?0:1);
 
-		// ========================================= >>
-		// EXECUTE MAIN QUERY !!
-		// ========================================= >>
-		$options['order'] = array('Entry.'.(isset($innerFieldMeta)||empty($_SESSION['order_by'])||empty($this->request->params['admin'])?$this->generalOrder:$_SESSION['order_by']));
-		$mysql = $this->Entry->find('all' ,$options);
-		
-		// MODIFY OUR ENTRYMETA FIRST !!		
-		foreach ($mysql as $key => $value) 
-		{
-			$mysql[$key] = $value = breakEntryMetas($value);
-			// ----------------------------------------- >>>
-            // ADDITIONAL FILTERING METHOD !!
-            // ----------------------------------------- >>>
-            if($myType['Type']['slug'] == 'logistic')
-            {
-                if(!empty($this->request->query['storage']) && !empty($this->request->query['content']) )
-                {
-                    $pecah_storage = explode('|', $value['EntryMeta'][$this->request->query['storage']]);
-                    $storage_key = key(preg_grep("/^".$this->request->query['content']."_.*/", $pecah_storage));
-                    if($storage_key >= 0)
-                    {
-                        $pecah_total = explode('_', $pecah_storage[$storage_key]);
-                        if( $pecah_total[1] < 1 )
-                        {
-                            unset($mysql[$key]);    continue;
-                        }
-                    }
-                    else
-                    {
-                        unset($mysql[$key]);    continue;
-                    }
-                }
-            }
-            else if($myType['Type']['slug'] == 'diamond' || $myType['Type']['slug'] == 'cor-jewelry')
-            {
-                if(!empty($this->request->query['storage']) && !empty($this->request->query['content']) )
-                {
-                    if(!($value['EntryMeta'][ $this->request->query['storage'] ] == $this->request->query['content'] && ($this->request->query['storage'] == 'warehouse' && stripos($value['EntryMeta']['product_status'] , 'stock') !== FALSE || $this->request->query['storage'] == 'exhibition' && stripos($value['EntryMeta']['product_status'] , 'consignment') !== FALSE)))
-                    {
-                        unset($mysql[$key]);    continue;
-                    }
-                }
-            }
-			// ----------------------------------------- >>>
-            // END OF ADDITIONAL FILTERING METHOD !!
-            // ----------------------------------------- >>>
-		}
-		$mysql = array_values($mysql);
-		
-		// Final Sort based on certain criteria !!
-        if($innerFieldMeta)
+		// ======================================== >>
+		// JOIN TABLE & ADDITIONAL FILTERING METHOD !!
+		// ======================================== >>
+        $joinEntryMeta = FALSE;
+        
+        if($myType['Type']['slug'] == 'logistic')
         {
+            if(!empty($this->request->query['storage']) && !empty($this->request->query['content']) )
+            {
+                $searchLv1 = 'EntryMeta.key_value';
+                $likeLv1 = '{#}form-'.$this->request->query['storage'].'=';
+                
+                $searchLv2 = 'CONCAT("|", SUBSTRING_INDEX(SUBSTRING_INDEX('.$searchLv1.', "'.$likeLv1.'", -1), "{#}", 1) )';
+                $likeLv2 = '|'.$this->request->query['content'].'_';
+                
+                $searchLv3 = 'SUBSTRING_INDEX( SUBSTRING_INDEX('.$searchLv2.', "'.$likeLv2.'", -1) , "|", 1 )';
+                array_push($options['conditions'], 
+                    array($searchLv1.' LIKE' => '%'.$likeLv1.'%'),
+                    array($searchLv2.' LIKE' => '%'.$likeLv2.'%'),
+                    array($searchLv3.' >=' => 1),
+                );
+            }
+        }
+//        else if($myType['Type']['slug'] == 'diamond' || $myType['Type']['slug'] == 'cor-jewelry')
+//        {
+//            if(!empty($this->request->query['storage']) && !empty($this->request->query['content']) )
+//            {
+//                if(!($value['EntryMeta'][ $this->request->query['storage'] ] == $this->request->query['content'] && ($this->request->query['storage'] == 'warehouse' && stripos($value['EntryMeta']['product_status'] , 'stock') !== FALSE || $this->request->query['storage'] == 'exhibition' && stripos($value['EntryMeta']['product_status'] , 'consignment') !== FALSE)))
+//                {
+//                    unset($mysql[$key]);    continue;
+//                }
+//            }
+//        }
+        
+        if( !empty($myMetaKey) )
+		{
+            $myMetaKey = array_map('trim', explode('|', $myMetaKey));
+            $myMetaValue = array_map('trim', explode('|', $myMetaValue));
+            
+            foreach($myMetaKey as $tempKey => $tempValue)
+            {
+                if(!empty($tempValue) && !empty($myMetaValue[$tempKey]))
+                {
+                    $joinEntryMeta = TRUE;
+                    
+                    $myMetaNot = '';
+                    if(substr($myMetaValue[$tempKey] , 0 , 1) == '!')
+                    {
+                        $myMetaValue[$tempKey] = substr($myMetaValue[$tempKey] , 1);
+                        $myMetaNot = 'NOT';
+                    }
+                    
+                    array_push($options['conditions'], array(
+                        'REPLACE(REPLACE(SUBSTRING_INDEX(SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-'.$tempValue.'=", -1), "{#}", 1) , "-" , " "),"_"," ") '.$myMetaNot.' LIKE' => '%'.string_unslug($myMetaValue[$tempKey]).'%'
+                    ));
+                    
+                    unset($myMetaKey[$tempKey]);
+                }
+            }
+            
+            $myMetaKey = array_filter($myMetaKey);
+            if(!empty($myMetaKey))
+            {
+                $joinEntryMeta = TRUE;
+                $options['conditions']['NOT'] = array_map(function($value){ return array('EntryMeta.key_value LIKE' => '%{#}form-'.$value.'=%'); }, $myMetaKey);
+            }
+		}
+        
+		if(!empty($_SESSION['searchMe']))
+		{
+            $options['conditions']['OR'] = array(
+                array('Entry.title LIKE' => '%'.$_SESSION['searchMe'].'%'), 
+                array('Entry.description LIKE' => '%'.$_SESSION['searchMe'].'%'),
+                array('ParentEntry.title LIKE' => '%'.$_SESSION['searchMe'].'%')
+            );
+            
+			if($this->mySetting['table_view']=='complex')
+			{
+                $joinEntryMeta = TRUE;
+				array_push($options['conditions']['OR'] , array('REPLACE(REPLACE(EntryMeta.key_value , "-" , " "),"_"," ") LIKE' => '%'.string_unslug($_SESSION['searchMe']).'%') );
+			}
+		}
+        
+        // ========================================= >>
+        // FINAL SORT based on certain criteria !!
+        // ========================================= >>
+        if(!empty($innerFieldMeta))
+        {
+            $joinEntryMeta = TRUE;
             $explodeSorting = explode(' ', $_SESSION['order_by']);
-            $mysql = orderby_metavalue( $mysql , 'EntryMeta', substr($explodeSorting[0] , 5) , $explodeSorting[1] , $innerFieldMeta );
+            if($innerFieldMeta == 'gallery')    $explodeSorting[0] = 'count-'.$explodeSorting[0];
+            
+            $sqlOrderValue = 'SUBSTRING_INDEX(SUBSTRING_INDEX(EntryMeta.key_value, "{#}'.$explodeSorting[0].'=", -1), "{#}", 1)';
+            if(strpos($innerFieldMeta, 'datetime') !== FALSE)
+            {
+                $sqlOrderValue = 'STR_TO_DATE('.$sqlOrderValue.', "%m/%d/%Y %H:%i")';
+            }
+            else if(strpos($innerFieldMeta, 'date') !== FALSE)
+            {
+                $sqlOrderValue = 'STR_TO_DATE('.$sqlOrderValue.', "%m/%d/%Y")';
+            }
+            else if($innerFieldMetaNumeric !== FALSE)
+            {
+                $sqlOrderValue = 'CAST('.$sqlOrderValue.' AS SIGNED)';
+            }
+            
+            $options['order'] = array('CASE WHEN EntryMeta.key_value LIKE "%{#}'.$explodeSorting[0].'=%" THEN '.$sqlOrderValue.' ELSE NULL END '.$explodeSorting[1]);
+        }
+        else 
+        {
+            $options['order'] = array('Entry.'.(isset($innerFieldMeta)||empty($_SESSION['order_by'])||empty($this->request->params['admin'])?$this->generalOrder:$_SESSION['order_by']));
         }
         
-		// SECOND FILTER GO NOW !!!
-		$data['totalList'] = count($mysql);
-        $data['myList'] = ( $paging >= 1 ? array_splice($mysql , ($paging-1) * $countPage , $countPage) : $mysql );
-
-		// set New countPage
-		$newCountPage = ceil($data['totalList'] / $countPage);
-		$data['countPage'] = $newCountPage;
+        if($joinEntryMeta)
+		{
+            $options['joins'] = array(array(
+				'table' => '(SELECT EntryMeta.entry_id, CONCAT("{#}", GROUP_CONCAT(EntryMeta.key, "=", EntryMeta.value SEPARATOR "{#}"), "{#}") as key_value FROM cms_entry_metas as EntryMeta GROUP BY EntryMeta.entry_id)',
+	            'alias' => 'EntryMeta',
+	            'type' => 'LEFT',
+	            'conditions' => array('Entry.id = EntryMeta.entry_id')
+			));
+		}
+        
+        // ========================================= >>
+		// EXECUTE MAIN QUERY !!
+		// ========================================= >>
+        $data['totalList'] = $this->Entry->find('count' ,$options);
+        if($paging >= 1)
+        {
+            $options['limit'] = $countPage;
+            $options['page'] = $paging;
+        }
+		$data['myList'] = array_map('breakEntryMetas', $this->Entry->find('all' ,$options));
+        
+        // set New countPage
+		$data['countPage'] = $newCountPage = ceil($data['totalList'] / $countPage);
 		
 		// set the paging limitation...
 		$left_limit = 1;
@@ -889,7 +908,8 @@ class EntriesController extends AppController {
 				),
                 'recursive' => -1
 			));
-			foreach ($temp100 as $key => $value) 
+            
+            foreach ($temp100 as $key => $value) 
 			{
 				$parent_language[ substr($value['Entry']['lang_code'], 0,2) ] = $value['Entry']['slug'];
 			}
@@ -941,7 +961,7 @@ class EntriesController extends AppController {
 			}
 			$data['parent_language'] = $parent_language;
 		}
-		$data['lang'] = strtolower(empty($myEntry)?(empty($_SESSION['lang'])? substr($this->mySetting['language'][0], 0,2):$_SESSION['lang']):substr($myEntry['Entry']['lang_code'], 0,2));
+		$data['lang'] = 'en'; // USING ENGLISH LANGUAGE ONLY !!
 		// ------------------------------------------ END OF LANGUAGE OPTION LINK -------------------------------------- //
 		
 		if(empty($prefield_slug))

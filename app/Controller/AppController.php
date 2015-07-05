@@ -231,7 +231,7 @@ class AppController extends Controller {
 		}
         
 		// check role if admin or not...
-		if( isset($this->request->params['admin']) && $this->request->params['admin'] == 1 && !empty($this->user) && $this->user['role_id'] > 2 )
+		if( !empty($this->request->params['admin']) && !empty($this->user) && $this->user['role_id'] > 2 )
 		{
             $this->Session->setFlash(__('Authorized access is required.'),'default',array() , 'auth');
             $this->redirect($this->Auth->logout());

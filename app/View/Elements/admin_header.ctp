@@ -159,7 +159,7 @@
 					echo $this->Html->link("<i class='icon-search'></i>",array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index','1','?'=>$extensionPaging) , array("class"=>"ajax_mypage searchMeLink","escape"=>false));
 				?>
 			</span>
-			<input style="width: 160px;" id="searchMe" class="span2" type="text" placeholder="search item here...">
+			<input style="width: 160px;" id="searchMe" class="span2" type="text" placeholder="([my_field]=)[my value]">
 		</div>
 
 		<?php

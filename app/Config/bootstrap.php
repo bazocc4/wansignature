@@ -305,50 +305,21 @@ function swap_value(&$a , &$b)
 
 function orderby_metavalue($data = array() , $metatable = NULL , $metakey , $sortorder = NULL , $input_type = NULL)
 {
-    if(empty($sortorder))
-	{
-		$sortorder = "ASC";
-	}
-	$sortorder = strtoupper($sortorder);
+    $sortorder = ( empty($sortorder) ? "ASC" : strtoupper($sortorder) );
+    if($input_type == 'gallery')    $metakey = 'count-form-'.$metakey;
+    
+    $keysort = array_keys($data);
+    $valuesort = array_map(function($value) use ($metatable, $metakey){
+        return trim(empty($metatable)?$value[$metakey]:$value[$metatable][$metakey]);
+    } , $data);
+    
+    if(strpos($input_type, 'date') !== FALSE)
+    {
+        $valuesort = array_map( function($value){ return date('Y-m-d H:i:s' , strtotime( strstr($value.'|', '|', TRUE) )); } , $valuesort);
+    }
 	
-	$keysort = array();
-	$valuesort = array();
-	
-	if($metakey == 'created' || $metakey == 'modified')
-	{
-		foreach ($data as $key => $value) 
-		{
-			array_push($keysort , $key);
-			
-			$tempvalue = (empty($metatable)?$value[$metakey]:$value[$metatable][$metakey]);
-			array_push($valuesort , $tempvalue);
-		}
-	}
-	else
-	{
-        if($input_type == 'gallery')
-        {
-            $metakey = 'count-form-'.$metakey;
-        }
-        
-		foreach ($data as $key => $value) 
-		{
-			array_push($keysort , $key);
-			
-			$tempvalue = (empty($metatable)?$value[$metakey]:$value[$metatable][$metakey]);
-			
-			// test if element value is a date value or not !!
-			if(!is_numeric($tempvalue) && ($temptime = strtotime($tempvalue)) )
-			{
-				$tempvalue = date('Y-m-d H:i:s' , $temptime);
-			}
-					
-			array_push($valuesort , $tempvalue);
-		}
-	}
-	
-	array_multisort(array_map('trim', $valuesort) , ($sortorder == "ASC"?SORT_ASC:SORT_DESC) , $keysort);
-	return array_map(function($value) use ($data){ return $data[$value]; } , $keysort);
+	array_multisort($valuesort , ($sortorder == "DESC"? SORT_DESC : SORT_ASC ) , $keysort);
+    return array_map(function($value) use ($data){ return $data[$value]; } , $keysort);
 }
 
 function parseTime($s)

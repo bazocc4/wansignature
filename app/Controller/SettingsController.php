@@ -21,6 +21,13 @@ class SettingsController extends AppController {
 	
 	function admin_index() 
 	{
+        // ===================
+        // TEST AREA here ...
+        // ===================
+        
+        // ===================
+        // END OF TEST AREA !!
+        // ===================
         $this->setTitle('Setting');
 		// if form submit is taken...
 		if(!empty($this->request->data))

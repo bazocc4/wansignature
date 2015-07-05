@@ -239,7 +239,7 @@ class EntryMeta extends AppModel {
 */
         if(isset($obj['barcode']))
         {
-            if(empty($obj['barcode']))          $obj['barcode'] = 1;
+            if(empty($obj['barcode']))          $obj['barcode'] = (empty($obj['sell_barcode'])?1:floor($obj['sell_barcode']));
         }
         
         if(isset($obj['vendor_barcode']))

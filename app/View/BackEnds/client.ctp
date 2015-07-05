@@ -336,15 +336,15 @@
 			?>
 			<input class="slug-code" type="hidden" value="<?php echo $value['Entry']['slug']; ?>" />
 			<h5 class="title-code"><?php echo (empty($popup)?$this->Html->link($value['Entry']['title'], $editUrl ):$value['Entry']['title']); ?></h5>
-			<p>
+			
 				<?php
-					if($descriptionUsed == 1 && !empty($value['Entry']['description']))
+					if(!empty($value['Entry']['description']))
 					{
 						$description = nl2br($value['Entry']['description']);
-						echo (strlen($description) > 30? '<a href="#" data-placement="right" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description);
+						echo '<p>'.(strlen($description) > 30? '<a href="#" data-placement="right" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description).'</p>';
 					}
 				?>
-			</p>
+			
 		</td>
 		<?php
 			if(empty($myEntry) && empty($popup)) // if this is a parent Entry !!

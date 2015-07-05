@@ -318,7 +318,7 @@ class EntriesController extends AppController {
 	 **/
 	function admin_index() 
 	{
-		// DEFINE THE ORDER...
+        // DEFINE THE ORDER...
 		if(!empty($this->request->data['order_by']))
 		{	
 			switch ($this->request->data['order_by']) 
@@ -720,25 +720,12 @@ class EntriesController extends AppController {
         // ========================================= >>
 		// FIND LAST MODIFIED !!
 		// ========================================= >>
-		$tempOpt = $options;
-		$tempOpt['order'] = array('Entry.modified DESC');
-		$data['lastModified'] = $this->Entry->find('first' , $tempOpt);
-        
-		// ================================================================ >>
-		// check for description or image is used for this entry or not ??
-		// ================================================================ >>
-		$data['descriptionUsed'] = 1;
-		
-		$tempOpt = $options;
-        array_push($tempOpt['conditions'], array('Entry.main_image >' => 0));
-		$checkSQL = $this->Entry->find('count' , $tempOpt);		
-		$data['imageUsed'] = (empty($checkSQL)?0:1);
+		$options['order'] = array('Entry.modified DESC');
+		$data['lastModified'] = $this->Entry->find('first' , $options);
 
 		// ======================================== >>
 		// JOIN TABLE & ADDITIONAL FILTERING METHOD !!
 		// ======================================== >>
-        $joinEntryMeta = FALSE;
-        
         if($myType['Type']['slug'] == 'logistic')
         {
             if(!empty($this->request->query['storage']) && !empty($this->request->query['content']) )
@@ -749,24 +736,23 @@ class EntriesController extends AppController {
                 $searchLv2 = 'CONCAT("|", SUBSTRING_INDEX(SUBSTRING_INDEX('.$searchLv1.', "'.$likeLv1.'", -1), "{#}", 1) )';
                 $likeLv2 = '|'.$this->request->query['content'].'_';
                 
-                $searchLv3 = 'SUBSTRING_INDEX( SUBSTRING_INDEX('.$searchLv2.', "'.$likeLv2.'", -1) , "|", 1 )';
+                $searchLv3 = 'SUBSTRING_INDEX('.$searchLv2.', "'.$likeLv2.'", -1)';
                 array_push($options['conditions'], 
                     array($searchLv1.' LIKE' => '%'.$likeLv1.'%'),
                     array($searchLv2.' LIKE' => '%'.$likeLv2.'%'),
-                    array($searchLv3.' >=' => 1),
+                    array('CAST('.$searchLv3.' AS SIGNED) >=' => 1)
                 );
             }
         }
-//        else if($myType['Type']['slug'] == 'diamond' || $myType['Type']['slug'] == 'cor-jewelry')
-//        {
-//            if(!empty($this->request->query['storage']) && !empty($this->request->query['content']) )
-//            {
-//                if(!($value['EntryMeta'][ $this->request->query['storage'] ] == $this->request->query['content'] && ($this->request->query['storage'] == 'warehouse' && stripos($value['EntryMeta']['product_status'] , 'stock') !== FALSE || $this->request->query['storage'] == 'exhibition' && stripos($value['EntryMeta']['product_status'] , 'consignment') !== FALSE)))
-//                {
-//                    unset($mysql[$key]);    continue;
-//                }
-//            }
-//        }
+        else if($myType['Type']['slug'] == 'diamond' || $myType['Type']['slug'] == 'cor-jewelry')
+        {
+            if(!empty($this->request->query['storage']) && !empty($this->request->query['content']) )
+            {
+                array_push($options['conditions'], array(
+                    'EntryMeta.key_value LIKE' => '%{#}form-product_status=%'.($this->request->query['storage'] == 'exhibition'?'consignment':'stock').'%{#}form-'.$this->request->query['storage'].'='.$this->request->query['content'].'{#}%'
+                ));
+            }
+        }
         
         if( !empty($myMetaKey) )
 		{
@@ -777,8 +763,6 @@ class EntriesController extends AppController {
             {
                 if(!empty($tempValue) && !empty($myMetaValue[$tempKey]))
                 {
-                    $joinEntryMeta = TRUE;
-                    
                     $myMetaNot = '';
                     if(substr($myMetaValue[$tempKey] , 0 , 1) == '!')
                     {
@@ -797,7 +781,6 @@ class EntriesController extends AppController {
             $myMetaKey = array_filter($myMetaKey);
             if(!empty($myMetaKey))
             {
-                $joinEntryMeta = TRUE;
                 $options['conditions']['NOT'] = array_map(function($value){ return array('EntryMeta.key_value LIKE' => '%{#}form-'.$value.'=%'); }, $myMetaKey);
             }
 		}
@@ -812,8 +795,7 @@ class EntriesController extends AppController {
             
 			if($this->mySetting['table_view']=='complex')
 			{
-                $joinEntryMeta = TRUE;
-				array_push($options['conditions']['OR'] , array('REPLACE(REPLACE(EntryMeta.key_value , "-" , " "),"_"," ") LIKE' => '%'.string_unslug($_SESSION['searchMe']).'%') );
+                array_push($options['conditions']['OR'] , array('REPLACE(REPLACE(EntryMeta.key_value , "-" , " "),"_"," ") LIKE' => '%'.string_unslug($_SESSION['searchMe']).'%') );
 			}
 		}
         
@@ -822,7 +804,6 @@ class EntriesController extends AppController {
         // ========================================= >>
         if(!empty($innerFieldMeta))
         {
-            $joinEntryMeta = TRUE;
             $explodeSorting = explode(' ', $_SESSION['order_by']);
             if($innerFieldMeta == 'gallery')    $explodeSorting[0] = 'count-'.$explodeSorting[0];
             
@@ -847,7 +828,7 @@ class EntriesController extends AppController {
             $options['order'] = array('Entry.'.(isset($innerFieldMeta)||empty($_SESSION['order_by'])||empty($this->request->params['admin'])?$this->generalOrder:$_SESSION['order_by']));
         }
         
-        if($joinEntryMeta)
+        if(strpos( serialize($options) , 'EntryMeta.key_value') !== FALSE)
 		{
             $options['joins'] = array(array(
 				'table' => '(SELECT EntryMeta.entry_id, CONCAT("{#}", GROUP_CONCAT(EntryMeta.key, "=", EntryMeta.value SEPARATOR "{#}"), "{#}") as key_value FROM cms_entry_metas as EntryMeta GROUP BY EntryMeta.entry_id)',
@@ -867,6 +848,9 @@ class EntriesController extends AppController {
             $options['page'] = $paging;
         }
 		$data['myList'] = array_map('breakEntryMetas', $this->Entry->find('all' ,$options));
+        
+        // check for image is used for this entries or not ??
+		$data['imageUsed'] = (empty(array_filter(array_column(array_column($data['myList'], 'Entry'), 'main_image')))?0:1);
         
         // set New countPage
 		$data['countPage'] = $newCountPage = ceil($data['totalList'] / $countPage);

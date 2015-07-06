@@ -730,18 +730,9 @@ class EntriesController extends AppController {
         {
             if(!empty($this->request->query['storage']) && !empty($this->request->query['content']) )
             {
-                $searchLv1 = 'EntryMeta.key_value';
-                $likeLv1 = '{#}form-'.$this->request->query['storage'].'=';
-                
-                $searchLv2 = 'CONCAT("|", SUBSTRING_INDEX(SUBSTRING_INDEX('.$searchLv1.', "'.$likeLv1.'", -1), "{#}", 1) )';
-                $likeLv2 = '|'.$this->request->query['content'].'_';
-                
-                $searchLv3 = 'SUBSTRING_INDEX('.$searchLv2.', "'.$likeLv2.'", -1)';
-                array_push($options['conditions'], 
-                    array($searchLv1.' LIKE' => '%'.$likeLv1.'%'),
-                    array($searchLv2.' LIKE' => '%'.$likeLv2.'%'),
-                    array('CAST('.$searchLv3.' AS SIGNED) >=' => 1)
-                );
+                array_push($options['conditions'], array(
+                    'CAST(SUBSTRING_INDEX(CONCAT("|", SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-'.$this->request->query['storage'].'=", -1)), "|'.$this->request->query['content'].'_", -1) AS SIGNED) >=' => 1
+                ));
             }
         }
         else if($myType['Type']['slug'] == 'diamond' || $myType['Type']['slug'] == 'cor-jewelry')
@@ -807,7 +798,7 @@ class EntriesController extends AppController {
             $explodeSorting = explode(' ', $_SESSION['order_by']);
             if($innerFieldMeta == 'gallery')    $explodeSorting[0] = 'count-'.$explodeSorting[0];
             
-            $sqlOrderValue = 'SUBSTRING_INDEX(SUBSTRING_INDEX(EntryMeta.key_value, "{#}'.$explodeSorting[0].'=", -1), "{#}", 1)';
+            $sqlOrderValue = 'TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(EntryMeta.key_value, "{#}'.$explodeSorting[0].'=", -1), "{#}", 1))';
             if(strpos($innerFieldMeta, 'datetime') !== FALSE)
             {
                 $sqlOrderValue = 'STR_TO_DATE('.$sqlOrderValue.', "%m/%d/%Y %H:%i")';

@@ -182,6 +182,7 @@ class EntryMeta extends AppModel {
             return FALSE;
         }
         
+        $entry_type = get_slug($entry_type);
         $query = array();
         if($complete)
         {

@@ -105,8 +105,14 @@ function openRequestedSinglePopup(strUrl , targetName)
     $.fn.doubleScroll = function(targetClass){        
         var scrollClass = 'double-scroll-top';
         var element = document.getElementsByClassName(targetClass)[0];        
-        if($('div.'+targetClass).prev('div.'+scrollClass).length == 0 && element.scrollWidth > element.offsetWidth )
+        if(element.scrollWidth > element.offsetWidth )
         {
+            // drop old scrollbars first if exist ...
+            if($('div.'+targetClass).prev('div.'+scrollClass).length > 0)
+            {
+                $('div.'+targetClass).prev('div.'+scrollClass).detach();
+            }
+            
             var scrollbar= document.createElement('div');
             scrollbar.appendChild(document.createElement('div'));
             scrollbar.className = scrollClass;

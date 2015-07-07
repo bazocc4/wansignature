@@ -654,9 +654,19 @@ class GetHelper extends AppHelper
         {
             $echothis = '<strong>'.$result.'</strong>';
         }
-        else if($shortkey == 'total_price' || $shortkey == 'barcode' || $shortkey == 'sell_barcode')
+        else if($shortkey == 'total_price' || $shortkey == 'barcode' || $shortkey == 'sell_barcode' || $shortkey == 'total_sold_price' || $shortkey == 'sold_price_usd' || $shortkey == 'vendor_usd')
         {
             $echothis = '<strong>'.toMoney($result  , true , true).' USD</strong>';
+            $echothis .= '<input type="hidden" value="'.$result.'">';
+        }
+        else if($shortkey == 'vendor_hkd')
+        {
+            $echothis = '<strong>'.toMoney($result  , true , true).' HKD</strong>';
+            $echothis .= '<input type="hidden" value="'.$result.'">';
+        }
+        else if($shortkey == 'sold_price_rp')
+        {
+            $echothis = '<strong>Rp '.toMoney($result  , true , true).'</strong>';
             $echothis .= '<input type="hidden" value="'.$result.'">';
         }
         else if($shortkey == 'rate_value' || $shortkey == 'vendor_barcode' || $shortkey == 'additional_cost')
@@ -675,6 +685,21 @@ class GetHelper extends AppHelper
         else if($shortkey == 'loan_interest_rate')
         {
             $echothis = $result.'% / month';
+        }
+        else if($shortkey == 'hkd_rate')
+        {
+            $echothis = '<strong>'.toMoney($result  , true , true).'</strong> HKD / $1 USD';
+            $echothis .= '<input type="hidden" value="'.$result.'">';
+        }
+        else if($shortkey == 'gold_price')
+        {
+            $echothis = 'Rp <strong>'.toMoney($result  , true , true).'</strong> / 1 gr Gold';
+            $echothis .= '<input type="hidden" value="'.$result.'">';
+        }
+        else if($shortkey == 'rp_rate')
+        {
+            $echothis = 'Rp <strong>'.toMoney($result  , true , true).'</strong> / $1 USD';
+            $echothis .= '<input type="hidden" value="'.$result.'">';
         }
         else
         {

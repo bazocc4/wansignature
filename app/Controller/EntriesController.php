@@ -269,7 +269,7 @@ class EntriesController extends AppController {
                 
         /**  Define how many rows we want for each "chunk" and other helper variable  **/
         $chunkSize = $counterRow = 50;
-        $maxCols = 71;
+        $maxCols = ( $myTypeSlug == 'diamond' ? 71 : 43 );
         $printSpace = array('', '&nbsp;','&nbsp;&nbsp;', '&nbsp;&nbsp;&nbsp;', '&nbsp;&nbsp;&nbsp;&nbsp;');
         $intervalSpace = count($printSpace) - 1;
         

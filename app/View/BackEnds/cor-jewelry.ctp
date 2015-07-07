@@ -100,7 +100,7 @@
                 }
             }
         
-			$('table#myTableList tr').css('cursor' , 'default');
+			$('table#myTableList tr').css('cursor' , 'default').click(function(e){ if($('td').is(e.target) && $(this).find('input[type=checkbox]').length > 0) $(this).find('input[type=checkbox]').click(); });
 
 			// submit bulk action checkbox !!
 			if($('form#global-action').length > 0)

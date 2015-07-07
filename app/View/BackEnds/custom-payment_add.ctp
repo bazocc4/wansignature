@@ -115,7 +115,7 @@
                             }
                             else // IDR
                             {
-                                $('span.rate_amount').html('= Rp. '+number_format(result)+',-');
+                                $('span.rate_amount').html('= Rp. '+number_format(result) );
                             }
                         }
                         else

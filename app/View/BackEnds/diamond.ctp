@@ -99,8 +99,8 @@
                     $('form#global-action').detach();
                 }
             }
-        
-			$('table#myTableList tr').css('cursor' , 'default');
+            
+			$('table#myTableList tr').css('cursor' , 'default').click(function(e){ if($('td').is(e.target) && $(this).find('input[type=checkbox]').length > 0) $(this).find('input[type=checkbox]').click(); });
 
 			// submit bulk action checkbox !!
 			if($('form#global-action').length > 0)
@@ -254,7 +254,7 @@
 				}
 			}
 		?>
-		<th>
+		<th class="date-field">
 		    <?php
                 echo $this->Html->link($titlekey.' ('.$totalList.')'.($_SESSION['order_by'] == 'title ASC'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == 'title DESC'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$_SESSION['order_by'] == 'title ASC'?"z_to_a":"a_to_z"));
             ?>
@@ -286,16 +286,27 @@
                         }
                         
                         $datefield = '';
-                        switch($value['input_type'])
+                        if($shortkey == 'carat' || $shortkey == 'item_ref_code')
                         {
-                            case 'datepicker':
-                            case 'datetimepicker':
-                            case 'multidate':
-                                $datefield = 'date-field';
-                                break;
+                            $datefield = 'date-field';
+                        }
+                        else
+                        {
+                            switch($value['input_type'])
+                            {
+                                case 'datepicker':
+                                case 'datetimepicker':
+                                case 'multidate':
+                                    $datefield = 'date-field';
+                                    break;
+                                case 'textarea':
+                                case 'ckeditor':
+                                    $datefield = 'ck-field';
+                                    break;
+                            }
                         }
                         
-                        echo "<th ".($value['input_type'] == 'textarea' || $value['input_type'] == 'ckeditor'?"style='min-width:200px;'":"")." class='".$hideKeyQuery." ".$datefield."'>";
+                        echo "<th class='".$hideKeyQuery." ".$datefield."'>";
                         echo $this->Html->link(string_unslug($shortkey).($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' asc'?" desc":" asc") ));
 						echo "</th>";
 					}
@@ -362,7 +373,7 @@
 		$orderlist .= $value['Entry']['sort_order'].",";
 	?>	
 	<tr class="orderlist" alt="<?php echo $value['Entry']['id']; ?>">
-		<td class="main-title">
+		<td>
 			<?php
 				if($imageUsed == 1)
 				{
@@ -465,7 +476,25 @@
 						}
                         else if($value10['input_type'] == 'browse')
                         {
-                        	$entrydetail = $this->Get->meta_details($displayValue , get_slug($shortkey));
+                        	$entrytype = '';
+                            if($shortkey == 'vendor_invoice_code')
+                            {
+                                $entrytype = 'dmd-vendor-invoice';
+                            }
+                            else if($shortkey == 'client_invoice_code')
+                            {
+                                $entrytype = 'dmd-client-invoice';
+                            }
+                            else if($shortkey == 'wholesaler')
+                            {
+                                $entrytype = 'client';
+                            }
+                            else
+                            {
+                                $entrytype = get_slug($shortkey);
+                            }
+                            
+                            $entrydetail = $this->Get->meta_details($displayValue , $entrytype);
 							if(empty($entrydetail))
 							{
 								echo $displayValue;
@@ -475,42 +504,11 @@
 								$outputResult = (empty($entrydetail['EntryMeta']['name'])?$entrydetail['Entry']['title']:$entrydetail['EntryMeta']['name']);
 								echo '<h5>'.(empty($popup)?$this->Html->link($outputResult,array("controller"=>"entries","action"=>$entrydetail['Entry']['entry_type']."/edit/".$entrydetail['Entry']['slug']),array('target'=>'_blank')):$outputResult).'</h5>';
                                 echo '<input type="hidden" value="'.$entrydetail['Entry']['slug'].'">';
-                                
-                                echo '<p>';                                
-                                // Try to use Primary EntryMeta first !!
-                                $targetMetaKey = NULL;
-                                foreach($entrydetail['EntryMeta'] as $metakey => $metavalue)
-                                {
-                                    if(substr($metavalue['key'] , 0 , 5) == 'form-')
-                                    {
-                                        $targetMetaKey = $metakey;
-                                        break;
-                                    }
-                                }
-                                
-                                if(isset($targetMetaKey))
-                                {
-                                    // test if value is a date value or not !!
-                                    if(strtotime($entrydetail['EntryMeta'][$targetMetaKey]['value']) && !is_numeric($entrydetail['EntryMeta'][$targetMetaKey]['value']))
-                                    {
-                                        echo date_converter($entrydetail['EntryMeta'][$targetMetaKey]['value'] , $mySetting['date_format']);
-                                    }
-                                    else
-                                    {
-                                        echo $entrydetail['EntryMeta'][$targetMetaKey]['value'];
-                                    }
-                                }
-                                else
-                                {
-                                    $description = nl2br($entrydetail['Entry']['description']);
-                            	    echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description);
-                                }                                
-                                echo '</p>';
 							}
                         }
                         else
                         {
-                        	echo $this->Get->outputConverter($value10['input_type'] , $displayValue , $myImageTypeList , $shortkey);
+                            echo $this->Get->outputConverter($value10['input_type'] , $displayValue , $myImageTypeList , $shortkey);
                         }                        
                         echo "</td>";
 					}

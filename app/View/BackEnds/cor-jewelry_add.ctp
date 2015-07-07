@@ -166,7 +166,7 @@
 		<?php
 			// Our CKEditor Description Field !!
 			$value = array();
-			$value['key'] = 'form-client_outstanding';
+			$value['key'] = 'form-description';
 			$value['validation'] = '';
 			$value['model'] = 'Entry';
 			$value['counter'] = 1;

@@ -75,7 +75,7 @@
                 }
             }
         
-			$('table#myTableList tr').css('cursor' , 'default');
+			$('table#myTableList tr').css('cursor' , 'default').click(function(e){ if($('td').is(e.target) && $(this).find('input[type=checkbox]').length > 0) $(this).find('input[type=checkbox]').click(); });
 
 			// submit bulk action checkbox !!
 			if($('form#global-action').length > 0)
@@ -490,21 +490,6 @@ $('input#warehouse-origin').val($warehouse.find('h5').text()).nextAll('input.war
                             if($shortkey == 'sale_venue')
                             {
                                 echo '<span class="label '.($displayValue=='Warehouse'?'label-info':'label-inverse').'">'.$displayValue.'</span>';
-                            }
-                            else if($shortkey == 'hkd_rate')
-                            {
-                                echo '<strong>'.toMoney($displayValue  , true , true).'</strong> HKD / $1 USD';
-                                echo '<input type="hidden" value="'.$displayValue.'">';
-                            }
-                            else if($shortkey == 'rp_rate')
-                            {
-                                echo 'Rp <strong>'.toMoney($displayValue  , true , true).',-</strong> / $1 USD';
-                                echo '<input type="hidden" value="'.$displayValue.'">';
-                            }
-                            else if($shortkey == 'gold_price')
-                            {
-                                echo 'Rp <strong>'.toMoney($displayValue  , true , true).',-</strong> / 1 gr Gold';
-                                echo '<input type="hidden" value="'.$displayValue.'">';
                             }
                             else if($shortkey == 'disc_adjustment' || $shortkey == 'payment_balance' || $shortkey == 'additional_cost')
                             {

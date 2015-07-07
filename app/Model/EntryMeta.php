@@ -212,7 +212,7 @@ class EntryMeta extends AppModel {
             $input['Entry']['entry_type'] = $entry_type;
             $input['Entry']['title'] = $title;
             $input['Entry']['slug'] = get_slug($input['Entry']['title']);
-            $input['Entry']['description'] = (empty($description)?'[Generated from Excel File]':$description);
+            if(!empty($description))    $input['Entry']['description'] = $description;
             $input['Entry']['created_by'] = $input['Entry']['modified_by'] = $this->myCreator['id'];
             $this->Entry->create();
             $this->Entry->save($input);
@@ -690,7 +690,7 @@ class EntryMeta extends AppModel {
                         // Total Price ...
                         if(empty($obj['total_sold_price']))
                         {
-                            $obj['total_sold_price'] = ( empty($obj['sell_barcode']) ? $obj['barcode'] : $obj['sell_barcode'] ) * (empty($obj['client_x'])?1:$obj['client_x']);
+                            $obj['total_sold_price'] = round( ( empty($obj['sell_barcode']) ? $obj['barcode'] : $obj['sell_barcode'] ) * (empty($obj['client_x'])?1:$obj['client_x']), 2);
                         }
                         $input['EntryMeta']['key'] = 'form-total_price';
                         $input['EntryMeta']['value'] = $obj['total_sold_price'];
@@ -736,7 +736,7 @@ class EntryMeta extends AppModel {
                             {
                                 if(empty($obj['total_sold_price']))
                                 {
-                                    $obj['total_sold_price'] = ( empty($obj['sell_barcode']) ? $obj['barcode'] : $obj['sell_barcode'] ) * (empty($obj['client_x'])?1:$obj['client_x']);
+                                    $obj['total_sold_price'] = round( ( empty($obj['sell_barcode']) ? $obj['barcode'] : $obj['sell_barcode'] ) * (empty($obj['client_x'])?1:$obj['client_x']), 2);
                                 }
 
                                 $this->EntryMeta->id = $tempValue['id'];
@@ -759,6 +759,22 @@ class EntryMeta extends AppModel {
                 }
             }
         } // end of entity client_invoice_code ...
+    }
+    
+    function upload_jewelry($value = array(), $mySetting = array())
+    {
+        $test_title = trim($value[2], 'G');
+        if(!is_numeric($test_title))
+        {
+            return false; // skip record ...
+        }
+        
+        // grouping value ...
+        $cor = array(
+            /* COR DETAIL INFORMATION */
+            
+        );
+        
     }
     
     function upload_diamond($value = array(), $mySetting = array())
@@ -839,11 +855,5 @@ class EntryMeta extends AppModel {
         
         // push product to database ...
         $this->push_product($dmd, 'diamond', $value[1] , $dmd['form-description']);
-    }
-    
-    function upload_jewelry($value = array(), $mySetting = array())
-    {
-        dpr($value);
-        return;
     }
 }

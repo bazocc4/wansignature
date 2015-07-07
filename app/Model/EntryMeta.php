@@ -248,6 +248,11 @@ class EntryMeta extends AppModel {
             if(empty($obj['vendor_barcode']))   $obj['vendor_barcode'] = 1;
         }
         
+        if(isset($obj[ $entity = 'item_weight' ]))
+        {
+            if(empty($obj[$entity]))            $obj[$entity] = 1;
+        }
+        
         if(isset($obj[ $entity = 'product_type' ]))
         {
             if(empty($this->push_general_entry($obj[$entity], $entity)))
@@ -258,6 +263,17 @@ class EntryMeta extends AppModel {
                 if($myTypeSlug == 'diamond')
                 {
                     $input['EntryMeta']['value'] = 'Diamond';
+                }
+                else // 999 cor-jewelry ...
+                {
+                    if(strpos($obj[$entity], '3d') !== FALSE)
+                    {
+                        $input['EntryMeta']['value'] = '999 3D (115%)';
+                    }
+                    else // 999 simple ...
+                    {
+                        $input['EntryMeta']['value'] = '999 Simple (110%)';
+                    }
                 }
                 $this->EntryMeta->create();
                 $this->EntryMeta->save($input);
@@ -272,24 +288,21 @@ class EntryMeta extends AppModel {
         if( isset($obj[ $entity = 'vendor' ]) )
         {
             $query = $this->push_general_entry($obj[$entity], $entity, TRUE);
-            if($query !== FALSE)
+            if($query !== FALSE && $myTypeSlug == 'diamond')
             {
                 // get / push capital X
-                if($myTypeSlug == 'diamond')
+                if(empty($obj['vendor_x']) && !empty($query['EntryMeta']['capital_x']) )
                 {
-                    if(empty($obj['vendor_x']) && !empty($query['EntryMeta']['capital_x']) )
-                    {
-                        $obj['vendor_x'] = $query['EntryMeta']['capital_x'];
-                    }
-                    else if(!empty($obj['vendor_x']) && empty($query['EntryMeta']['capital_x']))
-                    {
-                        $input = array();
-                        $input['EntryMeta']['entry_id'] = $this->Entry->id;
-                        $input['EntryMeta']['key'] = 'form-capital_x';
-                        $input['EntryMeta']['value'] = $obj['vendor_x'];
-                        $this->EntryMeta->create();
-                        $this->EntryMeta->save($input);
-                    }
+                    $obj['vendor_x'] = $query['EntryMeta']['capital_x'];
+                }
+                else if(!empty($obj['vendor_x']) && empty($query['EntryMeta']['capital_x']))
+                {
+                    $input = array();
+                    $input['EntryMeta']['entry_id'] = $this->Entry->id;
+                    $input['EntryMeta']['key'] = 'form-capital_x';
+                    $input['EntryMeta']['value'] = $obj['vendor_x'];
+                    $this->EntryMeta->create();
+                    $this->EntryMeta->save($input);
                 }
             }
         }
@@ -764,7 +777,7 @@ class EntryMeta extends AppModel {
     function upload_jewelry($value = array(), $mySetting = array())
     {
         $test_title = trim($value[2], 'G');
-        if(!is_numeric($test_title))
+        if(!is_numeric($test_title) || empty($value[3]))
         {
             return false; // skip record ...
         }
@@ -772,9 +785,61 @@ class EntryMeta extends AppModel {
         // grouping value ...
         $cor = array(
             /* COR DETAIL INFORMATION */
+            'product_type'          => $value[3],
+            'product_brand'         => $value[4],
+            'item_weight'           => round(floatval($value[5]), 2),
+            'item_size'             => intval($value[7]),
             
+            /* VENDOR INFO */
+            'vendor'                => strtoupper($value[8]),
+            'vendor_x'              => intval($value[9]), // later will be divided by 100 ...
+            'vendor_invoice_code'   => strtoupper($value[11]),
+            'vendor_pcs'            => intval($value[12]),
+            'vendor_gr'             => round(floatval($value[13]), 2),
+            
+            /* STATUS BARANG */
+            'warehouse'             => $value[14],
+            'stock_date'            => ( excelDateToDate($value[15], $rawDate) ? date('m/d/Y', $rawDate ) : '' ),
+            'product_status'        => $value[16],
+            
+            /* CLIENT INFO */
+            'wholesaler'                => $value[17],
+            'client'                    => $value[18],
+            
+            /* SOLD INVOICE TO CLIENT */
+            'client_invoice_date'   => ( excelDateToDate($value[22], $rawDate) ? date('m/d/Y', $rawDate ) : '' ),
+            'client_invoice_code'   => strtoupper($value[23]),
+            'client_invoice_pcs'    => intval($value[24]),
+            'form-sold_110'         => round(floatval($value[25]), 2),
+            'form-x_110'            => round(floatval($value[26]), 2),            
+            'form-sold_115'         => round(floatval($value[27]), 2),
+            'form-x_115'            => round(floatval($value[28]), 2),
+            'form-disc_adjustment'  => round(floatval($value[29]), 2),
+            'client_invoice_sold_24k' => round(floatval($value[30]), 2),
+            'gold_price'            => intval(str_replace(array(',', '.'), '' , trim($value[32], 'IDR'))),
+            
+            /* TYPE OF PAYMENT */
+            'payment_ct_ld'         => $value[33],
+            'payment_rosok'         => $value[34],
+            'payment_checks'        => $value[35],
+            'payment_cash'          => $value[36],
+            'payment_credit_card'   => $value[37],
+            'payment_return_goods'  => $value[38],
+            'payment_balance'       => round(floatval($value[ empty(floatval($value[39])) ? 31 : 39 ]), 2),
+            
+            /* HISTORY OF TRANSACTIONS */
+            'transaction_history'   => $value[41],
+            'form-description'      => $value[42], // keterangan / detail barang ...
         );
         
+        $cor['client_x'] = $cor['form-x_'.$cor['vendor_x']];
+        $cor['vendor_x'] /= 100;
+        
+        // synchronize product with other entity ...
+        $this->sync_product($cor, 'cor-jewelry');
+        
+        // push product to database ...
+        $this->push_product($cor, 'cor-jewelry', $value[2] , $cor['form-description']);
     }
     
     function upload_diamond($value = array(), $mySetting = array())

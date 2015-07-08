@@ -153,7 +153,7 @@
 				<?php
 			}
 		?>
-		<div class="input-prepend" style="margin-right: 5px;">
+		<div class="input-prepend" style="margin-right: 5px; margin-left: 5px;">
 			<span class="add-on" style="margin-right: 3px; margin-top : 9px;">
 				<?php
 					echo $this->Html->link("<i class='icon-search'></i>",array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index','1','?'=>$extensionPaging) , array("class"=>"ajax_mypage searchMeLink","escape"=>false));

@@ -48,9 +48,11 @@
 
                 $(document).ready(function(){
                     // modify element header view !!
-                    $('div.inner-header > div:last').prepend("<a data-toggle='tooltip' href='"+site+"entries/download_jewelry' title='Download Cor Jewelry List' class='btn btn-inverse right-btn fr'><i class='icon-download-alt icon-white'></i> Download</a>");
-
-                    $('div.inner-header > div:last > div:last').before("<div class='btn-group'><form accept='application/vnd.ms-excel' accept-charset='utf-8' method='post' enctype='multipart/form-data' action='#' style='margin:0 0 10px 0;'><input REQUIRED type='file' accept='.xls,.xlsx' name='data[fileurl]' onchange='checkfile(this);'><input class='btn' type='submit' value='Upload'></form></div>"); 
+                    $('div.inner-header > div:last > div:last').after("<div class='btn-group'><form accept='application/vnd.ms-excel' accept-charset='utf-8' method='post' enctype='multipart/form-data' action='#' style='margin:0 0 10px 0;'><input REQUIRED type='file'  style='width:200px;' accept='.xls,.xlsx' name='data[fileurl]' onchange='checkfile(this);'><input class='btn' type='submit' value='Upload'></form></div>"); // upload Excel ...
+                    
+                    $('div.inner-header > div:last > div:last').before("<a data-toggle='tooltip' href='"+site+"entries/download_jewelry' style='margin-bottom:10px;' title='Download Cor Jewelry List' class='btn btn-inverse right-btn fr hide'><i class='icon-download-alt icon-white'></i> Download</a>"); // download Excel ...
+                    
+                    
                 });
             </script>
             <?php
@@ -180,7 +182,7 @@
                         
                         richvalue += ' ['+item_weight+' x '+client_x+']';
                     }
-                    else
+                    else // cv-payment ...
                     {
                         gram_result = parseFloat(gram_result);
                         

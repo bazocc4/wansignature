@@ -253,9 +253,12 @@ class EntryMeta extends AppModel {
             if(empty($obj[$entity]))            $obj[$entity] = 1;
         }
         
+        $product_type_cat = '';
         if(isset($obj[ $entity = 'product_type' ]))
         {
-            if(empty($this->push_general_entry($obj[$entity], $entity)))
+            $query = $this->push_general_entry($obj[$entity], $entity, TRUE);
+            
+            if(empty($query))
             {
                 $input = array();
                 $input['EntryMeta']['entry_id'] = $this->Entry->id;
@@ -277,7 +280,17 @@ class EntryMeta extends AppModel {
                 }
                 $this->EntryMeta->create();
                 $this->EntryMeta->save($input);
+                
+                $query['EntryMeta']['category'] = $input['EntryMeta']['value'];
             }
+            
+            // for later use ...
+            $product_type_cat = $query['EntryMeta']['category'];
+        }
+        
+        if(isset($obj[ $entity = 'product_brand' ]))
+        {
+            $this->push_general_entry($obj[$entity], $entity);
         }
         
         if(isset($obj[ $entity = 'warehouse' ]))
@@ -514,6 +527,18 @@ class EntryMeta extends AppModel {
                         }
                     }
                 }
+                else // cor-jewelry ...
+                {
+                    $x_label = intval(substr($product_type_cat, strrpos($product_type_cat, '(') + 1 ));
+                    
+                    if(empty($query['EntryMeta']['x_'.$x_label]) && !empty($obj['client_x']) )
+                    {
+                        $input['EntryMeta']['key'] = 'form-x_'.$x_label;
+                        $input['EntryMeta']['value'] = $obj['client_x'];
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save($input);
+                    }
+                }
                 
                 if(empty($query))
                 {
@@ -575,6 +600,22 @@ class EntryMeta extends AppModel {
                         $obj['client_x'] = $query['EntryMeta']['diamond_sell_x'];
                     }
                 }
+                else // cor-jewelry ...
+                {
+                    $x_label = intval(substr($product_type_cat, strrpos($product_type_cat, '(') + 1 ));
+                    
+                    if(empty($query['EntryMeta']['x_'.$x_label]) && !empty($obj['client_x']) )
+                    {
+                        $input['EntryMeta']['key'] = 'form-x_'.$x_label;
+                        $input['EntryMeta']['value'] = $obj['client_x'];
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save($input);
+                    }
+                    else if(!empty($query['EntryMeta']['x_'.$x_label]) && empty($obj['client_x']) )
+                    {
+                        $obj['client_x'] = $query['EntryMeta']['x_'.$x_label];
+                    }
+                }
                 
                 // wholesaler ...
                 if(empty($query['EntryMeta']['wholesaler']) && !empty($obj['wholesaler']))
@@ -607,7 +648,7 @@ class EntryMeta extends AppModel {
         
         if(isset($obj[ $entity = 'client_invoice_code' ]))
         {
-            $query = $this->push_general_entry($obj[$entity], ($myTypeSlug=='diamond'?'dmd-client-invoice':'cor-client-invoice') , TRUE, array($obj['client'], $obj['warehouse'] ), $obj['form-description']);
+            $query = $this->push_general_entry($obj[$entity], ($myTypeSlug=='diamond'?'dmd-client-invoice':'cor-client-invoice') , TRUE, array($obj['client'], $obj['warehouse'] ), ($myTypeSlug=='diamond'? $obj['form-description'] : '' ) );
             if($query !== FALSE)
             {
                 $input = array();
@@ -693,7 +734,7 @@ class EntryMeta extends AppModel {
                         {
                             // query database rate ...
                             $query_rate = $this->Entry->meta_details(NULL , 'usd-rate' , NULL , NULL , NULL , NULL , 'IDR');
-                            $obj['rp_rate'] = ( empty($query_rate) ? 12800 : $query_rate['EntryMeta']['rate_value'] );
+                            $obj['rp_rate'] = ( empty($query_rate) ? 13000 : $query_rate['EntryMeta']['rate_value'] );
                         }
                         $input['EntryMeta']['key'] = 'form-rp_rate';
                         $input['EntryMeta']['value'] = $obj['rp_rate'];
@@ -716,6 +757,69 @@ class EntryMeta extends AppModel {
                         $this->EntryMeta->create();
                         $this->EntryMeta->save($input);
                     }
+                    else // cor-jewelry ...
+                    {
+                        if(empty($obj['gold_price']))
+                        {
+                            // query database rate ...
+                            $db_idr = $this->Entry->meta_details(NULL , 'usd-rate' , NULL , NULL , NULL , NULL , 'IDR');
+                            $db_gold = $this->Entry->meta_details(NULL , 'usd-rate' , NULL , NULL , NULL , NULL , 'gold bar%');
+                            
+                            if(empty($db_idr) || empty($db_gold))
+                            {
+                                $obj['gold_price'] = 500000;
+                            }
+                            else
+                            {
+                                $obj['gold_price'] = round($db_idr['EntryMeta']['rate_value'] / $db_gold['EntryMeta']['rate_value']);
+                            }
+                        }
+                        $input['EntryMeta']['key'] = 'form-gold_price';
+                        $input['EntryMeta']['value'] = $obj['gold_price'];
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save($input);
+                        
+                        // Sold X
+                        foreach(array(
+                            'form-sold_110', 'form-x_110', 'form-sold_115', 'form-x_115', 'form-disc_adjustment'
+                        ) as $sold_key => $sold_value)
+                        {
+                            if(!empty($obj[$sold_value]))
+                            {
+                                $input['EntryMeta']['key'] = $sold_value;
+                                $input['EntryMeta']['value'] = $obj[$sold_value];
+                                $this->EntryMeta->create();
+                                $this->EntryMeta->save($input);
+                            }
+                        }
+                        
+                        // Total Weight ...
+                        $input['EntryMeta']['key'] = 'form-total_weight';                        
+                        if(!empty($obj['client_invoice_sold_24k']))
+                        {
+                            $input['EntryMeta']['value'] = $obj['client_invoice_sold_24k'];
+                        }
+                        else
+                        {
+                            if(empty($obj['client_x']))
+                            {
+                                $obj['client_x'] = intval(substr($product_type_cat, strrpos($product_type_cat, '(') + 1 )) / 100;
+                            }
+                            
+                            $input['EntryMeta']['value'] = round($obj['item_weight'] * $obj['client_x'], 2);
+                        }
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save($input);
+                        
+                        // invoice payment balance ...
+                        $input['EntryMeta']['key'] = 'form-payment_balance';
+                        if(!empty($obj['payment_balance']) && !empty($obj['client_invoice_sold_24k']) )
+                        {
+                            $input['EntryMeta']['value'] = $obj['payment_balance'];
+                        }
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save($input);
+                    }
                 }
                 else // origin query existed ...
                 {
@@ -725,6 +829,10 @@ class EntryMeta extends AppModel {
                     }
                     
                     $obj['client'] = $query['EntryMeta']['client'];
+                    if(!empty($query['EntryMeta']['wholesaler']))
+                    {
+                        $obj['wholesaler'] = $query['EntryMeta']['wholesaler'];
+                    }
                     
                     if(empty($obj['warehouse']))
                     {
@@ -734,6 +842,11 @@ class EntryMeta extends AppModel {
                     if(isset($obj['rp_rate']) && empty($obj['rp_rate']))
                     {
                         $obj['rp_rate'] = $query['EntryMeta']['rp_rate'];
+                    }
+                    
+                    if(isset($obj['gold_price']) && empty($obj['gold_price']))
+                    {
+                        $obj['gold_price'] = $query['EntryMeta']['gold_price'];
                     }
                     
                     if(in_array($obj['client_invoice_code'], $_SESSION['client_invoice_code']))
@@ -755,17 +868,23 @@ class EntryMeta extends AppModel {
                                 $this->EntryMeta->id = $tempValue['id'];
                                 $this->EntryMeta->saveField('value', $tempValue['value'] + $obj['total_sold_price']);
                             }
-                            else if($tempValue['key'] == 'form-payment_balance')
+                            else if($tempValue['key'] == 'form-payment_balance' && $myTypeSlug == 'diamond')
                             {
-                                if($myTypeSlug == 'diamond')
+                                $paybal = $obj['sold_price_usd'] + round($obj['sold_price_rp'] / $obj['rp_rate'], 2);
+                                if(!empty($paybal))
                                 {
-                                    $paybal = $obj['sold_price_usd'] + round($obj['sold_price_rp'] / $obj['rp_rate'], 2);
-                                    if(!empty($paybal))
-                                    {
-                                        $this->EntryMeta->id = $tempValue['id'];
-                                        $this->EntryMeta->saveField('value', $tempValue['value'] + $paybal);
-                                    }
+                                    $this->EntryMeta->id = $tempValue['id'];
+                                    $this->EntryMeta->saveField('value', $tempValue['value'] + $paybal);
                                 }
+                            }
+                            else if($tempValue['key'] == 'form-total_weight' || $tempValue['key'] == 'form-payment_balance' && $myTypeSlug == 'cor-jewelry')
+                            {
+                                if(empty($obj['client_x']))
+                                {
+                                    $obj['client_x'] = intval(substr($product_type_cat, strrpos($product_type_cat, '(') + 1 )) / 100;
+                                }
+                                $this->EntryMeta->id = $tempValue['id'];
+                                $this->EntryMeta->saveField('value', $tempValue['value'] + round($obj['item_weight'] * $obj['client_x'], 2) );
                             }
                         }
                     }
@@ -792,7 +911,6 @@ class EntryMeta extends AppModel {
             
             /* VENDOR INFO */
             'vendor'                => strtoupper($value[8]),
-            'vendor_x'              => intval($value[9]), // later will be divided by 100 ...
             'vendor_invoice_code'   => strtoupper($value[11]),
             'vendor_pcs'            => intval($value[12]),
             'vendor_gr'             => round(floatval($value[13]), 2),
@@ -832,8 +950,13 @@ class EntryMeta extends AppModel {
             'form-description'      => $value[42], // keterangan / detail barang ...
         );
         
-        $cor['client_x'] = $cor['form-x_'.$cor['vendor_x']];
-        $cor['vendor_x'] /= 100;
+        // calculate client_x ...
+        $tempX = intval($value[9]);
+        $cor['client_x'] = $cor['form-x_'.$tempX];
+        if(empty($cor['client_x']))     $cor['client_x'] = $tempX / 100;
+        
+        // adjust Invoice Client Total Weight ...
+        $cor['client_invoice_sold_24k'] -= $cor['form-disc_adjustment'];
         
         // synchronize product with other entity ...
         $this->sync_product($cor, 'cor-jewelry');

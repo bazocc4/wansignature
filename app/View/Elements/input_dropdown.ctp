@@ -48,7 +48,15 @@
                     $value = isset($_POST['data'][$model][$counter]['value'])?$_POST['data'][$model][$counter]['value']:$value;
                     foreach ($list as $key10 => $value10)
                     {
-                        echo "<option ".(strtolower($value10['id']) == strtolower($value)?'SELECTED':'')." value=\"".$value10['id']."\">".$value10['name']."</option>";
+                        // group header ...
+                        if(substr($value10['name'], 0, 1) == '[' && substr($value10['name'], -1) == ']')
+                        {
+                            echo '<option style="font-style:italic;font-size:18px;color:blue;" DISABLED>'.$value10['name'].'</option>';
+                        }
+                        else
+                        {
+                            echo "<option ".(strtolower($value10['id']) == strtolower($value)?'SELECTED':'')." value=\"".$value10['id']."\">".$value10['name']."</option>";
+                        }
                     }
                 ?>
             </select>

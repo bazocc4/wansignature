@@ -529,11 +529,10 @@ class EntriesController extends AppController {
 		else
 		{
 			$myType = $this->Type->findBySlug($this->request->params['type']);
-		}		
-		$this->Entry->recursive = 2;
-		$myEntry = $this->meta_details($this->request->params['entry'] , (!empty($this->request->query['type'])?$this->request->query['type']:$myType['Type']['slug']) );
-		$this->Entry->recursive = 1;
+		}
         
+		$myEntry = $this->meta_details($this->request->params['entry'] , (!empty($this->request->query['type'])?$this->request->query['type']:$myType['Type']['slug']) );
+		
         if(empty($myEntry))
         {
             throw new NotFoundException('Error 404 - Not Found');

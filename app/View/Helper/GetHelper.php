@@ -674,11 +674,11 @@ class GetHelper extends AppHelper
             $echothis = '<strong>'.toMoney($result  , true , true).'</strong>';
             $echothis .= '<input type="hidden" value="'.$result.'">';
         }
-        else if(strpos($shortkey,'weight') !== FALSE || strpos($shortkey,'sold_1') !== FALSE)
+        else if(strpos($shortkey,'weight') !== FALSE || strpos($shortkey,'sold_1') !== FALSE || $shortkey == 'client_invoice_sold_24k' || $shortkey == 'vendor_gr')
         {
             $echothis = '<strong>'.$result.' gr</strong>';
         }
-        else if($shortkey == 'qty' || strpos($shortkey , 'stock') !== FALSE || $shortkey == 'total_pcs' || $shortkey == 'total_item_sent')    
+        else if($shortkey == 'qty' || $shortkey == 'total_item_sent' || strpos($shortkey, '_pcs') !== FALSE)
         {
             $echothis = '<h5>'.$result.' pc</h5>';
         }
@@ -706,7 +706,14 @@ class GetHelper extends AppHelper
             // last check based on numeric type or not ...
             if(is_numeric($result))
             {
-                $echothis = '<strong>'.$result.'</strong>';
+                if($result < 1000)
+                {
+                    $echothis = '<h5>'.$result.( strlen(strstr($result, '.')) == 2 ? '0' : '' ).'</h5>';
+                }
+                else
+                {
+                    $echothis = '<strong>'.$result.'</strong>';
+                }
             }
         }
         

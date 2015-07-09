@@ -80,7 +80,7 @@
                 {
                     if($detail_type == 'number')
                     {
-                        echo toMoney($value , true , true);
+                        echo toMoney($value.( strlen(strstr($value, '.')) == 2 ? '0' : '' ) , true , true);
                     }
                     else
                     {

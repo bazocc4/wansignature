@@ -485,7 +485,15 @@
                         }
                         else
                         {
-                        	echo $this->Get->outputConverter($value10['input_type'] , $displayValue , $myImageTypeList , $shortkey);
+                        	// SUPER CUSTOMIZED OUTPUT STYLE ...
+                            if($shortkey == 'payment_balance')
+                            {
+                                echo '<strong>'.$displayValue.' gr</strong>';
+                            }
+                            else
+                            {
+                                echo $this->Get->outputConverter($value10['input_type'] , $displayValue , $myImageTypeList , $shortkey);
+                            }
                         }                        
                         echo "</td>";
 					}

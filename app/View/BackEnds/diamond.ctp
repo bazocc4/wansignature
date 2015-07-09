@@ -505,7 +505,16 @@
                         }
                         else
                         {
-                            echo $this->Get->outputConverter($value10['input_type'] , $displayValue , $myImageTypeList , $shortkey);
+                            // SUPER CUSTOMIZED OUTPUT STYLE ...
+                            if($shortkey == 'payment_balance')
+                            {
+                                echo '<strong>'.toMoney($displayValue  , true , true).' USD</strong>';
+                                echo '<input type="hidden" value="'.$displayValue.'">';
+                            }
+                            else
+                            {
+                                echo $this->Get->outputConverter($value10['input_type'] , $displayValue , $myImageTypeList , $shortkey);
+                            }
                         }                        
                         echo "</td>";
 					}

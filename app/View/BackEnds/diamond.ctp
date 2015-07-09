@@ -135,10 +135,7 @@
 			// ---------------------------------------------------------------------- >>>
 			$('p#id-title-description').html('Last updated by <a href="#"><?php echo (empty($lastModified['AccountModifiedBy']['username'])?$lastModified['AccountModifiedBy']['email']:$lastModified['AccountModifiedBy']['username']).'</a> at '.date_converter($lastModified['Entry']['modified'], $mySetting['date_format'] , $mySetting['time_format']); ?>');
 			$('p#id-title-description').css('display','<?php echo (empty($totalList)?'none':'block'); ?>');
-			
-			// UPDATE TITLE HEADER !!
-			$('div.title > h2').html('<?php echo (empty($myEntry)?$myType['Type']['name']:$myEntry['Entry']['title'].' - '.$myChildType['Type']['name']); ?>');
-			
+        
 		<?php else: ?>
 			$('table#myTableList tbody tr').css('cursor' , 'pointer');
 			$('input[type=checkbox]').css('cursor' , 'default');

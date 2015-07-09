@@ -138,9 +138,6 @@
 			$('p#id-title-description').html('Last updated by <a href="#"><?php echo (empty($lastModified['AccountModifiedBy']['username'])?$lastModified['AccountModifiedBy']['email']:$lastModified['AccountModifiedBy']['username']).'</a> at '.date_converter($lastModified['Entry']['modified'], $mySetting['date_format'] , $mySetting['time_format']); ?>');
 			$('p#id-title-description').css('display','<?php echo (empty($totalList)?'none':'block'); ?>');
 			
-			// UPDATE TITLE HEADER !!
-			$('div.title > h2').html('<?php echo (empty($myEntry)?$myType['Type']['name']:$myEntry['Entry']['title'].' - '.$myChildType['Type']['name']); ?>');
-			
 		<?php else: ?>
 			$('table#myTableList tbody tr').css('cursor' , 'pointer');
 			$('input[type=checkbox]').css('cursor' , 'default');
@@ -456,7 +453,25 @@
 						}
                         else if($value10['input_type'] == 'browse')
                         {
-                        	$entrydetail = $this->Get->meta_details($displayValue , get_slug($shortkey));
+                        	$entrytype = '';
+                            if($shortkey == 'vendor_invoice_code')
+                            {
+                                $entrytype = 'cor-vendor-invoice';
+                            }
+                            else if($shortkey == 'client_invoice_code')
+                            {
+                                $entrytype = 'cor-client-invoice';
+                            }
+                            else if($shortkey == 'wholesaler')
+                            {
+                                $entrytype = 'client';
+                            }
+                            else
+                            {
+                                $entrytype = get_slug($shortkey);
+                            }
+                            
+                            $entrydetail = $this->Get->meta_details($displayValue , $entrytype);
 							if(empty($entrydetail))
 							{
 								echo $displayValue;
@@ -466,37 +481,6 @@
 								$outputResult = (empty($entrydetail['EntryMeta']['name'])?$entrydetail['Entry']['title']:$entrydetail['EntryMeta']['name']);
 								echo '<h5>'.(empty($popup)?$this->Html->link($outputResult,array("controller"=>"entries","action"=>$entrydetail['Entry']['entry_type']."/edit/".$entrydetail['Entry']['slug']),array('target'=>'_blank')):$outputResult).'</h5>';
                                 echo '<input type="hidden" value="'.$entrydetail['Entry']['slug'].'">';
-                                
-                                echo '<p>';                                
-                                // Try to use Primary EntryMeta first !!
-                                $targetMetaKey = NULL;
-                                foreach($entrydetail['EntryMeta'] as $metakey => $metavalue)
-                                {
-                                    if(substr($metavalue['key'] , 0 , 5) == 'form-')
-                                    {
-                                        $targetMetaKey = $metakey;
-                                        break;
-                                    }
-                                }
-                                
-                                if(isset($targetMetaKey))
-                                {
-                                    // test if value is a date value or not !!
-                                    if(strtotime($entrydetail['EntryMeta'][$targetMetaKey]['value']) && !is_numeric($entrydetail['EntryMeta'][$targetMetaKey]['value']))
-                                    {
-                                        echo date_converter($entrydetail['EntryMeta'][$targetMetaKey]['value'] , $mySetting['date_format']);
-                                    }
-                                    else
-                                    {
-                                        echo $entrydetail['EntryMeta'][$targetMetaKey]['value'];
-                                    }
-                                }
-                                else
-                                {
-                                    $description = nl2br($entrydetail['Entry']['description']);
-                            	    echo (strlen($description) > 30? '<a href="#" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description);
-                                }                                
-                                echo '</p>';
 							}
                         }
                         else

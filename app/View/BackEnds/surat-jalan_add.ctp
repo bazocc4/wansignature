@@ -91,30 +91,50 @@
                 
                 // onchange delivery_type callback ...
                 $('select.delivery_type').change(function(){
+                    
+                    var barang_masuk = false;
+                    
                     // origin toggle ...
-                    if($(this).val().indexOf('Exhibition To') >= 0 )
+                    if($(this).val() == 'Diamond Sale Return' || $(this).val() == 'Cor Jewelry Sale Return' || $(this).val() == 'Stock Souvenir' || $(this).val() == 'Diamond Purchase' || $(this).val() == 'Cor Jewelry Purchase')
                     {
-                        $('input.warehouse_origin').closest('div.control-group').hide();
-                        $('input.warehouse_origin , input#warehouse-origin').val('');
-                        
-                        if(!$('input#exhibition-origin').is(':visible'))
+                        barang_masuk = true;
+                        if($('input#warehouse-origin').is(':visible') || $('input#exhibition-origin').is(':visible'))
                         {
-                            $('input#exhibition-origin').change().closest('div.control-group').show();
+                            $('input.warehouse_origin').closest('div.control-group').hide();
+                            $('input.warehouse_origin , input#warehouse-origin').val('');
+
+                            $('input.exhibition_origin').closest('div.control-group').hide();
+                            $('input.exhibition_origin , input#exhibition-origin').val('');
+                            
+                            $('input#warehouse-origin').change(); // refresh url product browse ...
                         }
                     }
                     else
                     {
-                        $('input.exhibition_origin').closest('div.control-group').hide();
-                        $('input.exhibition_origin , input#exhibition-origin').val('');
-                        
-                        if(!$('input#warehouse-origin').is(':visible'))
+                        if($(this).val().indexOf('Exhibition To') >= 0 )
                         {
-                            $('input#warehouse-origin').change().closest('div.control-group').show();
+                            $('input.warehouse_origin').closest('div.control-group').hide();
+                            $('input.warehouse_origin , input#warehouse-origin').val('');
+
+                            if(!$('input#exhibition-origin').is(':visible'))
+                            {
+                                $('input#exhibition-origin').change().closest('div.control-group').show();
+                            }
+                        }
+                        else
+                        {
+                            $('input.exhibition_origin').closest('div.control-group').hide();
+                            $('input.exhibition_origin , input#exhibition-origin').val('');
+
+                            if(!$('input#warehouse-origin').is(':visible'))
+                            {
+                                $('input#warehouse-origin').change().closest('div.control-group').show();
+                            }
                         }
                     }
                     
                     // destination toggle ...
-                    if($(this).val().indexOf('To') >= 0)
+                    if($(this).val().indexOf(' To ') >= 0)
                     {
                         $('input.dmd_vendor_invoice').closest('div.control-group').hide();
                         $('input.dmd_vendor_invoice , input#dmd-vendor-invoice').val('');
@@ -151,14 +171,21 @@
                     }
                     else // to invoice / souvenir ...
                     {
-                        $('input.warehouse_destination').closest('div.control-group').hide();
-                        $('input.warehouse_destination , input#warehouse-destination').val('');
-                        
                         $('input.exhibition_destination').closest('div.control-group').hide();
                         $('input.exhibition_destination , input#exhibition-destination').val('');
                         
+                        if(barang_masuk)
+                        {
+                            $('input.warehouse_destination').closest('div.control-group').show();
+                        }
+                        else
+                        {
+                            $('input.warehouse_destination').closest('div.control-group').hide();
+                            $('input.warehouse_destination , input#warehouse-destination').val('');
+                        }
+                        
                         // invoice toggle ...
-                        if($(this).val().indexOf('Return') >= 0)
+                        if($(this).val().indexOf('Purchase') >= 0 || $(this).val().indexOf('Stock') >= 0)
                         {
                             $('input.dmd_client_invoice').closest('div.control-group').hide();
                             $('input.dmd_client_invoice , input#dmd-client-invoice').val('');
@@ -171,22 +198,33 @@
                             
                             $('input.vendor').closest('div.control-group').show();
                             
-                            if($(this).val() == 'Diamond Return')
+                            if($(this).val().indexOf('Stock') >= 0)
                             {
                                 $('input.cor_vendor_invoice').closest('div.control-group').hide();
                                 $('input.cor_vendor_invoice , input#cor-vendor-invoice').val('');
                                 
-                                $('input.dmd_vendor_invoice').closest('div.control-group').show();
-                            }
-                            else // Cor Return...
-                            {
                                 $('input.dmd_vendor_invoice').closest('div.control-group').hide();
                                 $('input.dmd_vendor_invoice , input#dmd-vendor-invoice').val('');
-                                
-                                $('input.cor_vendor_invoice').closest('div.control-group').show();
+                            }
+                            else // using invoice ...
+                            {
+                                if($(this).val().indexOf('Diamond') >= 0)
+                                {
+                                    $('input.cor_vendor_invoice').closest('div.control-group').hide();
+                                    $('input.cor_vendor_invoice , input#cor-vendor-invoice').val('');
+
+                                    $('input.dmd_vendor_invoice').closest('div.control-group').show();
+                                }
+                                else // Cor Jewelry ...
+                                {
+                                    $('input.dmd_vendor_invoice').closest('div.control-group').hide();
+                                    $('input.dmd_vendor_invoice , input#dmd-vendor-invoice').val('');
+
+                                    $('input.cor_vendor_invoice').closest('div.control-group').show();
+                                }
                             }
                         }
-                        else // SALE / souvenir ...
+                        else // SALE / souvenir to client ...
                         {
                             $('input.dmd_vendor_invoice').closest('div.control-group').hide();
                             $('input.dmd_vendor_invoice , input#dmd-vendor-invoice').val('');
@@ -207,19 +245,22 @@
                                 $('input.dmd_client_invoice').closest('div.control-group').hide();
                                 $('input.dmd_client_invoice , input#dmd-client-invoice').val('');
                             }
-                            else if($(this).val() == 'Diamond Sale')
+                            else // using invoice ...
                             {
-                                $('input.cor_client_invoice').closest('div.control-group').hide();
-                                $('input.cor_client_invoice , input#cor-client-invoice').val('');
-                                
-                                $('input.dmd_client_invoice').closest('div.control-group').show();
-                            }
-                            else // Cor Sale ...
-                            {
-                                $('input.dmd_client_invoice').closest('div.control-group').hide();
-                                $('input.dmd_client_invoice , input#dmd-client-invoice').val('');
-                                
-                                $('input.cor_client_invoice').closest('div.control-group').show();
+                                if($(this).val().indexOf('Diamond') >= 0)
+                                {
+                                    $('input.cor_client_invoice').closest('div.control-group').hide();
+                                    $('input.cor_client_invoice , input#cor-client-invoice').val('');
+
+                                    $('input.dmd_client_invoice').closest('div.control-group').show();
+                                }
+                                else // Cor Jewelry ...
+                                {
+                                    $('input.dmd_client_invoice').closest('div.control-group').hide();
+                                    $('input.dmd_client_invoice , input#dmd-client-invoice').val('');
+
+                                    $('input.cor_client_invoice').closest('div.control-group').show();
+                                }
                             }
                         }
                     }
@@ -244,7 +285,7 @@
                     {
                         $('div.logistic-group').closest('div.control-group').show();
                         
-                        if($(this).val() == 'Souvenir')
+                        if($(this).val().indexOf('Souvenir') >= 0)
                         {
                             $('div.diamond-group , div.cor-jewelry-group').html('').closest('div.control-group').hide().find('a.add-raw').click();
                         }
@@ -252,6 +293,16 @@
                         {
                             $('div.diamond-group , div.cor-jewelry-group').closest('div.control-group').show();
                         }
+                    }
+                    
+                    // toggle status pengiriman ...
+                    if(barang_masuk)
+                    {
+                        $('select.status').val('1').attr('disabled', 'disabled');
+                    }
+                    else
+                    {
+                        $('select.status').removeAttr('disabled');
                     }
                 }).trigger('change');
                 

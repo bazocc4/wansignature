@@ -37,12 +37,15 @@ $(document).ready(function(){
         // custom check !!
         if($('#myTypeSlug').val() == 'surat-jalan')
         {
-            var $storage = $(this).closest('div.control-group').find('a[data-storage][data-content].add-raw');
-            if($storage.length > 0 && ($storage.attr('data-storage').length == 0 || $storage.attr('data-content').length == 0) )
+            if($('input[id$="-origin"]').length > 0 && $('input[id$="-origin"]').is(':visible'))
             {
-                alert('Silahkan pilih tempat pengambilan barang terlebih dahulu.');
-                $('input#warehouse-origin , input#exhibition-origin').nextAll('a.get-from-table:visible').click();
-                return false;
+                var $storage = $(this).closest('div.control-group').find('a[data-storage][data-content].add-raw');
+                if($storage.length > 0 && ($storage.attr('data-storage').length == 0 || $storage.attr('data-content').length == 0) )
+                {
+                    alert('Silahkan pilih tempat pengambilan barang terlebih dahulu.');
+                    $('input#warehouse-origin , input#exhibition-origin').nextAll('a.get-from-table:visible').click();
+                    return false;
+                }
             }
         }
         

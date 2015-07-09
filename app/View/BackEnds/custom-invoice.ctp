@@ -575,25 +575,11 @@ $('input#warehouse-origin').val($warehouse.find('h5').text()).nextAll('input.war
 			if(empty($popup))
 			{
                 echo "<td class='action-btn'>";
-                echo $this->Html->link('<i class="icon-edit icon-white"></i>', $editUrl, array('escape'=>false, 'class'=>'btn btn-info','data-toggle'=>'tooltip', 'title'=>'CLICK TO EDIT / VIEW DETAIL') );
                 
-/*
-                if($myType['Type']['slug'] != 'pages')
-				{
-					$confirm = null;
-					$targetURL = 'entries/change_status/'.$value['Entry']['id'];
-                    echo '&nbsp;&nbsp;';
-					if($value['Entry']['status'] == 0)
-					{
-						echo '<a data-toggle="tooltip" title="CLICK TO PUBLISH RECORD" href="javascript:void(0)" onclick="changeLocation(\''.$targetURL.'\')" class="btn btn-success"><i class="icon-ok icon-white"></i></a>';					
-					}
-					else
-					{
-						$confirm = 'Are you sure to set '.strtoupper($value['Entry']['title']).' as draft ?';
-						echo '<a data-toggle="tooltip" title="CLICK TO DRAFT RECORD" href="javascript:void(0)" onclick="show_confirm(\''.$confirm.'\',\''.$targetURL.'\')" class="btn btn-warning"><i class="icon-ban-circle icon-white"></i></a>';
-					}
-				}
-*/
+                echo $this->Html->link('<i class="icon-th-list icon-white"></i>', array('action' => ($DMD?'diamond':'cor-jewelry'), '?' => array('key' => ($VENDOR?'vendor':'client').'_invoice_code', 'value' => $value['Entry']['slug'] ) ) , array('escape'=>false, 'class'=>'btn btn-primary','data-toggle'=>'tooltip', 'title'=>'CLICK TO VIEW INVOICE PRODUCTS', 'target'=>'_blank') ); // view invoice diamond / cor-jewelry List...
+                echo '&nbsp;&nbsp;';
+                
+                echo $this->Html->link('<i class="icon-edit icon-white"></i>', $editUrl, array('escape'=>false, 'class'=>'btn btn-info','data-toggle'=>'tooltip', 'title'=>'CLICK TO EDIT / VIEW DETAIL') );
 				?>
             &nbsp;<a data-toggle="tooltip" title="CLICK TO DELETE RECORD" href="javascript:void(0)" onclick="show_confirm('Are you sure want to delete <?php echo strtoupper($value['Entry']['title']); ?> ?','entries/delete/<?php echo $value['Entry']['id']; ?>')" class="btn btn-danger"><i class="icon-trash icon-white"></i></a>
 				<?php

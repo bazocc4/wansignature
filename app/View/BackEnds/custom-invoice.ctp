@@ -491,7 +491,7 @@ $('input#warehouse-origin').val($warehouse.find('h5').text()).nextAll('input.war
                             {
                                 echo '<span class="label '.($displayValue=='Warehouse'?'label-info':'label-inverse').'">'.$displayValue.'</span>';
                             }
-                            else if($shortkey == 'disc_adjustment' || $shortkey == 'payment_balance' || $shortkey == 'additional_cost')
+                            else if($shortkey == 'disc_adjustment' || $shortkey == 'payment_balance')
                             {
                                 if($DMD)
                                 {

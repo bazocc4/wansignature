@@ -211,10 +211,21 @@ var <?php echo $var_stream; ?> = <?php echo $raw_stream; ?>;
 
 $(document).ready(function(){
     $('div.<?php echo $browse_alias; ?>-group').closest('div.control-group').find('a.add-raw').click(function(){
+        
+        var placeholder = '';
+        if($('input[type=radio].currency').length > 0)
+        {
+            placeholder = $('input[type=radio].currency:checked').val();
+        }
+        else
+        {
+            placeholder = '<?php echo $unit; ?>';
+        }
+        
         var content = '<div class="row-fluid <?php echo $browse_alias; ?>-detail bottom-spacer <?php echo ($view_mode?'hide':''); ?>">';
         content += '<input REQUIRED id="<?php echo $browse_alias; ?>'+<?php echo $var_stream; ?>+'" class="input-xlarge" type="text" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][temp][]" readonly="true"/>';
 
-        content += '&nbsp;<input REQUIRED type="number" <?php echo $unit_step_min; ?> class="<?php echo $unit_size; ?>" placeholder="<?php echo $unit; ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][total][]" readonly="true"/>';
+        content += '&nbsp;<input REQUIRED type="number" <?php echo $unit_step_min; ?> class="<?php echo $unit_size; ?>" placeholder="'+placeholder+'" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][total][]" readonly="true"/>';
 
         var storage = '';
         if($(this).attr('data-storage').length > 0 && $(this).attr('data-content').length > 0)
@@ -259,18 +270,44 @@ $(document).ready(function(){
                     totalprice += parseFloat( $(this).val() );
                 }
             });
+            
+            // divide by certain currency rate ...
+            if($('input[type=radio].currency').length > 0 && $('input[type=radio].currency:checked').val() == 'HKD' && $.isNumeric($('input.hkd_rate').val()) )
+            {
+                totalprice /= parseFloat($('input.hkd_rate').val());
+            }
 
+            // show it off !!
             $('span.total_<?php echo $shortkey; ?>').html(number_format(totalprice,2)+'<input type="hidden" value="'+totalprice+'">');
             
             // update other attribute related ...
-            if($('input.gold_loss').length > 0)
+            if($('#myTypeSlug').val().indexOf('-payment') >= 0)
             {
-                $('input.gold_loss').trigger('keyup', [init]);
+                if($('input.gold_loss').length > 0)
+                {
+                    $('input.gold_loss').trigger('keyup', [init]);
+                }
+                else if($('input.additional_charge').length > 0)
+                {
+                    $('input.additional_charge').trigger('keyup', [init]);
+                }
             }
-            else if($('input.additional_charge').length > 0)
+            else if($('#myTypeSlug').val().indexOf('-invoice') >= 0)
             {
-                $('input.additional_charge').trigger('keyup', [init]);
+                if($('input.capital_x').length > 0)
+                {
+                    $('input.capital_x').trigger('keyup', [init]);
+                }
+                else if($('input.gold_loss').length > 0)
+                {
+                    $('input.gold_loss').trigger('keyup', [init]);
+                }
+                else if($('input.disc_adjustment').length > 0)
+                {
+                    $('input.disc_adjustment').trigger('keyup', [init]);
+                }
             }
+            
         }).find('input[type=number]:first').trigger('keyup', ['init']);
     }
 });    

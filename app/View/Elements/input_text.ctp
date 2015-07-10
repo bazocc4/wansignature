@@ -89,6 +89,15 @@
                 }
                 echo '</span>';
             }
+
+            // set default value for required numeric (SPECIAL CASE) ...
+            if($myType['Type']['slug'] == 'diamond' || $myType['Type']['slug'] == 'cor-jewelry')
+            {
+                if(empty($value) && $detail_type == 'number' && !empty($required))
+                {
+                    $value = 1;
+                }
+            }
         ?>
     
 	    <span class="<?php echo ($view_mode?'hide':''); ?>">

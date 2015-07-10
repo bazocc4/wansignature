@@ -179,11 +179,15 @@
                         
                         richvalue += ' ['+item_weight+' x '+client_x+']';
                     }
-                    else // cv-payment ...
+                    else // cor vendor ...
                     {
-                        gram_result = parseFloat(gram_result);
-                        
                         richvalue += ' / ' + $(this).find('td.form-product_brand h5').text();
+                        
+                        var item_weight = parseFloat(gram_result);
+                        if(item_weight != 1)
+                        {
+                            gram_result = item_weight;
+                        }
                     }
                     
                     $("input#"+targetID).val(richvalue).nextAll("input[type=hidden]").val( $(this).find("input[type=hidden].slug-code").val() );
@@ -194,7 +198,10 @@
                     if($trytotal.length > 0)
                     {
                         $trytotal.removeAttr('readonly');
-                        $trytotal.val( gram_result.toFixed(2) ).keyup();
+                        if(gram_result > 0)
+                        {
+                            $trytotal.val( gram_result.toFixed(2) ).keyup();
+                        }
                     }
 
 					if(!e.isTrigger)    $.colorbox.close();

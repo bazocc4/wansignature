@@ -153,53 +153,10 @@
                     }
                     $('input.amount').keyup();
                 });
-                
-                // trigger keyup on some element ...
-                if($('input.additional_cost').length > 0)
-                {
-                    $('input.additional_cost').keyup(function(e,init){
-                        var ratevalue = $('input.gold_bar_rate').val();
-                        var value = $(this).val();
-
-                        if($.isNumeric(value) && $.isNumeric(ratevalue))
-                        {
-                            var result = (parseFloat(value) / parseFloat(ratevalue)).toFixed(2);
-
-                            $('span.cost_rate_text').html('= <span class="additional_cost_gram">'+result+'</span> gram Gold Bar.');
-                        }
-                        else
-                        {
-                            $('span.cost_rate_text').html('');
-                        }
-
-                        // trigger additional_charge too ...
-                        $('input.additional_charge').trigger('keyup', [init]);
-
-                    }).trigger('keyup', ['init']);
-                }
-                
-                if($('input.gold_bar_rate').length > 0)
-                {
-                    $('input.gold_bar_rate').keyup(function(){
-                        $('input.additional_cost').keyup();
-                    });
-                }
-                
-                // onkeyup Gold Loss ...
-                if($('input.gold_loss').length > 0)
-                {
-                    $('span.unit_gold_loss').text('gram');
-                    $('input.gold_loss').keyup(function(e,init){
-                        var cor = parseFloat($('span.total_cor_jewelry input[type=hidden]').val());
-                        var result = ( $.isNumeric( $(this).val() ) ? cor * parseFloat($(this).val()) / 100 : 0 );
-                        $('span.total_gold_loss').html(number_format(result,2)+'<input type="hidden" value="'+result+'">');
-
-                        // trigger additional_charge too ...
-                        $('input.additional_charge').trigger('keyup', [init]);
-                    });
-                }
 			});
 		</script>
+		<script src="<?php echo $imagePath; ?>js/gold_loss.js"></script>
+		
 		<p class="notes important" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>
 		<input type="hidden" value="<?php echo (isset($_POST['data']['language'])?$_POST['data']['language']:(empty($lang)?substr($myEntry['Entry']['lang_code'], 0,2):$lang)); ?>" name="data[language]" id="myLanguage"/>
 		<input type="hidden" value="<?php echo (isset($_POST['data']['Entry'][2]['value'])?$_POST['data']['Entry'][2]['value']:(empty($myEntry)?'0':$myEntry['Entry']['main_image'])); ?>" name="data[Entry][2][value]" id="mySelectCoverId"/>

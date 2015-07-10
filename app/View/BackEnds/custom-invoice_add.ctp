@@ -159,6 +159,19 @@
                         $('input.total_weight').val(result.toFixed(2));
                     });
                 }
+                
+                // form submit pre-check ...
+                $('form').submit(function(){
+                    var produk = '<?php echo ( $DMD ? 'diamond' : 'cor-jewelry' ); ?>';
+                    var jml = $('div.'+produk+'-group div.'+produk+'-detail').length;
+                    
+                    if($('input.total_pcs').val() != jml)
+                    {
+                        alert('Jumlah produk tidak sesuai dengan total perhiasan yang didaftarkan!\nMohon mengecek kembali inputan Anda.');
+                        $('input.total_pcs').focus();
+                        return false;
+                    }
+                });
 			});
 		</script>
 		<p class="notes important" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>
@@ -250,6 +263,184 @@
                     }
                     
 					echo $this->element('input_'.$value['input_type'] , $value);
+                    
+                    // echo products to help calculate total price / weight result ...
+                    if(empty($myEntry))
+                    {
+                        if($DMD && $VENDOR)
+                        {
+                            if($value['key'] == 'form-hkd_rate')
+                            {
+                                ?>
+            <script>
+                $(document).ready(function(){
+                    $('input[type=radio].currency').change(function(){
+                        $('div.diamond-group input[type=number]').attr('placeholder', $(this).val() );
+                        $('div.diamond-group input[type=number]:first').trigger('keyup');
+                    });
+                    
+                    $('input.hkd_rate').keyup(function(){
+                        if($('input[type=radio].currency:checked').val() == 'HKD' && $.isNumeric( $(this).val() ))
+                        {
+                            $('input[type=radio].currency').trigger('change');
+                        }
+                    });
+                    
+                    $('input.capital_x').keyup(function(e, init){
+                        if(init == null)
+                        {
+                            var capital_x = 1;
+                            if($.isNumeric( $(this).val() ))
+                            {
+                                capital_x = parseFloat($(this).val());
+                            }
+
+                            var result = capital_x * parseFloat( $('span.total_diamond input[type=hidden]').val() );
+                            $('input.total_price').val( result.toFixed(2) );
+                        }
+                    });
+                });
+            </script>                    
+                                <?php
+                                
+                                echo $this->element('input_text' , array(
+                                    'key'           => 'temp-capital_x',
+                                    'validation'    => 'is_numeric|',
+                                    'p'             => 'Vendor Invoice X value',
+                                    'model'         => 'EntryMeta',
+                                    'counter'       => $counter++,
+                                    'inputsize'     => 'input-mini'
+                                ));
+                                
+                                echo $this->element('special_multibrowse' , array(
+                                    'key'           => 'temp-diamond',
+                                    'validation'    => 'not_empty|',
+                                    'p'             => "Diamond purchased from this invoice <span style='color:red;'>(with <strong>Vendor Barcode</strong> input, based on invoice currency).</span>",
+                                    'model'         => 'EntryMeta',
+                                    'counter'       => $counter++
+                                ));
+                            }
+                        }
+                        else if(!$DMD && $VENDOR)
+                        {
+                            if($value['key'] == 'form-total_item_sent')
+                            {
+                                ?>
+            <script>
+                $(document).ready(function(){
+                    $.fn.calculateTotalWeight = function(init){
+                        if(init == null)
+                        {
+                            var source = 0;
+                            if($('span.total_cor_jewelry').length > 0)  source += parseFloat($('span.total_cor_jewelry input[type=hidden]').val());
+                            if($('span.total_gold_loss').length > 0)    source += parseFloat($('span.total_gold_loss input[type=hidden]').val());
+                            if($('span.additional_cost_gram').length > 0)   source += parseFloat( $('span.additional_cost_gram').text() );
+                            
+                            $('input.total_weight').val( source.toFixed(2) );
+                        }
+                    }
+                });
+            </script>
+            <script src="<?php echo $imagePath; ?>js/gold_loss.js"></script>                   
+                                <?php
+                                
+                                echo $this->element('special_multibrowse' , array(
+                                    'key'           => 'temp-cor_jewelry',
+                                    'validation'    => 'not_empty|',
+                                    'p'             => "Cor Jewelry purchased from this invoice <span style='color:red;'>(with <strong>Item Weight</strong> input).</span>",
+                                    'model'         => 'EntryMeta',
+                                    'counter'       => $counter++
+                                ));
+                                
+                                echo $this->element('input_text' , array(
+                                    'key'           => 'temp-gold_loss',
+                                    'validation'    => 'is_numeric|',
+                                    'p'             => 'Nilai prosentase susut perhiasan.',
+                                    'model'         => 'EntryMeta',
+                                    'counter'       => $counter++,
+                                    'inputsize'     => 'input-mini'
+                                ));
+                                
+                                echo $this->element('input_browse' , array(
+                                    'key'           => 'temp-cost_currency',
+                                    'p'             => 'Cost currency from vendor side.',
+                                    'model'         => 'EntryMeta',
+                                    'counter'       => $counter++
+                                ));
+                                
+                                echo $this->element('input_text' , array(
+                                    'key'           => 'temp-gold_bar_rate',
+                                    'validation'    => 'is_numeric|',
+                                    'p'             => 'Selected cost currency rate value per 1 gram Gold Bar.',
+                                    'model'         => 'EntryMeta',
+                                    'counter'       => $counter++
+                                ));
+                                
+                                echo $this->element('input_text' , array(
+                                    'key'           => 'temp-additional_cost',
+                                    'validation'    => 'is_numeric|',
+                                    'p'             => 'Tambahan ongkos yang dibebankan dari vendor dalam satuan currency terpilih (ongkos kerja, pasang, dll).',
+                                    'model'         => 'EntryMeta',
+                                    'counter'       => $counter++
+                                ));
+                            }
+                        }
+                        else if($DMD && !$VENDOR)
+                        {
+                            if($value['key'] == 'form-rp_rate')
+                            {
+                                ?>
+            <script>
+                $(document).ready(function(){
+                    $('input.diamond_sell_x, input.disc_adjustment').keyup(function(e, init){
+                        if(init == null)
+                        {
+                            var diamond_sell_x = 1;
+                            if($.isNumeric( $('input.diamond_sell_x').val() ))
+                            {
+                                diamond_sell_x = parseFloat($('input.diamond_sell_x').val());
+                            }
+                            
+                            var disc = 0;
+                            if($.isNumeric( $('input.disc_adjustment').val() ))
+                            {
+                                disc = parseFloat( $('input.disc_adjustment').val() );
+                            }
+
+                            var result = diamond_sell_x * parseFloat( $('span.total_diamond input[type=hidden]').val() ) - disc;
+                            $('input.total_price').val( result.toFixed(2) );
+                        }
+                    });
+                });
+            </script>                    
+                                <?php
+                                
+                                echo $this->element('input_text' , array(
+                                    'key'           => 'temp-diamond_sell_x',
+                                    'validation'    => 'is_numeric|',
+                                    'p'             => 'Client Invoice X value',
+                                    'model'         => 'EntryMeta',
+                                    'counter'       => $counter++,
+                                    'inputsize'     => 'input-mini'
+                                ));
+                                
+                                echo $this->element('special_multibrowse' , array(
+                                    'key'           => 'temp-diamond',
+                                    'validation'    => 'not_empty|',
+                                    'p'             => "Diamond sold from this invoice <span style='color:red;'>(with <strong>$ USD Sell Barcode</strong> input).</span>",
+                                    'model'         => 'EntryMeta',
+                                    'counter'       => $counter++
+                                ));
+                            }
+                        }
+                        else if(!$DMD && !$VENDOR)
+                        {
+                            if($value['key'] == 'form-gold_price')
+                            {
+                                
+                            }
+                        }
+                    }
 				}
 			}
 			// HIDE THE BROKEN INPUT TYPE !!!!!!!!!!!!!

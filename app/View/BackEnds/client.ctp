@@ -134,32 +134,44 @@
 					$("input#"+targetID).change();
 
 					// Update other attribute...
-					if($('input.wholesaler').length > 0)
-					{
-                        var wholesaler = $(this).find("td.form-wholesaler h5");
-                        if(wholesaler.length > 0)
-                        {                            $('input#wholesaler').val(wholesaler.text()).nextAll('input[type=hidden].wholesaler').val(wholesaler.next('input[type=hidden]').val());
-                        }
-					}
-                    
-                    if($('input.salesman').length > 0)
-					{
-                        var salesman = $(this).find("td.form-salesman h5");
-                        if(salesman.length > 0)
-                        {                            $('input#salesman').val(salesman.text()).nextAll('input[type=hidden].salesman').val(salesman.next('input[type=hidden]').val());
-                        }
-					}
-                    
-                    if($('input[type=number][class^="x_1"]').length > 0)
+					if($('input#query-alias').val() != 'wholesaler')
                     {
-                        var $mytr = $(this);
-                        $('input[type=number][class^="x_1"]').each(function(i,el){
-                            var value = $mytr.find('td[class^="form-x_1"]:eq('+i+')').text();
-                            if($.isNumeric(value))
-                            {
-                                $(el).val(value);
+                        if($('input.wholesaler').length > 0)
+                        {
+                            var wholesaler = $(this).find("td.form-wholesaler h5");
+                            if(wholesaler.length > 0)
+                            {                            $('input#wholesaler').val(wholesaler.text()).nextAll('input[type=hidden].wholesaler').val(wholesaler.next('input[type=hidden]').val());
                             }
-                        });
+                        }
+
+                        if($('input.salesman').length > 0)
+                        {
+                            var salesman = $(this).find("td.form-salesman h5");
+                            if(salesman.length > 0)
+                            {                            $('input#salesman').val(salesman.text()).nextAll('input[type=hidden].salesman').val(salesman.next('input[type=hidden]').val());
+                            }
+                        }
+
+                        if($('input.diamond_sell_x').length > 0)
+                        {
+                            var diamond_sell_x = $(this).find('td.form-diamond_sell_x').text();
+                            if($.isNumeric(diamond_sell_x))
+                            {
+                                $('input.diamond_sell_x').val(diamond_sell_x).trigger('keyup');
+                            }
+                        }
+
+                        if($('input[type=number][class^="x_1"]').length > 0)
+                        {
+                            var $mytr = $(this);
+                            $('input[type=number][class^="x_1"]').each(function(i,el){
+                                var value = $mytr.find('td[class^="form-x_1"]:eq('+i+')').text();
+                                if($.isNumeric(value))
+                                {
+                                    $(el).val(value).trigger('keyup');
+                                }
+                            });
+                        }
                     }
 
 					if(!e.isTrigger)    $.colorbox.close();

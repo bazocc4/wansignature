@@ -172,7 +172,30 @@
                         
                         richvalue += ' ['+barcode+' '+currency+' x '+vendor_x+vendor_rate+']';
                     }
-                    else if($('#myTypeSlug').val() == 'dc-payment')
+                    else if($('#myTypeSlug').val() == 'dmd-vendor-invoice')
+                    {
+                        var barcode = parseFloat($(this).find('td.form-vendor_barcode input[type=hidden]').val());
+                        if(barcode != 1)
+                        {
+                            usd_result = barcode;
+                            var inv_cur = $('input[type=radio].currency:checked').val();
+                            var this_cur = $(this).find('td.form-vendor_currency').text();
+                            
+                            var hkd_rate = $('input.hkd_rate').val();
+                            if($.isNumeric(hkd_rate))
+                            {
+                                if(inv_cur == 'HKD' && this_cur == 'USD')
+                                {
+                                    usd_result *= parseFloat(hkd_rate);
+                                }
+                                else if(inv_cur == 'USD' && this_cur == 'HKD')
+                                {
+                                    usd_result /= parseFloat(hkd_rate);
+                                }
+                            }
+                        }
+                    }
+                    else // diamond client ...
                     {
                         var barcode = $(this).find('td.form-sell_barcode').text();
                         if(barcode == '-')
@@ -185,14 +208,24 @@
                             usd_result = parseFloat($(this).find('td.form-sell_barcode input[type=hidden]').val());
                         }
                         
-                        var client_x = $(this).find('td.form-client_x').text();
-                        if(client_x == '-')
+                        if($('#myTypeSlug').val() == 'dc-payment')
                         {
-                            client_x = ( $('#client_x').val()=='' ? 1 : $('#client_x').val() );
+                            var client_x = $(this).find('td.form-client_x').text();
+                            if(client_x == '-')
+                            {
+                                client_x = ( $('#client_x').val()=='' ? 1 : $('#client_x').val() );
+                            }
+                            usd_result *= parseFloat(client_x);
+                            
+                            richvalue += ' ['+barcode+' x '+client_x+']';
                         }
-                        usd_result *= parseFloat(client_x);
-                        
-                        richvalue += ' ['+barcode+' x '+client_x+']';
+                        else // invoice ...
+                        {
+                            if(usd_result == 1)
+                            {
+                                usd_result = 0;
+                            }
+                        }
                     }
                     
                     $("input#"+targetID).val(richvalue).nextAll("input[type=hidden]").val( $(this).find("input[type=hidden].slug-code").val() );
@@ -203,7 +236,10 @@
                     if($trytotal.length > 0)
                     {
                         $trytotal.removeAttr('readonly');
-                        $trytotal.val( usd_result.toFixed(2) ).keyup();
+                        if(usd_result > 0)
+                        {
+                            $trytotal.val( usd_result.toFixed(2) ).keyup();
+                        }
                     }
 
 					if(!e.isTrigger)    $.colorbox.close();

@@ -17,7 +17,7 @@ var jcrop_api = new Array();
         }
     }
     
-	$(document).ready(function()
+    $(document).ready(function()
 	{
         $.fn.generalColorbox('popup-image');
         

@@ -6,7 +6,7 @@
     $browse_slug = '';
     $browse_alias = get_slug($shortkey);
     // CUSTOM BROWSE SLUG ...
-    if($shortkey == 'payment_jewelry')
+    if(strpos($shortkey, '_jewelry') !== FALSE)
     {
         $browse_slug = 'cor-jewelry';
     }
@@ -50,6 +50,11 @@
             if($browse_alias != $browse_slug)
             {
                 $popupExtensions['alias'] = $browse_alias;
+            }
+
+            if(is_array($request_query))
+            {
+                $popupExtensions = array_merge($popupExtensions, $request_query);
             }
 			
 			// Check data POST first !!
@@ -204,7 +209,10 @@
 	<input type="hidden" value="<?php echo $validation; ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][validation]"/>
 	<input type="hidden" value="<?php echo $p; ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][instruction]"/>
 </div>
-
+<?php
+    // unset this var because later will be using javascript value !!
+    unset($popupExtensions['stream']);
+?>
 <script type="text/javascript">
 // special counter variable ...    
 var <?php echo $var_stream; ?> = <?php echo $raw_stream; ?>;
@@ -232,8 +240,8 @@ $(document).ready(function(){
         {
             storage += '&storage='+$(this).attr('data-storage')+'&content='+$(this).attr('data-content');
         }
-
-        content += '&nbsp;<a class="btn btn-info get-from-table" href="'+linkpath+'admin/entries/<?php echo $browse_slug; ?>?popup=init<?php echo (empty($popupExtensions['alias'])?'':'&alias='.$popupExtensions['alias']); ?>&stream='+<?php echo $var_stream; ?>+storage+'">Browse</a>';
+        
+        content += '&nbsp;<a class="btn btn-info get-from-table" href="'+linkpath+'admin/entries/<?php echo $browse_slug.get_more_extension($popupExtensions); ?>&stream='+<?php echo $var_stream; ?>+storage+'">Browse</a>';
         content += '<input class="<?php echo $shortkey; ?>" type="hidden" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value][]" />';
         content += '&nbsp;<a class="btn btn-danger del-raw" href="javascript:void(0)"><i class="icon-trash icon-white"></i></a>';
         content += '</div>';

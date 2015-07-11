@@ -131,40 +131,45 @@
                 ?>
                 
                 // Auto calculate Total Weight for Cor Client ...
-                var $sold = $('input[type=number][class^="sold_1"]');
+                var $sold = $('input[type=number][class^="sold_1"]'); // this is readonly input !!
                 if($sold.length > 0)
                 {
-                    $('input[type=number][class^="sold_1"], input[type=number][class^="x_1"], input.disc_adjustment').keyup(function(){
-                        var result = 0;
-                        $sold.each(function(i,el){
-                            var value = $(el).val();
-                            if($.isNumeric(value))
-                            {
+                    $('input[type=number][class^="x_1"], input.disc_adjustment').keyup(function(e, init){
+                        if(init == null)
+                        {
+                            var result = 0;
+                            $sold.each(function(i,el){
+                                
+                                var value = parseFloat($('span[class^="total_cor_jewelry"]:eq('+i+') input[type=hidden]').val());
+                                $(el).val( value.toFixed(2) );
+                                
                                 var multiplier = $('input[type=number][class^="x_1"]:eq('+i+')').val();
                                 if(!$.isNumeric(multiplier))
                                 {
                                     multiplier = 1;
                                 }
-                                
-                                result += parseFloat(value) * parseFloat(multiplier);
+
+                                result += value * parseFloat(multiplier);
+                            });
+
+                            var discount = $('input.disc_adjustment').val();
+                            if($.isNumeric(discount))
+                            {
+                                result -= parseFloat(discount);
                             }
-                        });
-                        
-                        var discount = $('input.disc_adjustment').val();
-                        if($.isNumeric(discount))
-                        {
-                            result -= parseFloat(discount);
+
+                            $('input.total_weight').val(result.toFixed(2));
                         }
-                        
-                        $('input.total_weight').val(result.toFixed(2));
                     });
+                    
+                    // also hide all "TOTAL JEWELRY PRICE" info ...
+                    $('span[class^="total_cor_jewelry"]').parent('strong').hide();
                 }
                 
                 // form submit pre-check ...
                 $('form').submit(function(){
                     var produk = '<?php echo ( $DMD ? 'diamond' : 'cor-jewelry' ); ?>';
-                    var jml = $('div.'+produk+'-group div.'+produk+'-detail').length;
-                    
+                    var jml = $('div[class*="'+produk+'-"][class*="-group"] div[class*="'+produk+'-"][class*="-detail"] input[type=hidden][value]').length;
                     if($('input.total_pcs').val() != jml)
                     {
                         alert('Jumlah produk tidak sesuai dengan total perhiasan yang didaftarkan!\nMohon mengecek kembali inputan Anda.');
@@ -250,6 +255,10 @@
                     {
                         $value['validation'] .= 'not_empty|';
                     }
+                    else if(strpos($value['key'], 'form-sold_1') !== FALSE)
+                    {
+                        $value['readonly'] = 'readonly';
+                    }
                     
                     // view mode ...
                     if(!empty($myEntry))
@@ -264,7 +273,9 @@
                     
 					echo $this->element('input_'.$value['input_type'] , $value);
                     
+                    // =========================================================== >>>
                     // echo products to help calculate total price / weight result ...
+                    // =========================================================== >>>
                     if(empty($myEntry))
                     {
                         if($DMD && $VENDOR)
@@ -437,7 +448,55 @@
                         {
                             if($value['key'] == 'form-gold_price')
                             {
-                                
+                                echo $this->element('special_multibrowse' , array(
+                                    'key'           => 'temp-cor_jewelry_125',
+                                    'p'             => "Cor Jewelry sold from this invoice <span style='color:red;'>( MADE IN ITALY ).</span>",
+                                    'model'         => 'EntryMeta',
+                                    'request_query' => array(
+                                        'key' => 'product_type',
+                                        'value' => 'made-in-italy'
+                                    ),
+                                    'counter'       => $counter++
+                                ));
+                            }
+                            else if($value['key'] == 'form-x_125')
+                            {
+                                echo $this->element('special_multibrowse' , array(
+                                    'key'           => 'temp-cor_jewelry_100',
+                                    'p'             => "Cor Jewelry sold from this invoice <span style='color:red;'>( MADE IN KOREA ).</span>",
+                                    'model'         => 'EntryMeta',
+                                    'request_query' => array(
+                                        'key' => 'product_type',
+                                        'value' => 'made-in-korea'
+                                    ),
+                                    'counter'       => $counter++
+                                ));
+                            }
+                            else if($value['key'] == 'form-x_100')
+                            {
+                                echo $this->element('special_multibrowse' , array(
+                                    'key'           => 'temp-cor_jewelry_110',
+                                    'p'             => "Cor Jewelry sold from this invoice <span style='color:red;'>( 999 SIMPLE ).</span>",
+                                    'model'         => 'EntryMeta',
+                                    'request_query' => array(
+                                        'key' => 'product_type|product_type|product_type',
+                                        'value' => '!made-in-italy|!made-in-korea|!3D'
+                                    ),
+                                    'counter'       => $counter++
+                                ));
+                            }
+                            else if($value['key'] == 'form-x_110')
+                            {
+                                echo $this->element('special_multibrowse' , array(
+                                    'key'           => 'temp-cor_jewelry_115',
+                                    'p'             => "Cor Jewelry sold from this invoice <span style='color:red;'>( 999 3D ).</span>",
+                                    'model'         => 'EntryMeta',
+                                    'request_query' => array(
+                                        'key' => 'product_type',
+                                        'value' => '3D'
+                                    ),
+                                    'counter'       => $counter++
+                                ));
                             }
                         }
                     }

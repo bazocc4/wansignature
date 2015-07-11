@@ -160,37 +160,35 @@
 		if(myLangSelector.find('ul.dropdown-menu li').length <= 1)	myLangSelector.hide();
         
         // UPDATE SOME NEW COLUMN !!
-        $('table#myTableList tbody td.form-delivery_type').each(function(i,el){            
-            var destination = '';
-            var invoice = '';
-            switch($(el).text()){
-                case 'Warehouse To Warehouse':
-                case 'Exhibition To Warehouse':
-                    destination = 'warehouse_destination';
-                    break;
-                case 'Warehouse To Exhibition':
-                case 'Exhibition To Exhibition':
-                    destination = 'exhibition_destination';
-                    break;
-                case 'Diamond Return':
-                case 'Cor Jewelry Return':
-                    destination = 'vendor';
-                    invoice = ($(el).text() == 'Diamond Return'?'dmd_vendor_invoice':'cor_vendor_invoice');
-                    break;
-                default:
-                    destination = 'client';
-                    invoice = ($(el).text() == 'Diamond Sale'?'dmd_client_invoice':'cor_client_invoice');
-                    break;
-            }
+        $('table#myTableList tbody tr').each(function(i,el){
+            // invoice ...
+            $(el).find('td[class^="form-"][class*="_invoice"]').each(function(index, element){
+                if($(element).text() != '-')
+                {
+                    $(el).find('td.form-invoice').html( $(element).html() );
+                    return false;
+                }
+            });
             
-            $(el).nextAll('td.form-destination').html( $(el).nextAll('td.form-'+destination).html() );
-            if(invoice.length > 0)
-            {
-                $(el).nextAll('td.form-invoice').html( $(el).nextAll('td.form-'+invoice).html() );
-            }
+            // origin ...
+            $($(el).find('td[class^="form-"][class*="_origin"], td.form-vendor, td.form-client').get().reverse()).each(function(index, element){
+                if($(element).text() != '-')
+                {
+                    $(el).find('td.form-origin').html( $(element).html() );
+                    return false;
+                }
+            });
             
-            $(el).nextAll('td.form-origin').html( $(el).nextAll('td.form-'+ ($(el).text().indexOf('Exhibition To')>=0?'exhibition_origin':'warehouse_origin') ).html() );
+            // destination ...
+            $($(el).find('td[class^="form-"][class*="_destination"], td.form-vendor, td.form-client').get().reverse()).each(function(index, element){
+                if($(element).text() != '-')
+                {
+                    $(el).find('td.form-destination').html( $(element).html() );
+                    return false;
+                }
+            });
         });
+        
 	});
 </script>
 <?php if($totalList <= 0){ ?>
@@ -221,7 +219,7 @@
 		?>
 		<th class="date-field">
 		    <?php
-                echo $this->Html->link($titlekey.' ('.$totalList.')'.($_SESSION['order_by'] == 'title ASC'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == 'title DESC'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$_SESSION['order_by'] == 'title ASC'?"z_to_a":"a_to_z"));
+                echo $this->Html->link($titlekey.' ('.$totalList.')'.($_SESSION['order_by'] == 'title ASC'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == 'title DESC'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$_SESSION['order_by'] == 'title DESC'?"a_to_z":"z_to_a"));
             ?>
 		</th>
 		
@@ -272,7 +270,7 @@
                         }
                         
                         echo "<th ".($value['input_type'] == 'textarea' || $value['input_type'] == 'ckeditor'?"style='min-width:200px;'":"")." class='".$hideKeyQuery." ".$datefield."'>";
-                        echo $this->Html->link(string_unslug($shortkey).($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' asc'?" desc":" asc") ));
+                        echo $this->Html->link(string_unslug($shortkey).($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' desc'?" asc":" desc") ));
 						echo "</th>";
                         
                         if($shortkey == 'exhibition_destination')
@@ -300,19 +298,19 @@
 		<th class="date-field">
             <?php
                 $entityTitle = "modified";
-                echo $this->Html->link('last '.string_unslug($entityTitle).($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' asc'?" desc":" asc") ));
+                echo $this->Html->link('last '.string_unslug($entityTitle).($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' desc'?" asc":" desc") ));
             ?>
         </th>
         <th>
             <?php
                 $entityTitle = "modified_by";
-                echo $this->Html->link('last updated by'.($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' asc'?" desc":" asc") ));
+                echo $this->Html->link('last updated by'.($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' desc'?" asc":" desc") ));
             ?>
         </th>
 		<th>
 		    <?php
                 $entityTitle = "status";
-                echo $this->Html->link(string_unslug($entityTitle).($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' asc'?" desc":" asc") ));                
+                echo $this->Html->link(string_unslug($entityTitle).($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' desc'?" asc":" desc") ));                
             ?>
 		</th>
 		<?php

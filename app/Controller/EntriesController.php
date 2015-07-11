@@ -947,6 +947,9 @@ class EntriesController extends AppController {
 		// if form submit is taken...
 		if (!empty($this->request->data)) 
 		{
+//            dpr($this->request->data);
+//            exit;
+            
             if(empty($lang_code) && !empty($myEntry) && substr($myEntry['Entry']['lang_code'], 0,2) != $this->request->data['language'])
 			{
 				$myEntry = $this->Entry->findByLangCode($this->request->data['language'].substr($myEntry['Entry']['lang_code'], 2));
@@ -1029,6 +1032,7 @@ class EntriesController extends AppController {
 				// ------------------------------------- end of entry details...
 				$this->Entry->create();
 				$this->Entry->save($this->request->data);
+                $this->request->data['Entry'][0]['slug'] = $this->Entry->field('slug');
                 $newEntryId = $this->Entry->id;
                 if($data['gallery'])
                 {   
@@ -1170,6 +1174,14 @@ class EntriesController extends AppController {
                 maka sistem otomatis langsung buat 2 record payment (1 untuk payment original input,
                 dan 1 untuk payment return goods)...
         */
+        
+        if(empty($myEntry)) // ADD MODE ONLY !!
+        {
+            if(strpos($myTypeSlug, '-invoice') !== FALSE && empty($myChildTypeSlug))
+            {
+                $this->EntryMeta->update_product_by_invoice($myTypeSlug , $this->request->data);
+            }
+        }
 	}
 
 	/**

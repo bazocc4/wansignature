@@ -955,6 +955,12 @@ class EntryMeta extends AppModel {
         $cor['client_x'] = $cor['form-x_'.$tempX];
         if(empty($cor['client_x']))     $cor['client_x'] = $tempX / 100;
         
+        // adjust product_type title ...
+        if(stripos($cor['product_type'], '3D') === FALSE && $tempX == 115)
+        {
+            $cor['product_type'] .= ' 3D';
+        }
+        
         // adjust Invoice Client Total Weight ...
         $cor['client_invoice_sold_24k'] -= $cor['form-disc_adjustment'];
         
@@ -989,9 +995,9 @@ class EntryMeta extends AppModel {
             'carat'                 => implode(chr(10), array_filter(array($value[13], $value[14], $value[15], $value[16])) ),
             'gold_carat'            => $value[17],
             'gold_weight'           => round(floatval($value[18]), 2),
+            'item_ref_code'         => implode(chr(10), array_filter(array($value[20], $value[21])) ),
             
             /* VENDOR & SUPPLIER DETAIL */
-            'item_ref_code'         => implode(chr(10), array_filter(array($value[20], $value[21])) ),
             'vendor'                => strtoupper($value[22]),
             'vendor_item_code'      => $value[23],
             'vendor_invoice_code'   => strtoupper($value[24]),
@@ -1043,5 +1049,200 @@ class EntryMeta extends AppModel {
         
         // push product to database ...
         $this->push_product($dmd, 'diamond', $value[1] , $dmd['form-description']);
+    }
+    
+    function update_product_by_invoice($myTypeSlug, $data)
+    {
+        $new_total_pcs = 0;
+        
+        if($myTypeSlug == 'dmd-vendor-invoice')
+        {
+            // to search vd barcode for each product ...
+            $prodkey = array_search('temp-diamond', array_column($data['EntryMeta'], 'key'));
+
+            $data['EntryMeta']['temp-diamond'] = array_unique(array_filter($data['EntryMeta']['temp-diamond']));
+            
+            $pushdata = array(
+                'form-vendor_invoice_code'  => $data['Entry'][0]['slug'],
+                'form-vendor_invoice_date'  => $data['EntryMeta']['date'],
+                'form-vendor'               => $data['EntryMeta']['vendor'],
+                'form-vendor_currency'      => $data['EntryMeta']['currency'],
+                'form-vendor_x'             => $data['EntryMeta']['temp-capital_x'],
+            );
+            
+            $query = $this->Entry->findAllByEntryTypeAndSlug('diamond', $data['EntryMeta']['temp-diamond'] );
+            foreach($query as $key => $value)
+            {
+                $dbkey_haystack = array_column($value['EntryMeta'], 'key');
+                
+                $pushdata['form-vendor_barcode'] = $data['EntryMeta'][$prodkey]['total'][array_search($value['Entry']['slug'], $data['EntryMeta']['temp-diamond'] )];
+                $pushdata['form-vendor_usd'] = round($pushdata['form-vendor_barcode'] * (is_numeric($pushdata['form-vendor_x'])?$pushdata['form-vendor_x']:1) , 2);
+                $pushdata['form-vendor_hkd'] = round($pushdata['form-vendor_usd'] * $data['EntryMeta']['hkd_rate'], 2);
+
+                foreach(array_filter( array_map('trim', $pushdata) ) as $subkey => $subvalue)
+                {
+                    $dbkey = array_search($subkey, $dbkey_haystack);
+                    if($dbkey === FALSE)
+                    {
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save(array('EntryMeta' => array(
+                            'entry_id'  => $value['Entry']['id'],
+                            'key'       => $subkey,
+                            'value'     => $subvalue
+                        )));
+                    }
+                    else
+                    {
+                        $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
+                        $this->EntryMeta->saveField('value', $subvalue );
+                    }
+                }
+            }
+            $new_total_pcs = count($query);
+        }
+        else if($myTypeSlug == 'cor-vendor-invoice')
+        {
+            // to search item weight for each product ...
+            $prodkey = array_search('temp-cor_jewelry', array_column($data['EntryMeta'], 'key'));
+            
+            $data['EntryMeta']['temp-cor_jewelry'] = array_unique(array_filter($data['EntryMeta']['temp-cor_jewelry']));
+            
+            $pushdata = array(
+                'form-vendor_invoice_code'  => $data['Entry'][0]['slug'],
+                'form-vendor'               => $data['EntryMeta']['vendor'],
+                'form-vendor_pcs'           => count($data['EntryMeta']['temp-cor_jewelry']),
+                'form-vendor_gr'            => $data['EntryMeta']['total_weight'],
+            );
+            
+            $query = $this->Entry->findAllByEntryTypeAndSlug('cor-jewelry', $data['EntryMeta']['temp-cor_jewelry'] );
+            foreach($query as $key => $value)
+            {
+                $dbkey_haystack = array_column($value['EntryMeta'], 'key');
+                $pushdata['form-item_weight'] = $data['EntryMeta'][$prodkey]['total'][array_search($value['Entry']['slug'], $data['EntryMeta']['temp-cor_jewelry'] )];
+                foreach(array_filter( array_map('trim', $pushdata) ) as $subkey => $subvalue)
+                {
+                    $dbkey = array_search($subkey, $dbkey_haystack);
+                    if($dbkey === FALSE)
+                    {
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save(array('EntryMeta' => array(
+                            'entry_id'  => $value['Entry']['id'],
+                            'key'       => $subkey,
+                            'value'     => $subvalue
+                        )));
+                    }
+                    else
+                    {
+                        $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
+                        $this->EntryMeta->saveField('value', $subvalue );
+                    }
+                }
+            }
+            $new_total_pcs = count($query);
+        }
+        else if($myTypeSlug == 'dmd-client-invoice')
+        {
+            // to search sell barcode for each product ...
+            $prodkey = array_search('temp-diamond', array_column($data['EntryMeta'], 'key'));
+
+            $data['EntryMeta']['temp-diamond'] = array_unique(array_filter($data['EntryMeta']['temp-diamond']));
+            
+            $pushdata = array(
+                'form-client_invoice_code'  => $data['Entry'][0]['slug'],
+                'form-client_invoice_date'  => $data['EntryMeta']['date'],                
+                'form-client'               => $data['EntryMeta']['client'],
+                'form-client_x'             => $data['EntryMeta']['temp-diamond_sell_x'],                
+                'form-wholesaler'           => $data['EntryMeta']['wholesaler'],
+                'form-salesman'             => $data['EntryMeta']['salesman'],                
+                'form-rp_rate'              => $data['EntryMeta']['rp_rate'],
+                'form-payment_balance'      => $data['EntryMeta']['payment_balance'],
+            );
+            
+            $query = $this->Entry->findAllByEntryTypeAndSlug('diamond', $data['EntryMeta']['temp-diamond'] );
+            foreach($query as $key => $value)
+            {
+                $dbkey_haystack = array_column($value['EntryMeta'], 'key');
+                
+                $pushdata['form-sell_barcode'] = $data['EntryMeta'][$prodkey]['total'][array_search($value['Entry']['slug'], $data['EntryMeta']['temp-diamond'] )];                
+                $pushdata['form-barcode'] = ( $value['EntryMeta'][array_search('form-barcode', $dbkey_haystack)]['value'] == 1 ? floor($pushdata['form-sell_barcode']) :'');                
+                $pushdata['form-total_sold_price'] = round($pushdata['form-sell_barcode'] * (is_numeric($pushdata['form-client_x'])?$pushdata['form-client_x']:1) , 2);
+
+                foreach(array_filter( array_map('trim', $pushdata) ) as $subkey => $subvalue)
+                {
+                    $dbkey = array_search($subkey, $dbkey_haystack);
+                    if($dbkey === FALSE)
+                    {
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save(array('EntryMeta' => array(
+                            'entry_id'  => $value['Entry']['id'],
+                            'key'       => $subkey,
+                            'value'     => $subvalue
+                        )));
+                    }
+                    else
+                    {
+                        $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
+                        $this->EntryMeta->saveField('value', $subvalue );
+                    }
+                }
+            }
+            $new_total_pcs = count($query);
+        }
+        else if($myTypeSlug == 'cor-client-invoice')
+        {
+            $cor_haystack = array_filter(array_column($data['EntryMeta'], 'key'), function($v){
+                return strpos($v, 'temp-cor_jewelry') !== FALSE;
+            });
+            
+            $pushdata = array(
+                'form-client_invoice_code'  => $data['Entry'][0]['slug'],
+                'form-client_invoice_date'  => $data['EntryMeta']['date'],
+                'form-client'               => $data['EntryMeta']['client'],
+                'form-wholesaler'           => $data['EntryMeta']['wholesaler'],
+                'form-salesman'             => $data['EntryMeta']['salesman'],
+                'form-client_invoice_pcs'   => array_sum(array_map(function($prodvalue) use (&$data){
+                    $data['EntryMeta'][$prodvalue] = array_unique(array_filter($data['EntryMeta'][$prodvalue]));
+                    return count($data['EntryMeta'][$prodvalue]);
+                }, $cor_haystack)),
+                'form-client_invoice_sold_24k' => $data['EntryMeta']['total_weight'],
+                'form-gold_price'           => $data['EntryMeta']['gold_price'],
+                'form-payment_balance'      => $data['EntryMeta']['payment_balance'],
+            );
+            
+            foreach($cor_haystack as $prodkey => $prodvalue )
+            {
+                $pushdata['form-client_x'] = $data['EntryMeta']['x'.str_replace('temp-cor_jewelry','',$prodvalue)];
+                $query = $this->Entry->findAllByEntryTypeAndSlug('cor-jewelry', $data['EntryMeta'][$prodvalue] );
+                foreach($query as $key => $value)
+                {
+                    $dbkey_haystack = array_column($value['EntryMeta'], 'key');
+                    $pushdata['form-item_weight'] = $data['EntryMeta'][$prodkey]['total'][array_search($value['Entry']['slug'], $data['EntryMeta'][$prodvalue] )];
+                    foreach(array_filter( array_map('trim', $pushdata) ) as $subkey => $subvalue)
+                    {
+                        $dbkey = array_search($subkey, $dbkey_haystack);
+                        if($dbkey === FALSE)
+                        {
+                            $this->EntryMeta->create();
+                            $this->EntryMeta->save(array('EntryMeta' => array(
+                                'entry_id'  => $value['Entry']['id'],
+                                'key'       => $subkey,
+                                'value'     => $subvalue
+                            )));
+                        }
+                        else
+                        {
+                            $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
+                            $this->EntryMeta->saveField('value', $subvalue );
+                        }
+                    }
+                }
+            }
+            $new_total_pcs = $pushdata['form-client_invoice_pcs'];
+        }
+        
+        // re-calculate total PCS !!
+        $total_pcs = $this->EntryMeta->findByEntryIdAndKey($data['Entry']['id'], 'form-total_pcs');
+        $this->EntryMeta->id = $total_pcs['EntryMeta']['id'];
+        $this->EntryMeta->saveField('value', $new_total_pcs );
     }
 }

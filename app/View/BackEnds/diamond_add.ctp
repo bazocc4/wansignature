@@ -138,6 +138,29 @@
 							break;
 					}
 					echo $this->element('input_'.$value['input_type'] , $value);
+                    
+                    // Input Group Divider !!
+                    switch($value['key'])
+                    {
+                        case 'form-exhibition':
+                            echo '<div class="alert alert-info full fl"><strong>ITEM DESCRIPTION / SPECIFICATIONS</strong></div>';
+                            break;
+                        case 'form-item_ref_code':
+                            echo '<div class="alert alert-info full fl"><strong>VENDOR & SUPPLIER DETAIL</strong></div>';
+                            break;
+                        case 'form-vendor_hkd':
+                            echo '<div class="alert alert-info full fl"><strong>SOLD & RETURN REPORT TO VENDOR</strong></div>';
+                            break;
+                        case 'form-omzet':
+                            echo '<div class="alert alert-info full fl"><strong>EVERYTHING ABOUT WAN TRANSACTIONS</strong></div>';
+                            break;
+                        case 'form-rp_rate':
+                            echo '<div class="alert alert-info full fl"><strong>TYPE OF PAYMENT</strong></div>';
+                            break;
+                        case 'form-payment_balance':
+                            echo '<div class="alert alert-info full fl"><strong>HISTORY OF TRANSACTIONS</strong></div>';
+                            break;
+                    }
 				}
 			}
 			// HIDE THE BROKEN INPUT TYPE !!!!!!!!!!!!!

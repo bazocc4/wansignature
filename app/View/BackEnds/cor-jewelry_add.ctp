@@ -135,6 +135,26 @@
 							break;
 					}
 					echo $this->element('input_'.$value['input_type'] , $value);
+                    
+                    // Input Group Divider !!
+                    switch($value['key'])
+                    {
+                        case 'form-item_size':
+                            echo '<div class="alert alert-info full fl"><strong>VENDOR INFORMATION</strong></div>';
+                            break;
+                        case 'form-vendor_gr':
+                            echo '<div class="alert alert-info full fl"><strong>JEWELRY STATUS</strong></div>';
+                            break;
+                        case 'form-product_status':
+                            echo '<div class="alert alert-info full fl"><strong>SOLD INVOICE TO CLIENT</strong></div>';
+                            break;
+                        case 'form-gold_price':
+                            echo '<div class="alert alert-info full fl"><strong>TYPE OF PAYMENT</strong></div>';
+                            break;
+                        case 'form-payment_balance':
+                            echo '<div class="alert alert-info full fl"><strong>HISTORY OF TRANSACTIONS</strong></div>';
+                            break;
+                    }
 				}
 			}
 			// HIDE THE BROKEN INPUT TYPE !!!!!!!!!!!!!

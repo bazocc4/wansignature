@@ -79,7 +79,7 @@
 		<div class="container-fluid">
       		<div class="header row-fluid">
 				<div class="span7">
-					<a class="hide" target="_blank" alt="homepage" href="<?php echo $imagePath; ?>"><img src="<?php echo $imagePath; ?>images/logo.png" /></a>
+					<a class="<!--hide-->" target="_blank" alt="homepage" href="<?php echo $imagePath; ?>"><img src="<?php echo $imagePath; ?>images/logo.png" /></a>
 				</div>
 				
 				<div class="username span5">

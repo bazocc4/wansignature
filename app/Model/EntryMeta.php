@@ -153,8 +153,11 @@ class EntryMeta extends AppModel {
                 }
                 else // UPDATE ENTRYMETA ...
                 {
-                    $this->EntryMeta->id = $qValue['id'];
-                    $this->EntryMeta->saveField('value', $obj[$shortkey]);
+                    if($qValue['value'] != $obj[$shortkey])
+                    {
+                        $this->EntryMeta->id = $qValue['id'];
+                        $this->EntryMeta->saveField('value', $obj[$shortkey]);
+                    }
                     unset($obj[$shortkey]);
                 }
             }
@@ -1091,7 +1094,7 @@ class EntryMeta extends AppModel {
                             'value'     => $subvalue
                         )));
                     }
-                    else
+                    else if($value['EntryMeta'][$dbkey]['value'] != $subvalue)
                     {
                         $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
                         $this->EntryMeta->saveField('value', $subvalue );
@@ -1131,7 +1134,7 @@ class EntryMeta extends AppModel {
                             'value'     => $subvalue
                         )));
                     }
-                    else
+                    else if($value['EntryMeta'][$dbkey]['value'] != $subvalue)
                     {
                         $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
                         $this->EntryMeta->saveField('value', $subvalue );
@@ -1179,7 +1182,7 @@ class EntryMeta extends AppModel {
                             'value'     => $subvalue
                         )));
                     }
-                    else
+                    else if($value['EntryMeta'][$dbkey]['value'] != $subvalue)
                     {
                         $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
                         $this->EntryMeta->saveField('value', $subvalue );
@@ -1229,7 +1232,7 @@ class EntryMeta extends AppModel {
                                 'value'     => $subvalue
                             )));
                         }
-                        else
+                        else if($value['EntryMeta'][$dbkey]['value'] != $subvalue)
                         {
                             $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
                             $this->EntryMeta->saveField('value', $subvalue );
@@ -1241,8 +1244,11 @@ class EntryMeta extends AppModel {
         }
         
         // re-calculate total PCS !!
-        $total_pcs = $this->EntryMeta->findByEntryIdAndKey($data['Entry']['id'], 'form-total_pcs');
-        $this->EntryMeta->id = $total_pcs['EntryMeta']['id'];
-        $this->EntryMeta->saveField('value', $new_total_pcs );
+        if($data['EntryMeta']['total_pcs'] != $new_total_pcs)
+        {
+            $total_pcs = $this->EntryMeta->findByEntryIdAndKey($data['Entry']['id'], 'form-total_pcs');
+            $this->EntryMeta->id = $total_pcs['EntryMeta']['id'];
+            $this->EntryMeta->saveField('value', $new_total_pcs );
+        }
     }
 }

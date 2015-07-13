@@ -1250,5 +1250,41 @@ class EntryMeta extends AppModel {
             $this->EntryMeta->id = $total_pcs['EntryMeta']['id'];
             $this->EntryMeta->saveField('value', $new_total_pcs );
         }
+        
+        // update client data too ...
+        if(strpos($myTypeSlug, '-client-invoice') !== FALSE)
+        {
+            $pushdata = array_filter( array_map('trim', array(
+                'form-salesman'     => $data['EntryMeta']['salesman'],
+                'form-warehouse'    => $data['EntryMeta']['warehouse'],
+                'form-exhibition'   => $data['EntryMeta']['exhibition'],
+            ) ) );
+            
+            if(!empty($pushdata))
+            {
+                $query = $this->Entry->findByEntryTypeAndSlug('client', $data['EntryMeta']['client'] );                
+                $dbkey_haystack = array_column($query['EntryMeta'], 'key');
+                
+                foreach($pushdata as $subkey => $subvalue)
+                {
+                    $dbkey = array_search($subkey, $dbkey_haystack);
+                    
+                    if($dbkey === FALSE)
+                    {
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save(array('EntryMeta' => array(
+                            'entry_id'  => $query['Entry']['id'],
+                            'key'       => $subkey,
+                            'value'     => $subvalue
+                        )));
+                    }
+                    else if(strpos( '|'.$query['EntryMeta'][$dbkey]['value'].'|', '|'.$subvalue.'|' ) === FALSE)
+                    {
+                        $this->EntryMeta->id = $query['EntryMeta'][$dbkey]['id'];
+                        $this->EntryMeta->saveField('value', $query['EntryMeta'][$dbkey]['value'].'|'.$subvalue );
+                    }
+                }
+            }
+        }
     }
 }

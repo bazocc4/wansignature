@@ -1,5 +1,6 @@
 var instance = '';
 var delayCloseWindow = 2000; // delay for closing window popup (in ms) !!
+var windowObjectReference = [];
 
 function string_unslug(str)
 {
@@ -43,13 +44,15 @@ function deleteChildPic(myobj)
 
 function openRequestedSinglePopup(strUrl , targetName) 
 {
-    if(targetName == null)
-    {
-        targetName = "SingleSecondaryWindowName";
-    }
-	var options = "toolbar=yes,resizable=yes,scrollbars=yes,status=yes";
-	var windowObjectReference = window.open(strUrl,targetName ,options);
-	windowObjectReference.focus();
+    if(window.name.length > 0)  targetName = window.name;
+    else if(targetName == null) targetName = "SingleSecondaryWindowName";
+    
+    var i = 1;
+    while($.inArray(targetName+i, windowObjectReference) >= 0)  ++i;
+    
+    targetName += i;
+    windowObjectReference.push(targetName);
+    window.open(strUrl,targetName, "toolbar=yes,resizable=yes,scrollbars=yes,status=yes").focus();
 }
 
 (function($) {

@@ -116,9 +116,6 @@
 			$('p#id-title-description').html('Last updated by <a href="#"><?php echo (empty($lastModified['AccountModifiedBy']['username'])?$lastModified['AccountModifiedBy']['email']:$lastModified['AccountModifiedBy']['username']).'</a> at '.date_converter($lastModified['Entry']['modified'], $mySetting['date_format'] , $mySetting['time_format']); ?>');
 			$('p#id-title-description').css('display','<?php echo (empty($totalList)?'none':'block'); ?>');
 			
-			// UPDATE TITLE HEADER !!
-			$('div.title > h2').html('<?php echo (empty($myEntry)?$myType['Type']['name']:$myEntry['Entry']['title'].' - '.$myChildType['Type']['name']); ?>');
-			
 		<?php else: ?>
 			$('table#myTableList tbody tr').css('cursor' , 'pointer');
 			$('input[type=checkbox]').css('cursor' , 'default');
@@ -158,6 +155,31 @@
 		// disable language selector ONLY IF one language available !!		
 		var myLangSelector = ($('#colorbox').length > 0 && $('#colorbox').is(':visible')? $('#colorbox').find('div.lang-selector:first') : $('div.lang-selector')  );
 		if(myLangSelector.find('ul.dropdown-menu li').length <= 1)	myLangSelector.hide();
+        
+        // UPDATE TITLE HEADER !!
+        <?php
+            if( ($this->request->query['key'] == 'diamond' || $this->request->query['key'] == 'cor_jewelry') && !empty($this->request->query['value']) )
+            {
+                $query = $this->Get->meta_details($this->request->query['value'], get_slug($this->request->query['key']) );
+                if(!empty($query))
+                {
+                    $product_type = $this->Get->meta_details($query['EntryMeta']['product_type'], 'product-type' );
+                    ?>
+        $('div.title > h2').append(' <span style="color:red;">#<?php echo $query['Entry']['title'].' '.$product_type['Entry']['title']; ?></span>');
+                    <?php
+                }
+            }
+            else if(!empty($this->request->query['warehouse']))
+            {
+                $query = $this->Get->meta_details($this->request->query['warehouse'], 'warehouse' );
+                if(!empty($query))
+                {
+                    ?>
+        $('div.title > h2').append(' <span style="color:red;">WH# <?php echo $query['Entry']['title']; ?></span>');
+                    <?php
+                }
+            }
+        ?>
         
         // UPDATE SOME NEW COLUMN !!
         $('table#myTableList tbody tr').each(function(i,el){

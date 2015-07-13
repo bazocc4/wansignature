@@ -69,6 +69,7 @@
                 }
             }
         
+			// click on record will trigger checkbox clicked too !!
 			$('table#myTableList tr').css('cursor' , 'default').click(function(e){ if($('td').is(e.target) && $(this).find('input[type=checkbox]').length > 0) $(this).find('input[type=checkbox]').click(); });
 
 			// submit bulk action checkbox !!
@@ -76,11 +77,8 @@
             {
                 $('form#global-action').submit(function(){				
                     var records = [];
-                    $('input.check-record').each(function(i,el){
-                        if($(el).attr('checked'))
-                        {
-                            records.push($(el).val());
-                        }
+                    $('input.check-record:checked').each(function(i,el){
+                        records.push($(el).val());
                     });
 
                     if(records.length > 0)
@@ -112,17 +110,7 @@
 			$('div.title > h2').html('<?php echo (empty($myEntry)?$myType['Type']['name']:$myEntry['Entry']['title'].' - '.$myChildType['Type']['name']); ?>');
 			
 		<?php else: ?>
-            // UPDATE TITLE HEADER !!
-            <?php
-                if(!empty($this->request->query['alias']))
-                {
-                    ?>
-            $('#colorbox div.title > h2').append(' <span style="color:red;">(<?php echo string_unslug($this->request->query['alias']); ?>)</span>');
-                    <?php
-                }
-            ?>
-        
-            $('table#myTableList tbody tr').css('cursor' , 'pointer');
+			$('table#myTableList tbody tr').css('cursor' , 'pointer');
 			$('input[type=checkbox]').css('cursor' , 'default');
 
 			$('table#myTableList tbody tr').click(function(e){
@@ -143,37 +131,11 @@
                     $("input#"+targetID).val(richvalue).nextAll("input[type=hidden]").val( $(this).find("input[type=hidden].slug-code").val() );
 					$("input#"+targetID).change();
 
-					// Update other attribute...
-					if($('input#query-alias').val() != 'wholesaler')
+					// update other attribute ...
+                    var $trytotal = $("input#"+targetID).nextAll('input[type=number]');
+                    if($trytotal.length > 0)
                     {
-                        if($('input.wholesaler').length > 0)
-                        {
-                            var wholesaler = $(this).find("td.form-wholesaler h5");
-                            if(wholesaler.length > 0)
-                            {                            $('input#wholesaler').val(wholesaler.text()).nextAll('input[type=hidden].wholesaler').val(wholesaler.next('input[type=hidden]').val());
-                            }
-                        }
-
-                        if($('input.diamond_sell_x').length > 0)
-                        {
-                            var diamond_sell_x = $(this).find('td.form-diamond_sell_x').text();
-                            if($.isNumeric(diamond_sell_x))
-                            {
-                                $('input.diamond_sell_x').val(diamond_sell_x).trigger('keyup');
-                            }
-                        }
-
-                        if($('input[type=number][class^="x_1"]').length > 0)
-                        {
-                            var $mytr = $(this);
-                            $('input[type=number][class^="x_1"]').each(function(i,el){
-                                var value = $mytr.find('td[class^="form-x_1"]:eq('+i+')').text();
-                                if($.isNumeric(value))
-                                {
-                                    $(el).val(value).trigger('keyup');
-                                }
-                            });
-                        }
+                        $trytotal.removeAttr('readonly').focus();
                     }
 
 					if(!e.isTrigger)    $.colorbox.close();
@@ -221,7 +183,7 @@
 				}
 			}
 		?>
-		<th>
+		<th class="date-field">
 		    <?php
                 echo $this->Html->link($titlekey.' ('.$totalList.')'.($_SESSION['order_by'] == 'title ASC'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == 'title DESC'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$_SESSION['order_by'] == 'title DESC'?"a_to_z":"z_to_a"));
             ?>
@@ -247,16 +209,9 @@
 						$entityTitle = $value['key'];
                         $hideKeyQuery = '';
                         $shortkey = substr($entityTitle, 5);
-                        if(!empty($popup))
+                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!')
                         {
-                            if($this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!')
-                            {
-                                $hideKeyQuery = 'hide';
-                            }
-                            else if($this->request->query['key'] == 'kategori' && $this->request->query['value'] != 'Retailer' && $shortkey == 'wholesaler')
-                            {
-                                $hideKeyQuery = 'hide';
-                            }
+                            $hideKeyQuery = 'hide';
                         }
                         
                         $datefield = '';
@@ -265,12 +220,16 @@
                             case 'datepicker':
                             case 'datetimepicker':
                             case 'multidate':
-                            case 'browse':
-                                $datefield = 'date-field';
+                            case 'multibrowse':
+                                $datefield = 'date-field'; // 100 px
+                                break;
+                            case 'textarea':
+                            case 'ckeditor':
+                                $datefield = 'ck-field'; // 200 px
                                 break;
                         }
                         
-                        echo "<th ".($value['input_type'] == 'textarea' || $value['input_type'] == 'ckeditor'?"style='min-width:200px;'":"")." class='".$hideKeyQuery." ".$datefield."'>";
+                        echo "<th class='".$hideKeyQuery." ".$datefield."'>";
                         echo $this->Html->link(string_unslug($shortkey).($_SESSION['order_by'] == $entityTitle.' asc'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == $entityTitle.' desc'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$entityTitle.($_SESSION['order_by'] == $entityTitle.' desc'?" asc":" desc") ));
 						echo "</th>";
 					}
@@ -312,8 +271,8 @@
                         if($myType['Type']['slug'] != 'pages')
                         {
                             ?>
-                    <option value="active">Publish</option>
-					<option value="disable">Draft</option>                            
+                    <option value="active">Complete</option>
+					<option value="disable">Pending</option>                            
                             <?php
                         }
 */
@@ -337,7 +296,7 @@
 		$orderlist .= $value['Entry']['sort_order'].",";
 	?>	
 	<tr class="orderlist" alt="<?php echo $value['Entry']['id']; ?>">
-		<td class="main-title">
+		<td>
 			<?php
 				if($imageUsed == 1)
 				{
@@ -349,16 +308,14 @@
                 $editUrl = array('action'=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'edit',$value['Entry']['slug'] ,'?'=> (!empty($myEntry)&&$myType['Type']['slug']!=$myChildType['Type']['slug']?array('type'=>$myChildType['Type']['slug']):'')   );
 			?>
 			<input class="slug-code" type="hidden" value="<?php echo $value['Entry']['slug']; ?>" />
-			<h5 class="title-code"><?php echo (empty($popup)?$this->Html->link($value['Entry']['title'], $editUrl ):$value['Entry']['title']); ?></h5>
-			
-				<?php
-					if(!empty($value['Entry']['description']))
-					{
-						$description = nl2br($value['Entry']['description']);
-						echo '<p>'.(strlen($description) > 30? '<a href="#" data-placement="right" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description).'</p>';
-					}
-				?>
-			
+			<h5 class="title-code"><?php echo (empty($popup)?$this->Html->link($value['Entry']['title'],$editUrl):$value['Entry']['title']); ?></h5>
+            <?php
+                if(!empty($value['Entry']['description']))
+                {
+                    $description = nl2br($value['Entry']['description']);
+                    echo '<p>'.(strlen($description) > 30? '<a href="#" data-placement="right" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description).'</p>';
+                }
+            ?>
 		</td>
 		<?php
 			if(empty($myEntry) && empty($popup)) // if this is a parent Entry !!
@@ -388,16 +345,9 @@
 						$shortkey = substr($value10['key'], 5);
                         $displayValue = $value['EntryMeta'][$shortkey];
                         $hideKeyQuery = '';
-                        if(!empty($popup))
+                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!')
                         {
-                            if($this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!')
-                            {
-                                $hideKeyQuery = 'hide';
-                            }
-                            else if($this->request->query['key'] == 'kategori' && $this->request->query['value'] != 'Retailer' && $shortkey == 'wholesaler')
-                            {
-                                $hideKeyQuery = 'hide';
-                            }
+                            $hideKeyQuery = 'hide';
                         }
                         
                         echo "<td class='".$value10['key']." ".$hideKeyQuery."'>";
@@ -425,13 +375,19 @@
 							$emptybrowse = 0;
 							foreach ($displayValue as $brokekey => $brokevalue) 
 							{
+                                $brokeWithTotal = explode('_', $brokevalue);
+                                
+                                $brokevalue = $brokeWithTotal[0];
+                                $broketotal = $brokeWithTotal[1];
+                                
 								$mydetails = $this->Get->meta_details($brokevalue , $browse_slug );
 								if(!empty($mydetails))
 								{
 									$emptybrowse = 1;
 									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']);
-									echo '<p>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).'</p>';
-                                    echo '<input type="hidden" value="'.$mydetails['Entry']['slug'].'">';
+                                    
+									echo '<p>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).(!empty($broketotal)?' ('.$broketotal.' pc)':'').'</p>';
+                                    echo '<input data-total="'.$broketotal.'" type="hidden" value="'.$mydetails['Entry']['slug'].'">';
 								}
 							}
 							
@@ -442,17 +398,7 @@
 						}
                         else if($value10['input_type'] == 'browse')
                         {
-                            $entrytype = '';
-                            if($shortkey == 'wholesaler')
-                            {
-                                $entrytype = 'client';
-                            }
-                            else
-                            {
-                                $entrytype = get_slug($shortkey);
-                            }
-                            
-                        	$entrydetail = $this->Get->meta_details($displayValue , $entrytype );
+                        	$entrydetail = $this->Get->meta_details($displayValue , get_slug($shortkey));
 							if(empty($entrydetail))
 							{
 								echo $displayValue;
@@ -527,9 +473,9 @@
 			<span class="label <?php echo $value['Entry']['status']==0?'label-important':'label-success'; ?>">
 				<?php
 					if($value['Entry']['status'] == 0)
-						echo "Draft";
+						echo "Pending";
 					else
-						echo "Published";
+						echo "Complete";
 				?>
 			</span>
 -->
@@ -541,25 +487,11 @@
 			if(empty($popup))
 			{
                 echo "<td class='action-btn'>";
-                echo $this->Html->link('<i class="icon-edit icon-white"></i>', $editUrl, array('escape'=>false, 'class'=>'btn btn-info','data-toggle'=>'tooltip', 'title'=>'CLICK TO EDIT / VIEW DETAIL') );
                 
-/*
-                if($myType['Type']['slug'] != 'pages')
-				{
-					$confirm = null;
-					$targetURL = 'entries/change_status/'.$value['Entry']['id'];
-                    echo '&nbsp;&nbsp;';
-					if($value['Entry']['status'] == 0)
-					{
-						echo '<a data-toggle="tooltip" title="CLICK TO PUBLISH RECORD" href="javascript:void(0)" onclick="changeLocation(\''.$targetURL.'\')" class="btn btn-success"><i class="icon-ok icon-white"></i></a>';					
-					}
-					else
-					{
-						$confirm = 'Are you sure to set '.strtoupper($value['Entry']['title']).' as draft ?';
-						echo '<a data-toggle="tooltip" title="CLICK TO DRAFT RECORD" href="javascript:void(0)" onclick="show_confirm(\''.$confirm.'\',\''.$targetURL.'\')" class="btn btn-warning"><i class="icon-ban-circle icon-white"></i></a>';
-					}
-				}
-*/
+                echo $this->Html->link('<i class="icon-retweet icon-white"></i>', array('action' => 'surat-jalan', '?' => array('warehouse' => $value['Entry']['slug'] ) ) , array('escape'=>false, 'class'=>'btn btn-primary','data-toggle'=>'tooltip', 'title'=>'CLICK TO VIEW ALL PRODUCTS TRANSFER BETWEEN THIS WAREHOUSE', 'target'=>'_blank') ); // view history perpindahan antar gudang terpilih ...
+                echo '&nbsp;&nbsp;';
+                
+                echo $this->Html->link('<i class="icon-edit icon-white"></i>', $editUrl, array('escape'=>false, 'class'=>'btn btn-info','data-toggle'=>'tooltip', 'title'=>'CLICK TO EDIT / VIEW DETAIL') );
 				?>
             &nbsp;<a data-toggle="tooltip" title="CLICK TO DELETE RECORD" href="javascript:void(0)" onclick="show_confirm('Are you sure want to delete <?php echo strtoupper($value['Entry']['title']); ?> ?','entries/delete/<?php echo $value['Entry']['id']; ?>')" class="btn btn-danger"><i class="icon-trash icon-white"></i></a>
 				<?php

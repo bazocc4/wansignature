@@ -743,6 +743,16 @@ class EntriesController extends AppController {
                 ));
             }
         }
+        else if($myType['Type']['slug'] == 'surat-jalan')
+        {
+            if(!empty($this->request->query['warehouse']))
+            {
+                array_push($options['conditions'], array('OR' => array(
+                    array('SUBSTRING_INDEX(SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-warehouse_origin=", -1), "{#}", 1)' => $this->request->query['warehouse']),
+                    array('SUBSTRING_INDEX(SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-warehouse_destination=", -1), "{#}", 1)' => $this->request->query['warehouse']),
+                )));
+            }
+        }
         
         if( !empty($myMetaKey) )
 		{

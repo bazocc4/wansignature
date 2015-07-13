@@ -32,21 +32,10 @@
             ?>
 			<div class="alert alert-info full fl">
 				<a class="close" data-dismiss="alert" href="#">&times;</a>
-				Transaksi pembayaran invoice <?php echo strtoupper($myEntry['Entry']['title']); ?> sudah lunas.
+				<i class="icon-info-sign"></i> Transaksi pembayaran invoice <?php echo strtoupper($myEntry['Entry']['title']); ?> sudah lunas.
 			</div>
 			<?php
 		}
-        else
-        {
-            ?>
-        <script type="text/javascript">
-            $(document).ready(function(){
-                // Add INSTANT PAID BUTTON !! (lunas)
-                $('a.get-started').after('<a data-toggle="tooltip" data-placement="bottom" title="Tekan untuk pelunasan invoice secara langsung." href="'+site+'entries/pelunasan_tagihan/<?php echo $myEntry['Entry']['slug']; ?>" class="btn btn-success fr right-btn">Instant Paid Off</a>');
-            });
-        </script>    
-            <?php
-        }
 		echo $this->element('admin_header', array('extensionPaging' => $extensionPaging));
 		echo '<div class="inner-content '.(empty($popup)?'':'layout-content-popup').'" id="inner-content">';
 		echo '<div class="autoscroll" id="ajaxed">';

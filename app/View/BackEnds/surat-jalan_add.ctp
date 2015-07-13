@@ -387,7 +387,7 @@
                     }
                     
                     // on-the-fly validation ...
-                    if($value['key'] == 'form-client' || $value['key'] == 'form-vendor' || strpos($value['key'] , '_origin') !== FALSE || strpos($value['key'] , '_destination') !== FALSE)
+                    if($value['key'] == 'form-client' || $value['key'] == 'form-vendor' || strpos($value['key'] , '_origin') !== FALSE || strpos($value['key'] , '_destination') !== FALSE || strpos($value['key'] , '_client_invoice') !== FALSE)
                     {
                         $value['validation'] .= 'not_empty|';
                     }

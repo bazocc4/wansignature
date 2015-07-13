@@ -270,6 +270,14 @@
                             $value['display'] = 'none';
                         }
                     }
+                    else // ADD MODE !!
+                    {
+                        if($VENDOR && $value['key'] == 'form-warehouse')
+                        {
+                            $TP = $this->Get->meta_details(NULL , 'warehouse' , NULL , NULL , NULL , NULL , 'TP');
+                            $value['value'] = $TP['Entry']['slug'];
+                        }
+                    }
                     
 					echo $this->element('input_'.$value['input_type'] , $value);
                     
@@ -448,6 +456,7 @@
                         {
                             if($value['key'] == 'form-gold_price')
                             {
+                                echo '<div class="alert alert-info full fl"><strong>COR JEWELRY 125 : MADE IN ITALY</strong></div>';
                                 echo $this->element('special_multibrowse' , array(
                                     'key'           => 'temp-cor_jewelry_125',
                                     'p'             => "Cor Jewelry sold from this invoice <span style='color:red;'>( MADE IN ITALY ).</span>",
@@ -461,6 +470,7 @@
                             }
                             else if($value['key'] == 'form-x_125')
                             {
+                                echo '<div class="alert alert-info full fl"><strong>COR JEWELRY 100 : MADE IN KOREA</strong></div>';
                                 echo $this->element('special_multibrowse' , array(
                                     'key'           => 'temp-cor_jewelry_100',
                                     'p'             => "Cor Jewelry sold from this invoice <span style='color:red;'>( MADE IN KOREA ).</span>",
@@ -474,6 +484,7 @@
                             }
                             else if($value['key'] == 'form-x_100')
                             {
+                                echo '<div class="alert alert-info full fl"><strong>COR JEWELRY 110 : 999 SIMPLE</strong></div>';
                                 echo $this->element('special_multibrowse' , array(
                                     'key'           => 'temp-cor_jewelry_110',
                                     'p'             => "Cor Jewelry sold from this invoice <span style='color:red;'>( 999 SIMPLE ).</span>",
@@ -487,6 +498,7 @@
                             }
                             else if($value['key'] == 'form-x_110')
                             {
+                                echo '<div class="alert alert-info full fl"><strong>COR JEWELRY 115 : 999 3D</strong></div>';
                                 echo $this->element('special_multibrowse' , array(
                                     'key'           => 'temp-cor_jewelry_115',
                                     'p'             => "Cor Jewelry sold from this invoice <span style='color:red;'>( 999 3D ).</span>",
@@ -497,6 +509,10 @@
                                     ),
                                     'counter'       => $counter++
                                 ));
+                            }
+                            else if($value['key'] == 'form-x_115')
+                            {
+                                echo '<div class="alert alert-info full fl"><strong>INVOICE SUMMARY CALCULATION</strong></div>';
                             }
                         }
                     }

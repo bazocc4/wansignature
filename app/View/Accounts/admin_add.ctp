@@ -35,7 +35,7 @@
 				<input REQUIRED id="user" class="input-medium" value="<?php echo $_POST['data']['temp']['username']; ?>" type="text" readonly="true" name="data[temp][username]"/>
 				<input type="hidden" name="data[Account][user_id]" value="<?php echo $_POST['data']['Account']['user_id']; ?>" />
 				<?php echo $this->Html->link('Browse',array('controller'=>'users','action'=>'index?popup=init','admin'=>true),array('class'=>'btn btn-info get-from-table'));	?>
-				<p class="help-block">Haven't been registered yet? Please <?php echo $this->Html->link('register<img style="max-width:100%;" alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>'users','action'=>'add'),array("target"=>"SingleSecondaryWindowName","onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;" , "escape" => false)); ?> first as user.</p>	
+				<p class="help-block">Haven't been registered yet? Please <?php echo $this->Html->link('register<img style="max-width:100%;" alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>'users','action'=>'add'),array("onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;" , "escape" => false)); ?> first as user.</p>	
 			</div>
 		</div>
 		

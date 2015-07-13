@@ -80,18 +80,7 @@
 <div class="inner-header <?php echo (empty($popup)?'':'layout-header-popup'); ?> row-fluid">
 	<div class="span5">
 		<div class="title">
-		    <?php
-                $invoice_info = '';
-                if(strpos($this->request->query['key'], '_invoice_code') !== FALSE && !empty($this->request->query['value']) )
-                {
-                    $query = $this->Get->meta_details($this->request->query['value']);
-                    if(!empty($query))
-                    {
-                        $invoice_info = ' <span style="color:red;">INV# '.$query['Entry']['title'].'</span>';
-                    }
-                }
-            ?>
-			<h2><?php echo (empty($myEntry)?$myType['Type']['name']:$myEntry['Entry']['title'].' - '.$myChildType['Type']['name']).$invoice_info; ?></h2>
+		    <h2><?php echo (empty($myEntry)?$myType['Type']['name']:$myEntry['Entry']['title'].' - '.$myChildType['Type']['name']); ?></h2>
 			<?php
 				echo '<p class="title-description">'.(empty($myChildType)?$myType['Type']['description']:$myChildType['Type']['description']).'</p>';
 				if($totalList > 0)

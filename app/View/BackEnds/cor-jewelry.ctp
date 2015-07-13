@@ -221,6 +221,20 @@
 		// disable language selector ONLY IF one language available !!		
 		var myLangSelector = ($('#colorbox').length > 0 && $('#colorbox').is(':visible')? $('#colorbox').find('div.lang-selector:first') : $('div.lang-selector')  );
 		if(myLangSelector.find('ul.dropdown-menu li').length <= 1)	myLangSelector.hide();
+        
+        // UPDATE TITLE HEADER !!
+        <?php
+            if(strpos($this->request->query['key'], '_invoice_code') !== FALSE && !empty($this->request->query['value']) )
+            {
+                $query = $this->Get->meta_details($this->request->query['value']);
+                if(!empty($query))
+                {
+                    ?>
+        $('div.title > h2').append(' <span style="color:red;">INV# <?php echo $query['Entry']['title']; ?></span>');
+                    <?php
+                }
+            }
+        ?>
 	});
 </script>
 <?php if($totalList <= 0){ ?>
@@ -591,25 +605,11 @@
 			if(empty($popup))
 			{
                 echo "<td class='action-btn'>";
-                echo $this->Html->link('<i class="icon-edit icon-white"></i>', $editUrl, array('escape'=>false, 'class'=>'btn btn-info','data-toggle'=>'tooltip', 'title'=>'CLICK TO EDIT / VIEW DETAIL') );
                 
-/*
-                if($myType['Type']['slug'] != 'pages')
-				{
-					$confirm = null;
-					$targetURL = 'entries/change_status/'.$value['Entry']['id'];
-                    echo '&nbsp;&nbsp;';
-					if($value['Entry']['status'] == 0)
-					{
-						echo '<a data-toggle="tooltip" title="CLICK TO PUBLISH RECORD" href="javascript:void(0)" onclick="changeLocation(\''.$targetURL.'\')" class="btn btn-success"><i class="icon-ok icon-white"></i></a>';					
-					}
-					else
-					{
-						$confirm = 'Are you sure to set '.strtoupper($value['Entry']['title']).' as draft ?';
-						echo '<a data-toggle="tooltip" title="CLICK TO DRAFT RECORD" href="javascript:void(0)" onclick="show_confirm(\''.$confirm.'\',\''.$targetURL.'\')" class="btn btn-warning"><i class="icon-ban-circle icon-white"></i></a>';
-					}
-				}
-*/
+                echo $this->Html->link('<i class="icon-retweet icon-white"></i>', array('action' => 'surat-jalan', '?' => array('key' => str_replace('-','_',$myType['Type']['slug']), 'value' => $value['Entry']['slug'] ) ) , array('escape'=>false, 'class'=>'btn btn-primary','data-toggle'=>'tooltip', 'title'=>'CLICK TO VIEW PRODUCT TRANSFER HISTORY', 'target'=>'_blank') ); // view history perpindahan produk terpilih ...
+                echo '&nbsp;&nbsp;';
+                
+                echo $this->Html->link('<i class="icon-edit icon-white"></i>', $editUrl, array('escape'=>false, 'class'=>'btn btn-info','data-toggle'=>'tooltip', 'title'=>'CLICK TO EDIT / VIEW DETAIL') );
 				?>
             &nbsp;<a data-toggle="tooltip" title="CLICK TO DELETE RECORD" href="javascript:void(0)" onclick="show_confirm('Are you sure want to delete <?php echo strtoupper($value['Entry']['title']); ?> ?','entries/delete/<?php echo $value['Entry']['id']; ?>')" class="btn btn-danger"><i class="icon-trash icon-white"></i></a>
 				<?php

@@ -193,7 +193,7 @@
             });
             
             // origin ...
-            $($(el).find('td[class^="form-"][class*="_origin"], td.form-vendor, td.form-client').get().reverse()).each(function(index, element){
+            $($(el).find('td[class^="form-"][class*="_origin"], td.form-vendor, td.form-client, td.form-salesman').get().reverse()).each(function(index, element){
                 if($(element).text() != '-')
                 {
                     $(el).find('td.form-origin').html( $(element).html() );
@@ -202,7 +202,7 @@
             });
             
             // destination ...
-            $($(el).find('td[class^="form-"][class*="_destination"], td.form-vendor, td.form-client').get().reverse()).each(function(index, element){
+            $($(el).find('td[class^="form-"][class*="_destination"], td.form-vendor, td.form-client, td.form-salesman').get().reverse()).each(function(index, element){
                 if($(element).text() != '-')
                 {
                     $(el).find('td.form-destination').html( $(element).html() );
@@ -265,7 +265,7 @@
 						$entityTitle = $value['key'];
                         $hideKeyQuery = '';
                         $shortkey = substr($entityTitle, 5);
-                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!' || $shortkey == 'client' || $shortkey == 'vendor' || strpos($shortkey, '_destination') !== FALSE || strpos($shortkey, '_invoice') !== FALSE || strpos($shortkey, '_origin') !== FALSE)
+                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!' || $shortkey == 'client' || $shortkey == 'salesman' || $shortkey == 'vendor' || strpos($shortkey, '_destination') !== FALSE || strpos($shortkey, '_invoice') !== FALSE || strpos($shortkey, '_origin') !== FALSE)
                         {
                             $hideKeyQuery = 'hide';
                         }
@@ -357,7 +357,12 @@
 	</thead>
 	
 	<tbody>
-	<?php		
+	<?php
+        $statusDict = array(
+            array('label' => 'label-important', 'name' => 'On Process'),
+            array('label' => 'label-success', 'name' => 'Accepted'),
+            array('label' => 'label-info', 'name' => 'Repair'),
+        );    
 		$orderlist = "";
 		foreach ($myList as $value):
 		$orderlist .= $value['Entry']['sort_order'].",";
@@ -414,7 +419,7 @@
 						$shortkey = substr($value10['key'], 5);
                         $displayValue = $value['EntryMeta'][$shortkey];
                         $hideKeyQuery = '';
-                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!' || $shortkey == 'client' || $shortkey == 'vendor' || strpos($shortkey, '_destination') !== FALSE || strpos($shortkey, '_invoice') !== FALSE || strpos($shortkey, '_origin') !== FALSE)
+                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!' || $shortkey == 'client' || $shortkey == 'salesman' || $shortkey == 'vendor' || strpos($shortkey, '_destination') !== FALSE || strpos($shortkey, '_invoice') !== FALSE || strpos($shortkey, '_origin') !== FALSE)
                         {
                             $hideKeyQuery = 'hide';
                         }
@@ -582,13 +587,8 @@
 			</span>
 		</td>
 		<td style='min-width: 0px;' <?php echo (empty($popup)?'':'class="offbutt"'); ?>>
-			<span class="label <?php echo $value['Entry']['status']==0?'label-important':'label-success'; ?>">
-				<?php
-					if($value['Entry']['status'] == 0)
-						echo "On Process";
-					else
-						echo "Accepted";
-				?>
+		    <span class="label <?php echo $statusDict[$value['Entry']['status']]['label']; ?>">
+				<?php echo $statusDict[$value['Entry']['status']]['name']; ?>
 			</span>            
 		</td>
 		<?php

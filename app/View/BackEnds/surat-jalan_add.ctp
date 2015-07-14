@@ -94,8 +94,10 @@
                     
                     var barang_masuk = false;
                     
+                    // ===================================== >>>
                     // origin toggle ...
-                    if($(this).val() == 'Diamond Sale Return' || $(this).val() == 'Cor Jewelry Sale Return' || $(this).val() == 'Stock Souvenir' || $(this).val() == 'Diamond Purchase' || $(this).val() == 'Cor Jewelry Purchase')
+                    // ===================================== >>>
+                    if($(this).val() == 'Diamond Sale Return' || $(this).val() == 'Cor Jewelry Sale Return' || $(this).val() == 'Stock Souvenir' || $(this).val() == 'Diamond Purchase' || $(this).val() == 'Cor Jewelry Purchase' || $(this).val() == 'Salesman To Warehouse')
                     {
                         barang_masuk = true;
                         if($('input#warehouse-origin').is(':visible') || $('input#exhibition-origin').is(':visible'))
@@ -133,7 +135,46 @@
                         }
                     }
                     
+                    // ===================================== >>>
                     // destination toggle ...
+                    // ===================================== >>>
+                    if($(this).val().indexOf('To Warehouse') >= 0 || barang_masuk)
+                    {
+                        $('input.exhibition_destination').closest('div.control-group').hide();
+                        $('input.exhibition_destination , input#exhibition-destination').val('');
+
+                        $('input.warehouse_destination').closest('div.control-group').show();
+                    }
+                    else if($(this).val().indexOf('To Exhibition') >= 0)
+                    {
+                        $('input.warehouse_destination').closest('div.control-group').hide();
+                        $('input.warehouse_destination , input#warehouse-destination').val('');
+
+                        $('input.exhibition_destination').closest('div.control-group').show();
+                    }
+                    else
+                    {
+                        $('input.warehouse_destination').closest('div.control-group').hide();
+                        $('input.warehouse_destination , input#warehouse-destination').val('');
+                        
+                        $('input.exhibition_destination').closest('div.control-group').hide();
+                        $('input.exhibition_destination , input#exhibition-destination').val('');
+                    }
+                    
+                    // Salesman existence toggle ...
+                    if($(this).val().indexOf('Salesman') >= 0)
+                    {
+                        $('input.salesman').closest('div.control-group').show();
+                    }
+                    else
+                    {
+                        $('input.salesman').closest('div.control-group').hide();
+                        $('input.salesman , input#salesman').val('');
+                    }
+                    
+                    // ===================================== >>>
+                    // partners toggle ...
+                    // ===================================== >>>
                     if($(this).val().indexOf(' To ') >= 0)
                     {
                         $('input.dmd_vendor_invoice').closest('div.control-group').hide();
@@ -153,37 +194,9 @@
                         
                         $('input.client').closest('div.control-group').hide();
                         $('input.client , input#client').val('');
-                        
-                        if($(this).val().indexOf('To Warehouse') >= 0)
-                        {
-                            $('input.exhibition_destination').closest('div.control-group').hide();
-                            $('input.exhibition_destination , input#exhibition-destination').val('');
-                            
-                            $('input.warehouse_destination').closest('div.control-group').show();
-                        }
-                        else // to exhibition ...
-                        {
-                            $('input.warehouse_destination').closest('div.control-group').hide();
-                            $('input.warehouse_destination , input#warehouse-destination').val('');
-                            
-                            $('input.exhibition_destination').closest('div.control-group').show();
-                        }
                     }
                     else // to invoice / souvenir ...
                     {
-                        $('input.exhibition_destination').closest('div.control-group').hide();
-                        $('input.exhibition_destination , input#exhibition-destination').val('');
-                        
-                        if(barang_masuk)
-                        {
-                            $('input.warehouse_destination').closest('div.control-group').show();
-                        }
-                        else
-                        {
-                            $('input.warehouse_destination').closest('div.control-group').hide();
-                            $('input.warehouse_destination , input#warehouse-destination').val('');
-                        }
-                        
                         // invoice toggle ...
                         if($(this).val().indexOf('Purchase') >= 0 || $(this).val().indexOf('Stock') >= 0)
                         {
@@ -265,7 +278,9 @@
                         }
                     }
                     
+                    // ===================================== >>>
                     // Goods toggle ...
+                    // ===================================== >>>
                     if($(this).val().indexOf('Diamond') >= 0 || $(this).val().indexOf('Cor') >= 0)
                     {
                         $('div.logistic-group').html('').closest('div.control-group').hide().find('a.add-raw').click();
@@ -295,14 +310,19 @@
                         }
                     }
                     
+                    // ===================================== >>>
                     // toggle status pengiriman ...
-                    if(barang_masuk)
+                    // ===================================== >>>
+                    if(barang_masuk || $(this).val().indexOf('Salesman') >= 0)
                     {
                         $('select.status').val('1').attr('disabled', 'disabled');
                     }
-                    else
+                    else // remove disabled HANYA JIKA statusnya sedang disabled ...
                     {
-                        $('select.status').removeAttr('disabled');
+                        if($('select.status[disabled]').length > 0)
+                        {
+                            $('select.status').val('0').removeAttr('disabled');
+                        }
                     }
                 }).trigger('change');
                 
@@ -387,7 +407,7 @@
                     }
                     
                     // on-the-fly validation ...
-                    if($value['key'] == 'form-client' || $value['key'] == 'form-vendor' || strpos($value['key'] , '_origin') !== FALSE || strpos($value['key'] , '_destination') !== FALSE || strpos($value['key'] , '_client_invoice') !== FALSE)
+                    if($value['key'] == 'form-client' || $value['key'] == 'form-salesman' || $value['key'] == 'form-vendor' || strpos($value['key'] , '_origin') !== FALSE || strpos($value['key'] , '_destination') !== FALSE || strpos($value['key'] , '_client_invoice') !== FALSE)
                     {
                         $value['validation'] .= 'not_empty|';
                     }
@@ -423,12 +443,19 @@
 			$value['validation'] = 'not_empty';
 			$value['model'] = 'Entry';
 			$value['input_type'] = 'dropdown';
-			$value['list'][0]['id'] = '0';
-			$value['list'][0]['name'] = 'On Process';
-			$value['list'][1]['id'] = '1';
-			$value['list'][1]['name'] = 'Accepted';
+            $value['list'] = array(
+                array('id' => '0', 'name' => 'On Process'),
+                array('id' => '1', 'name' => 'Accepted'),
+            );
             $value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['status']);
             $value['p'] = "Pilih <strong>On Process</strong> jika pengiriman masih diproses.<br>Pilih <strong>Accepted</strong> jika seluruh pengiriman barang sudah diterima oleh pihak penerima.";
+
+            if(empty($myEntry) || $myEntry['Entry']['status'] == 2)
+            {
+                array_push($value['list'], array('id' => '2', 'name' => 'Repair'));
+                $value['p'] .= '<br>Pilih <strong>Repair</strong> jika produk sedang dalam tahap perbaikan oleh pihak WAN Signature.';
+            }
+
             $value['display'] = ($myEntry['Entry']['status']==1?'none':'');
 			echo $this->element('input_'.$value['input_type'] , $value);
 		?>

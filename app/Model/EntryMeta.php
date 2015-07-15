@@ -1158,7 +1158,6 @@ class EntryMeta extends AppModel {
                 'form-wholesaler'           => $data['EntryMeta']['wholesaler'],
                 'form-salesman'             => $data['EntryMeta']['salesman'],                
                 'form-rp_rate'              => $data['EntryMeta']['rp_rate'],
-                'form-payment_balance'      => $data['EntryMeta']['payment_balance'],
             );
             
             $query = $this->Entry->findAllByEntryTypeAndSlug('diamond', $data['EntryMeta']['temp-diamond'] );
@@ -1209,7 +1208,6 @@ class EntryMeta extends AppModel {
                 }, $cor_haystack)),
                 'form-client_invoice_sold_24k' => $data['EntryMeta']['total_weight'],
                 'form-gold_price'           => $data['EntryMeta']['gold_price'],
-                'form-payment_balance'      => $data['EntryMeta']['payment_balance'],
             );
             
             foreach($cor_haystack as $prodkey => $prodvalue )

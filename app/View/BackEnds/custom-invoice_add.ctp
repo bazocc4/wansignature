@@ -169,8 +169,27 @@
                 // form submit pre-check ...
                 $('form').submit(function(){
                     var produk = '<?php echo ( $DMD ? 'diamond' : 'cor-jewelry' ); ?>';
-                    var jml = $('div[class*="'+produk+'-"][class*="-group"] div[class*="'+produk+'-"][class*="-detail"] input[type=hidden][value]').length;
-                    if($('input.total_pcs').val() != jml)
+                    var tempbrg = [];
+                    var duplicate = false;
+                    $('div[class*="'+produk+'-"][class*="-group"] div[class*="'+produk+'-"][class*="-detail"] input[type=hidden][value]').each(function(i,el){
+                        if($.inArray($(el).val(), tempbrg) >= 0)
+                        {
+                            duplicate = $(el).prevAll('input[id^="'+produk+'"]');
+                            return false;
+                        }
+                        else
+                        {
+                            tempbrg.push($(el).val());
+                        }
+                    });
+                    
+                    if(duplicate !== false)
+                    {
+                        alert('Sistem mendeteksi adanya 2 atau lebih produk yg sama dalam invoice ini (#'+duplicate.val()+').\nMohon mengecek kembali daftar produk Anda.');
+                        duplicate.focus();
+                        return false;
+                    }
+                    else if($('input.total_pcs').val() != tempbrg.length)
                     {
                         alert('Jumlah produk tidak sesuai dengan total perhiasan yang didaftarkan!\nMohon mengecek kembali inputan Anda.');
                         $('input.total_pcs').focus();
@@ -276,6 +295,10 @@
                         {
                             $TP = $this->Get->meta_details(NULL , 'warehouse' , NULL , NULL , NULL , NULL , 'TP');
                             $value['value'] = $TP['Entry']['slug'];
+                        }
+                        else if($value['key'] == 'form-total_item_sent' || $value['key'] == 'form-payment_balance')
+                        {
+                            $value['display'] = 'none';
                         }
                     }
                     

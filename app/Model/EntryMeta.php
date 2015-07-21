@@ -68,9 +68,7 @@ class EntryMeta extends AppModel {
 	function embedded_img_meta($type)
 	{
 		$imgReason = $this->find('all', array(
-			'conditions' => array(
-				'EntryMeta.key' => 'image_'.$type
-			),
+			'conditions' => array('EntryMeta.key' => 'image_'.$type),
             'recursive' => -1
 		));
 		$imgTypeList[0] = 'jpg';
@@ -109,9 +107,8 @@ class EntryMeta extends AppModel {
     
     function get_diamond_type()
     {
-        $query = $this->findAllByKeyAndValue('form-category', 'Diamond');
         $result = array();
-        
+        $query = $this->findAllByKeyAndValue('form-category', 'Diamond');
         foreach($query as $key => $value)
         {
             $result[$value['Entry']['slug']] = $value['Entry']['title'];
@@ -1054,6 +1051,11 @@ class EntryMeta extends AppModel {
         $this->push_product($dmd, 'diamond', $value[1] , $dmd['form-description']);
     }
     
+    function update_surat_jalan($myTypeSlug, $data, $myEntry = array())
+    {
+        
+    }
+    
     function update_product_by_invoice($myTypeSlug, $data)
     {
         $new_total_pcs = 0;
@@ -1158,6 +1160,9 @@ class EntryMeta extends AppModel {
                 'form-wholesaler'           => $data['EntryMeta']['wholesaler'],
                 'form-salesman'             => $data['EntryMeta']['salesman'],                
                 'form-rp_rate'              => $data['EntryMeta']['rp_rate'],
+                // warehouse / exhibition ...
+                'form-warehouse'            => $data['EntryMeta']['warehouse'],
+                'form-exhibition'           => $data['EntryMeta']['exhibition'],
             );
             
             $query = $this->Entry->findAllByEntryTypeAndSlug('diamond', $data['EntryMeta']['temp-diamond'] );
@@ -1181,7 +1186,7 @@ class EntryMeta extends AppModel {
                             'value'     => $subvalue
                         )));
                     }
-                    else if($value['EntryMeta'][$dbkey]['value'] != $subvalue)
+                    else if($value['EntryMeta'][$dbkey]['value'] != $subvalue && $subkey != 'form-warehouse' && $subkey != 'form-exhibition')
                     {
                         $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
                         $this->EntryMeta->saveField('value', $subvalue );
@@ -1208,6 +1213,9 @@ class EntryMeta extends AppModel {
                 }, $cor_haystack)),
                 'form-client_invoice_sold_24k' => $data['EntryMeta']['total_weight'],
                 'form-gold_price'           => $data['EntryMeta']['gold_price'],
+                // warehouse / exhibition ...
+                'form-warehouse'            => $data['EntryMeta']['warehouse'],
+                'form-exhibition'           => $data['EntryMeta']['exhibition'],
             );
             
             foreach($cor_haystack as $prodkey => $prodvalue )
@@ -1230,7 +1238,7 @@ class EntryMeta extends AppModel {
                                 'value'     => $subvalue
                             )));
                         }
-                        else if($value['EntryMeta'][$dbkey]['value'] != $subvalue)
+                        else if($value['EntryMeta'][$dbkey]['value'] != $subvalue && $subkey != 'form-warehouse' && $subkey != 'form-exhibition')    
                         {
                             $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
                             $this->EntryMeta->saveField('value', $subvalue );

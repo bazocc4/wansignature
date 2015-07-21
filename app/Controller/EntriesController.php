@@ -591,6 +591,7 @@ class EntriesController extends AppController {
 	**/
 	public function _admin_default($myType = array(),$paging = NULL , $myEntry = array() , $myMetaKey = NULL , $myMetaValue = NULL , $myChildTypeSlug = NULL , $searchMe = NULL , $popup = NULL , $lang = NULL , $manualset = NULL)
 	{
+        set_time_limit(60); // 1 MINUTE time limit execution.
         if(is_null($paging))
 		{
 			$paging = 1;
@@ -745,11 +746,11 @@ class EntriesController extends AppController {
         }
         else if($myType['Type']['slug'] == 'surat-jalan')
         {
-            if(!empty($this->request->query['warehouse']))
+            if(!empty($this->request->query['storage']) && !empty($this->request->query['content']) )
             {
                 array_push($options['conditions'], array('OR' => array(
-                    array('SUBSTRING_INDEX(SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-warehouse_origin=", -1), "{#}", 1)' => $this->request->query['warehouse']),
-                    array('SUBSTRING_INDEX(SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-warehouse_destination=", -1), "{#}", 1)' => $this->request->query['warehouse']),
+                    array('SUBSTRING_INDEX(SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-'.$this->request->query['storage'].'_origin=", -1), "{#}", 1)' => $this->request->query['content']),
+                    array('SUBSTRING_INDEX(SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-'.$this->request->query['storage'].'_destination=", -1), "{#}", 1)' => $this->request->query['content']),
                 )));
             }
         }
@@ -1111,8 +1112,13 @@ class EntriesController extends AppController {
 						{
 							$this->request->data['EntryMeta']['value'] = ($value['input_type'] == 'checkbox'?implode("|",$value['value']):$value['value']);
 						}
-						$this->EntryMeta->create();
-						$this->EntryMeta->save($this->request->data);
+						
+                        // ONE MORE CHECKER STEP !!
+                        if(!empty($value['value']))
+                        {
+                            $this->EntryMeta->create();
+						    $this->EntryMeta->save($this->request->data);
+                        }
 					}
 				}
 				
@@ -1191,6 +1197,11 @@ class EntriesController extends AppController {
             {
                 $this->EntryMeta->update_product_by_invoice($myTypeSlug , $this->request->data);
             }
+        }
+        
+        if($myTypeSlug == 'surat-jalan')
+        {
+            $this->EntryMeta->update_surat_jalan($myTypeSlug , $this->request->data, $myEntry);
         }
 	}
 
@@ -1435,8 +1446,13 @@ class EntriesController extends AppController {
 								{
 									$this->request->data['EntryMeta']['value'] = ($value['input_type'] == 'checkbox'?implode("|",$value['value']):$value['value']);
 								}
-								$this->EntryMeta->create();
-								$this->EntryMeta->save($this->request->data);
+                                
+                                // ONE MORE CHECKER STEP !!
+                                if(!empty($value['value']))
+                                {
+                                    $this->EntryMeta->create();
+                                    $this->EntryMeta->save($this->request->data);
+                                }
 							}
 						}
 					}

@@ -488,7 +488,7 @@
 			{
                 echo "<td class='action-btn'>";
                 
-                echo $this->Html->link('<i class="icon-retweet icon-white"></i>', array('action' => 'surat-jalan', '?' => array('warehouse' => $value['Entry']['slug'] ) ) , array('escape'=>false, 'class'=>'btn btn-primary','data-toggle'=>'tooltip', 'title'=>'CLICK TO VIEW ALL PRODUCTS TRANSFER BETWEEN THIS WAREHOUSE', 'target'=>'_blank') ); // view history perpindahan antar gudang terpilih ...
+                echo $this->Html->link('<i class="icon-retweet icon-white"></i>', array('action' => 'surat-jalan', '?' => array('storage'=>'warehouse', 'content'=>$value['Entry']['slug'] ) ) , array('escape'=>false, 'class'=>'btn btn-primary','data-toggle'=>'tooltip', 'title'=>'CLICK TO VIEW ALL PRODUCTS TRANSFER BETWEEN THIS WAREHOUSE', 'target'=>'_blank') ); // view history perpindahan antar gudang terpilih ...
                 echo '&nbsp;&nbsp;';
                 
                 echo $this->Html->link('<i class="icon-edit icon-white"></i>', $editUrl, array('escape'=>false, 'class'=>'btn btn-info','data-toggle'=>'tooltip', 'title'=>'CLICK TO EDIT / VIEW DETAIL') );

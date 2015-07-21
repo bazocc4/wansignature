@@ -547,31 +547,35 @@ class Entry extends AppModel {
 	}
 	
 	/**
-     * function that be executed after save an entry (automated by cakephp)
-     * @return boolean
+     * function that be executed after save a record (automated by cakephp)
+     * @param boolean $created will be true if a new record was created (rather than an update).
+     * @param array $options is the same one passed to Model::save().
      * @public
      **/
-    function afterSave()
+    function afterSave($created, $options = array())
     {   
-        $temp = $this->field('sort_order');
-        if($temp == 0)
+        if($created)
         {
-            $this->saveField('sort_order' , $this->id);
+            $temp = $this->field('sort_order');
+            if($temp == 0)
+            {
+                $this->saveField('sort_order' , $this->id);
+            }
+            // lang_code update
+            $temp = $this->field('lang_code');
+            if(empty($temp))
+            {
+                // search for default language...
+                $query = $this->Setting->findByKey('language');
+                $this->saveField('lang_code' , substr($query['Setting']['value'] , 0 , 2).'-'.$this->id);
+            }
+            else if(strlen($temp) == 2)
+            {
+                $this->saveField('lang_code' , $temp.'-'.$this->id);
+            }
+
+            $this->updateCountField($this->field('parent_id') , $this->field('entry_type'));
         }
-        // lang_code update
-        $temp = $this->field('lang_code');
-        if(empty($temp))
-        {
-            // search for default language...
-            $query = $this->Setting->findByKey('language');
-            $this->saveField('lang_code' , substr($query['Setting']['value'] , 0 , 2).'-'.$this->id);
-        }
-        else if(strlen($temp) == 2)
-        {
-            $this->saveField('lang_code' , $temp.'-'.$this->id);
-        }
-		
-		$this->updateCountField($this->field('parent_id') , $this->field('entry_type'));
     }
 	
 	/**

@@ -230,7 +230,7 @@
                 if(!empty($query))
                 {
                     ?>
-        $('div.title > h2').append(' <span style="color:red;">INV# <?php echo $query['Entry']['title']; ?></span>');
+        $('div.title:last > h2').append(' <span style="color:red;">INV# <?php echo $query['Entry']['title']; ?></span>');
                     <?php
                 }
             }

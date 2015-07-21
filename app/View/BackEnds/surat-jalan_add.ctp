@@ -50,6 +50,26 @@
 					$('p#id-title-description').html('Last updated by <a href="#"><?php echo (empty($myEntry['AccountModifiedBy']['username'])?$myEntry['AccountModifiedBy']['email']:$myEntry['AccountModifiedBy']['username']).'</a> at '.date_converter($myEntry['Entry']['modified'], $mySetting['date_format'] , $mySetting['time_format']); ?>');
 					$('p#id-title-description').css('display','<?php echo (!empty($lang)?'none':'block'); ?>');
 				}
+                
+                // onchange invoice callback ...
+                $('input[id$="-invoice"]').change(function(){
+                    var targetvalue = $(this).nextAll('input[type=hidden]:first').val();
+                    var key = '';
+                    var value = '';
+                    if(targetvalue.length > 0)
+                    {
+                        key = ( $(this).attr('id').indexOf('-client-') >= 0 ? 'client_invoice_code' : 'vendor_invoice_code' );
+                        value = targetvalue;
+                    }
+                    
+                    var $products = $('div.diamond-group , div.cor-jewelry-group');
+                    $products.closest('div.control-group').find('a.add-raw').attr({
+                        'data-key': key,
+                        'data-value': value
+                    });
+                    
+                    $products.html('').closest('div.control-group').find('a.add-raw').click();
+                });
 				
 				// onchange origin callback ...
                 $('input#warehouse-origin , input#exhibition-origin').change(function(e){
@@ -175,6 +195,8 @@
                     // ===================================== >>>
                     // partners toggle ...
                     // ===================================== >>>
+                    var invoice_old = $('input[id$="-invoice"]:visible').val();
+                    
                     if($(this).val().indexOf(' To ') >= 0)
                     {
                         $('input.dmd_vendor_invoice').closest('div.control-group').hide();
@@ -276,6 +298,12 @@
                                 }
                             }
                         }
+                    }
+                    
+                    var invoice_now = $('input[id$="-invoice"]:visible').val();
+                    if(invoice_old != null && invoice_old.length > 0 && (invoice_now == null || invoice_now.length == 0) )
+                    {
+                        $('input[id$="-invoice"]:first').trigger('change');
                     }
                     
                     // ===================================== >>>

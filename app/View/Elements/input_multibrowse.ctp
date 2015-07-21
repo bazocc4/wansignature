@@ -119,7 +119,7 @@
 	</div>
 	
 	<div class="controls">
-		<a data-storage="" data-content="" href="javascript:void(0)" class="add-raw underline <?php echo ($view_mode?'hide':''); ?>">Add a <?php echo str_replace('_', ' ', $shortkey); ?></a>
+		<a data-storage="" data-content="" data-key="" data-value="" href="javascript:void(0)" class="add-raw underline <?php echo ($view_mode?'hide':''); ?>">Add a <?php echo str_replace('_', ' ', $shortkey); ?></a>
 		<p class="help-block">
         
 		    <?php if(!$view_mode): ?>
@@ -149,6 +149,10 @@ $(document).ready(function(){
         if($(this).attr('data-storage').length > 0 && $(this).attr('data-content').length > 0)
         {
             storage += '&storage='+$(this).attr('data-storage')+'&content='+$(this).attr('data-content');
+        }
+        if($(this).attr('data-key').length > 0 && $(this).attr('data-value').length > 0)
+        {
+            storage += '&key='+$(this).attr('data-key')+'&value='+$(this).attr('data-value');
         }
 
         content += '&nbsp;<a class="btn btn-info get-from-table" href="'+linkpath+'admin/entries/<?php echo $browse_slug; ?>?popup=init&stream='+<?php echo $var_stream; ?>+storage+'">Browse</a>';

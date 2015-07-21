@@ -144,11 +144,36 @@
 $('input#'+partner).val($obj_partner.find('h5').text()).nextAll('input.'+partner).val($obj_partner.find('input[type=hidden]').val());                        
                     }
                     
-                    if($('input#warehouse-origin').length > 0 && $('input#warehouse-origin').is(':visible'))
+                    if($('input#warehouse-origin').length > 0 && $('input#warehouse-origin').is(':visible') || $('input#exhibition-origin').length > 0 && $('input#exhibition-origin').is(':visible'))
                     {
                         var $warehouse = $(this).find("td.form-warehouse");
-$('input#warehouse-origin').val($warehouse.find('h5').text()).nextAll('input.warehouse_origin').val($warehouse.find('input[type=hidden]').val());
-                        $('input#warehouse-origin').change();
+                        if($warehouse.text() == '-')
+                        {
+                            $('input.warehouse_origin , input#warehouse-origin').val('');
+                            if($('input#exhibition-origin').length > 0)
+                            {
+                                $('input.warehouse_origin').closest('div.control-group').hide();
+                                
+                                var $pameran = $(this).find("td.form-exhibition");
+                                $('input#exhibition-origin').val($pameran.find('h5').text()).nextAll('input.exhibition_origin').val($pameran.find('input[type=hidden]').val()).closest('div.control-group').show();    
+                                $('input#exhibition-origin').change();
+                            }
+                            else
+                            {
+                                $('input#warehouse-origin').change();
+                            }
+                        }
+                        else
+                        {
+                            if($('input#exhibition-origin').length > 0)
+                            {
+                                $('input.exhibition_origin').closest('div.control-group').hide();
+                                $('input.exhibition_origin , input#exhibition-origin').val('');
+                            }
+                            
+                            $('input#warehouse-origin').val($warehouse.find('h5').text()).nextAll('input.warehouse_origin').val($warehouse.find('input[type=hidden]').val()).closest('div.control-group').show();
+                            $('input#warehouse-origin').change();
+                        }
                     }
                     else if($('input#warehouse-destination').length > 0 && $('input#warehouse-destination').is(':visible'))
                     {
@@ -455,6 +480,24 @@ $('input#warehouse-destination').val($warehouse.find('h5').text()).nextAll('inpu
                                 if($entrydetail['Entry']['entry_type'] == 'exhibition')
                                 {
                                     echo (!empty($entrydetail['EntryMeta']['start_date'])?date_converter($entrydetail['EntryMeta']['start_date'], $mySetting['date_format']):'[start date]').' s/d '.(!empty($entrydetail['EntryMeta']['end_date'])?date_converter($entrydetail['EntryMeta']['end_date'], $mySetting['date_format']):'[end date]');
+                                }
+                                else if($entrydetail['Entry']['entry_type'] == 'client')
+                                {
+                                    if(!empty($entrydetail['EntryMeta']['kode_pelanggan']))
+                                    {
+                                        echo $entrydetail['EntryMeta']['kode_pelanggan'];
+                                    }
+                                    else if(!empty($entrydetail['EntryMeta']['alamat']))
+                                    {
+                                        echo $entrydetail['EntryMeta']['alamat'];
+                                    }
+                                    else // default additional attribute ...
+                                    {
+                                        if($shortkey != 'wholesaler')
+                                        {
+                                            echo $entrydetail['EntryMeta']['kategori'];
+                                        }
+                                    }
                                 }
                                 else
                                 {

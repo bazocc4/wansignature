@@ -116,7 +116,7 @@
                     {
                         echo ' / '.strtoupper($metaDetails['EntryMeta']['kode_pelanggan']).' / '.$metaDetails['EntryMeta']['kategori'].' / '.nl2br($metaDetails['EntryMeta']['alamat']).' / '.$metaDetails['EntryMeta']['telepon'];
                     }
-                    else if($metaDetails['Entry']['entry_type'] == 'vendor')
+                    else if($metaDetails['Entry']['entry_type'] == 'vendor' || $metaDetails['Entry']['entry_type'] == 'salesman')
                     {
                         echo ' / '.nl2br($metaDetails['EntryMeta']['alamat']).' / '.$metaDetails['EntryMeta']['telepon'];
                     }

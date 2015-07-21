@@ -165,17 +165,17 @@
                 {
                     $product_type = $this->Get->meta_details($query['EntryMeta']['product_type'], 'product-type' );
                     ?>
-        $('div.title > h2').append(' <span style="color:red;">#<?php echo $query['Entry']['title'].' '.$product_type['Entry']['title']; ?></span>');
+        $('div.title:last > h2').append(' <span style="color:red;">#<?php echo $query['Entry']['title'].' '.$product_type['Entry']['title']; ?></span>');
                     <?php
                 }
             }
-            else if(!empty($this->request->query['warehouse']))
+            else if(!empty($this->request->query['storage']) && !empty($this->request->query['content']))
             {
-                $query = $this->Get->meta_details($this->request->query['warehouse'], 'warehouse' );
+                $query = $this->Get->meta_details($this->request->query['content'], $this->request->query['storage'] );
                 if(!empty($query))
                 {
                     ?>
-        $('div.title > h2').append(' <span style="color:red;">WH# <?php echo $query['Entry']['title']; ?></span>');
+        $('div.title:last > h2').append(' <span style="color:red;"><?php echo ($this->request->query['storage']=='exhibition'?'EXH':'WH'); ?># <?php echo $query['Entry']['title']; ?></span>');
                     <?php
                 }
             }
@@ -506,6 +506,24 @@
                                 if($entrydetail['Entry']['entry_type'] == 'exhibition')
                                 {
                                     echo (!empty($entrydetail['EntryMeta']['start_date'])?date_converter($entrydetail['EntryMeta']['start_date'], $mySetting['date_format']):'[start date]').' s/d '.(!empty($entrydetail['EntryMeta']['end_date'])?date_converter($entrydetail['EntryMeta']['end_date'], $mySetting['date_format']):'[end date]');
+                                }
+                                else if($entrydetail['Entry']['entry_type'] == 'client')
+                                {
+                                    if(!empty($entrydetail['EntryMeta']['kode_pelanggan']))
+                                    {
+                                        echo $entrydetail['EntryMeta']['kode_pelanggan'];
+                                    }
+                                    else if(!empty($entrydetail['EntryMeta']['alamat']))
+                                    {
+                                        echo $entrydetail['EntryMeta']['alamat'];
+                                    }
+                                    else // default additional attribute ...
+                                    {
+                                        if($shortkey != 'wholesaler')
+                                        {
+                                            echo $entrydetail['EntryMeta']['kategori'];
+                                        }
+                                    }
                                 }
                                 else
                                 {

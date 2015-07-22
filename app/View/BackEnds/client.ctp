@@ -114,7 +114,7 @@
 		<?php else: ?>
             // UPDATE TITLE HEADER !!
             <?php
-                if(!empty($this->request->query['alias']))
+                if($isAjax == 0 && !empty($this->request->query['alias']))
                 {
                     ?>
             $('#colorbox div.title > h2').append(' <span style="color:red;">(<?php echo string_unslug($this->request->query['alias']); ?>)</span>');

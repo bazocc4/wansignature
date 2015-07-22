@@ -1,6 +1,6 @@
 <?php
 	if(is_array($data)) extract($data , EXTR_SKIP);
-	if( !empty($myList) )
+	if( !empty($myList) || $paging > 1 )
 	{
 		?>
 			<div class="pagination fr">

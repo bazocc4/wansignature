@@ -51,8 +51,6 @@
                     $('div.inner-header > div:last > div:last').after("<div class='btn-group'><form accept='application/vnd.ms-excel' accept-charset='utf-8' method='post' enctype='multipart/form-data' action='#' style='margin:0 0 10px 0;'><input REQUIRED type='file'  style='width:200px;' accept='.xls,.xlsx' name='data[fileurl]' onchange='checkfile(this);'><input class='btn' type='submit' value='Upload'></form></div>"); // upload Excel ...
                     
                     $('div.inner-header > div:last > div:last').before("<a data-toggle='tooltip' href='"+site+"entries/download_jewelry' style='margin-bottom:10px;' title='Download Cor Jewelry List' class='btn btn-inverse right-btn fr hide'><i class='icon-download-alt icon-white'></i> Download</a>"); // download Excel ...
-                    
-                    
                 });
             </script>
             <?php
@@ -224,7 +222,7 @@
         
         // UPDATE TITLE HEADER !!
         <?php
-            if(strpos($this->request->query['key'], '_invoice_code') !== FALSE && !empty($this->request->query['value']) )
+            if($isAjax == 0 && strpos($this->request->query['key'], '_invoice_code') !== FALSE && !empty($this->request->query['value']) )
             {
                 $query = $this->Get->meta_details($this->request->query['value']);
                 if(!empty($query))

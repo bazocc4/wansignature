@@ -262,7 +262,7 @@
         
         // UPDATE TITLE HEADER !!
         <?php
-            if(strpos($this->request->query['key'], '_invoice_code') !== FALSE && !empty($this->request->query['value']) )
+            if($isAjax == 0 && strpos($this->request->query['key'], '_invoice_code') !== FALSE && !empty($this->request->query['value']) )
             {
                 $query = $this->Get->meta_details($this->request->query['value']);
                 if(!empty($query))

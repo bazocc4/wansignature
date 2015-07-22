@@ -749,8 +749,8 @@ class EntriesController extends AppController {
             if(!empty($this->request->query['storage']) && !empty($this->request->query['content']) )
             {
                 array_push($options['conditions'], array('OR' => array(
-                    array('SUBSTRING_INDEX(SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-'.$this->request->query['storage'].'_origin=", -1), "{#}", 1)' => $this->request->query['content']),
-                    array('SUBSTRING_INDEX(SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-'.$this->request->query['storage'].'_destination=", -1), "{#}", 1)' => $this->request->query['content']),
+                    array('SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-'.$this->request->query['storage'].'_origin=", -1) LIKE' => $this->request->query['content'].'%'),
+                    array('SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-'.$this->request->query['storage'].'_destination=", -1) LIKE' => $this->request->query['content'].'%'),
                 )));
             }
         }
@@ -808,7 +808,7 @@ class EntriesController extends AppController {
             $explodeSorting = explode(' ', $_SESSION['order_by']);
             if($innerFieldMeta == 'gallery')    $explodeSorting[0] = 'count-'.$explodeSorting[0];
             
-            $sqlOrderValue = 'TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(EntryMeta.key_value, "{#}'.$explodeSorting[0].'=", -1), "{#}", 1))';
+            $sqlOrderValue = 'LTRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(EntryMeta.key_value, "{#}'.$explodeSorting[0].'=", -1), "{#}", 1))';
             if(strpos($innerFieldMeta, 'datetime') !== FALSE)
             {
                 $sqlOrderValue = 'STR_TO_DATE('.$sqlOrderValue.', "%m/%d/%Y %H:%i")';
@@ -822,7 +822,7 @@ class EntriesController extends AppController {
                 $sqlOrderValue = 'CAST('.$sqlOrderValue.' AS SIGNED)';
             }
             
-            $options['order'] = array('CASE WHEN EntryMeta.key_value LIKE "%{#}'.$explodeSorting[0].'=%" THEN '.$sqlOrderValue.' ELSE NULL END '.$explodeSorting[1]);
+            $options['order'] = array($sqlOrderValue.' '.$explodeSorting[1]);
         }
         else 
         {

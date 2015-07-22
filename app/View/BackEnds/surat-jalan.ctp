@@ -158,25 +158,28 @@
         
         // UPDATE TITLE HEADER !!
         <?php
-            if( ($this->request->query['key'] == 'diamond' || $this->request->query['key'] == 'cor_jewelry') && !empty($this->request->query['value']) )
+            if($isAjax == 0)
             {
-                $query = $this->Get->meta_details($this->request->query['value'], get_slug($this->request->query['key']) );
-                if(!empty($query))
+                if( ($this->request->query['key'] == 'diamond' || $this->request->query['key'] == 'cor_jewelry') && !empty($this->request->query['value']) )
                 {
-                    $product_type = $this->Get->meta_details($query['EntryMeta']['product_type'], 'product-type' );
-                    ?>
-        $('div.title:last > h2').append(' <span style="color:red;">#<?php echo $query['Entry']['title'].' '.$product_type['Entry']['title']; ?></span>');
-                    <?php
+                    $query = $this->Get->meta_details($this->request->query['value'], get_slug($this->request->query['key']) );
+                    if(!empty($query))
+                    {
+                        $product_type = $this->Get->meta_details($query['EntryMeta']['product_type'], 'product-type' );
+                        ?>
+            $('div.title:last > h2').append(' <span style="color:red;">#<?php echo $query['Entry']['title'].' '.$product_type['Entry']['title']; ?></span>');
+                        <?php
+                    }
                 }
-            }
-            else if(!empty($this->request->query['storage']) && !empty($this->request->query['content']))
-            {
-                $query = $this->Get->meta_details($this->request->query['content'], $this->request->query['storage'] );
-                if(!empty($query))
+                else if(!empty($this->request->query['storage']) && !empty($this->request->query['content']))
                 {
-                    ?>
-        $('div.title:last > h2').append(' <span style="color:red;"><?php echo ($this->request->query['storage']=='exhibition'?'EXH':'WH'); ?># <?php echo $query['Entry']['title']; ?></span>');
-                    <?php
+                    $query = $this->Get->meta_details($this->request->query['content'], $this->request->query['storage'] );
+                    if(!empty($query))
+                    {
+                        ?>
+            $('div.title:last > h2').append(' <span style="color:red;"><?php echo ($this->request->query['storage']=='exhibition'?'EXH':'WH'); ?># <?php echo $query['Entry']['title']; ?></span>');
+                        <?php
+                    }
                 }
             }
         ?>

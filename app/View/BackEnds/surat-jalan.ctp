@@ -160,14 +160,20 @@
         <?php
             if($isAjax == 0)
             {
-                if( ($this->request->query['key'] == 'diamond' || $this->request->query['key'] == 'cor_jewelry') && !empty($this->request->query['value']) )
+                if(!empty($this->request->query['key']) && !empty($this->request->query['value']) )
                 {
                     $query = $this->Get->meta_details($this->request->query['value'], get_slug($this->request->query['key']) );
                     if(!empty($query))
                     {
-                        $product_type = $this->Get->meta_details($query['EntryMeta']['product_type'], 'product-type' );
+                        $append_content = ' <span style="color:red;">#'.$query['Entry']['title'];
+                        if($this->request->query['key'] == 'diamond' || $this->request->query['key'] == 'cor_jewelry')
+                        {
+                            $product_type = $this->Get->meta_details($query['EntryMeta']['product_type'], 'product-type' );
+                            $append_content .= ' '.$product_type['Entry']['title'];
+                        }
+                        $append_content .= '</span>';
                         ?>
-            $('div.title:last > h2').append(' <span style="color:red;">#<?php echo $query['Entry']['title'].' '.$product_type['Entry']['title']; ?></span>');
+            $('div.title:last > h2').append('<?php echo $append_content; ?>');
                         <?php
                     }
                 }

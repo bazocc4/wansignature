@@ -362,6 +362,14 @@
                         $('input#warehouse-origin , input#exhibition-origin').focus();
                         return false;
                     }
+                    
+                    // Status Repair just for Sale ...
+                    if($('select.status').val() == '2' && $('select.delivery_type').val() != 'Diamond Sale' && $('select.delivery_type').val() != 'Cor Jewelry Sale')
+                    {
+                        alert('Status REPAIR hanya berlaku untuk "Diamond Sale" dan "Cor Jewelry Sale".\nSilahkan pilih salah satu dari "Delivery Type" tersebut.');
+                        $('select.delivery_type').focus();
+                        return false;
+                    }
                 });
 			});
 		</script>

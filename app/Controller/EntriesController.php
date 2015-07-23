@@ -740,7 +740,7 @@ class EntriesController extends AppController {
             if(!empty($this->request->query['storage']) && !empty($this->request->query['content']) )
             {
                 array_push($options['conditions'], array(
-                    'EntryMeta.key_value LIKE' => '%{#}form-product_status=%'.($this->request->query['storage'] == 'exhibition'?'consignment':'stock').'%{#}form-'.$this->request->query['storage'].'='.$this->request->query['content'].'{#}%'
+                    'EntryMeta.key_value LIKE' => '%{#}form-product_status=%'.($this->request->query['storage'] == 'exhibition'?'exhibition':'stock').'%{#}form-'.$this->request->query['storage'].'='.$this->request->query['content'].'{#}%'
                 ));
             }
         }
@@ -958,8 +958,8 @@ class EntriesController extends AppController {
 		// if form submit is taken...
 		if (!empty($this->request->data)) 
 		{
-//            dpr($this->request->data);
-//            exit;
+            dpr($this->request->data);
+            exit;
             
             if(empty($lang_code) && !empty($myEntry) && substr($myEntry['Entry']['lang_code'], 0,2) != $this->request->data['language'])
 			{
@@ -1201,7 +1201,10 @@ class EntriesController extends AppController {
         
         if($myTypeSlug == 'surat-jalan')
         {
-            $this->EntryMeta->update_surat_jalan($myTypeSlug , $this->request->data, $myEntry);
+            if(empty($myEntry) || $myEntry['Entry']['status'] != 1) // executed ONLY IF still not accepted ...
+            {
+                $this->EntryMeta->update_surat_jalan($this->request->data, $myEntry);
+            }
         }
 	}
 

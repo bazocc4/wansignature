@@ -1051,8 +1051,202 @@ class EntryMeta extends AppModel {
         $this->push_product($dmd, 'diamond', $value[1] , $dmd['form-description']);
     }
     
-    function update_surat_jalan($myTypeSlug, $data, $myEntry = array())
+    function update_surat_jalan($data, $myEntry = array())
     {
+        foreach(array('diamond', 'cor_jewelry', 'logistic') as $key => $value)
+        {
+            $data['EntryMeta'][$value] = array_unique(array_filter($data['EntryMeta'][$value]));
+        }
+        
+        // product ...
+        $pushdata = array();
+        if(!empty($data['EntryMeta']['diamond']) || !empty($data['EntryMeta']['cor_jewelry']))
+        {
+            if($data['Entry'][3]['value'] == 2) // on repair at WAN ...
+            {
+                $pushdata['form-product_status'] = 'REPARASI';
+            }
+            else if($data['Entry'][3]['value'] == 0) // On Process ...
+            {
+                $pushdata['form-product_status'] = 'CONSIGNMENT';
+            }
+
+            // destination ...
+            if(!empty($data['EntryMeta']['warehouse_destination']))
+            {
+                $pushdata['form-warehouse'] = $data['EntryMeta']['warehouse_destination'];
+                $pushdata['form-exhibition'] = '';
+
+                if($data['Entry'][3]['value'] == 1) // Accepted ...
+                {
+                    $pushdata['form-product_status'] = 'STOCK';
+                    $pushdata['form-stock_date'] = $data['EntryMeta']['date'];
+                }
+            }
+            else if(!empty($data['EntryMeta']['exhibition_destination']))
+            {
+                $pushdata['form-exhibition'] = $data['EntryMeta']['exhibition_destination'];
+                if($data['Entry'][3]['value'] == 1) // Accepted ...
+                {
+                    $pushdata['form-product_status'] = 'EXHIBITION';
+                }
+            }
+            
+            // vendor ...
+            if(!empty($data['EntryMeta']['vendor']))
+            {
+                $pushdata['form-vendor'] = $data['EntryMeta']['vendor'];
+                if( !empty($data['EntryMeta']['warehouse_origin']) && $data['Entry'][3]['value'] == 1 ) // Accepted ...
+                {
+                    $pushdata['form-product_status'] = 'RETURN';
+                }
+            }
+
+            // client ...
+            if(!empty($data['EntryMeta']['client']))
+            {
+                $pushdata['form-client'] = $data['EntryMeta']['client'];
+                if( (!empty($data['EntryMeta']['warehouse_origin']) || !empty($data['EntryMeta']['exhibition_origin'])) && $data['Entry'][3]['value'] == 1) // Accepted ...
+                {
+                    $pushdata['form-product_status'] = 'SOLD';
+                }
+            }
+            
+            // salesman ...
+            if(!empty($data['EntryMeta']['salesman']))
+            {
+                $pushdata['form-salesman'] = $data['EntryMeta']['salesman'];
+                if(!empty($data['EntryMeta']['warehouse_origin']) || !empty($data['EntryMeta']['exhibition_origin']))
+                {
+                    $pushdata['form-product_status'] = 'KLLG';
+                }
+            }
+            
+            $pushdata = array_map('trim', $pushdata);
+        }
+        
+        // push to database product ...
+        foreach(array('diamond', 'cor_jewelry') as $typekey => $typevalue)
+        {
+            if(!empty($data['EntryMeta'][$typevalue]))
+            {
+                $entry_type = get_slug($typevalue);
+                $query = $this->Entry->findAllByEntryTypeAndSlug($entry_type, $data['EntryMeta'][$typevalue] );
+                foreach($query as $key => $value)
+                {
+                    $dbkey_haystack = array_column($value['EntryMeta'], 'key');
+                    foreach($pushdata as $subkey => $subvalue)
+                    {
+                        $dbkey = array_search($subkey, $dbkey_haystack);
+                        if(empty($subvalue))
+                        {
+                            if($dbkey !== FALSE)
+                            {
+                                $this->EntryMeta->delete($value['EntryMeta'][$dbkey]['id']);
+                            }
+                        }
+                        else
+                        {
+                            if($dbkey === FALSE)
+                            {
+                                $this->EntryMeta->create();
+                                $this->EntryMeta->save(array('EntryMeta' => array(
+                                    'entry_id'  => $value['Entry']['id'],
+                                    'key'       => $subkey,
+                                    'value'     => $subvalue
+                                )));
+                            }
+                            else if($value['EntryMeta'][$dbkey]['value'] != $subvalue)
+                            {
+                                $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
+                                $this->EntryMeta->saveField('value', $subvalue );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // logistic ...
+        if(!empty($data['EntryMeta']['logistic']))
+        {
+            $logiskey = array_search('form-logistic', array_column($data['EntryMeta'], 'key'));
+            $logismove = array();
+            foreach(array('origin', 'destination') as $key => $value)
+            {
+                if(!empty($data['EntryMeta']['warehouse_'.$value]))
+                {
+                    $logismove[$value] = array(
+                        'storage' => 'warehouse',
+                        'content' => $data['EntryMeta']['warehouse_'.$value]
+                    );
+                }
+                else if(!empty($data['EntryMeta']['exhibition_'.$value]))
+                {
+                    $logismove[$value] = array(
+                        'storage' => 'exhibition',
+                        'content' => $data['EntryMeta']['exhibition_'.$value]
+                    );
+                }
+            }
+            
+            $query = $this->Entry->findAllByEntryTypeAndSlug('logistic', $data['EntryMeta']['logistic'] );
+            foreach($query as $key => $value)
+            {
+                $dbkey_haystack = array_column($value['EntryMeta'], 'key');
+                $totalkey = array_search($value['Entry']['slug'], $data['EntryMeta']['logistic'] );
+                
+                // AMBIL STOCK ...
+                if(!empty($logismove['origin']) && empty($myEntry)) // ADD MODE ONLY !!
+                {
+                    $dbkey = array_search('form-'.$logismove['origin']['storage'], $dbkey_haystack);
+                    $pecah_storage = explode('|', $value['EntryMeta'][$dbkey]['value'] );
+                    $storage_key = key(preg_grep("/^".$logismove['origin']['content']."_.*/", $pecah_storage));
+                    $pecah_total = explode('_', $pecah_storage[$storage_key]);
+                    $pecah_total[1] -= $data['EntryMeta'][$logiskey]['total'][$totalkey];
+                    $pecah_storage[$storage_key] = implode('_', $pecah_total);
+                    $value['EntryMeta'][$dbkey]['value'] = implode('|', $pecah_storage);
+                    $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
+                    $this->EntryMeta->saveField('value', $value['EntryMeta'][$dbkey]['value'] );
+                }
+                
+                // TAMBAH STOCK ...
+                if(!empty($logismove['destination']) && $data['Entry'][3]['value'] == 1) // Accepted ...
+                {
+                    $dbkey = array_search('form-'.$logismove['destination']['storage'], $dbkey_haystack);
+                    if($dbkey === FALSE)
+                    {
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save(array('EntryMeta' => array(
+                            'entry_id'  => $value['Entry']['id'],
+                            'key'       => 'form-'.$logismove['destination']['storage'],
+                            'value'     => $logismove['destination']['content'].'_'.$data['EntryMeta'][$logiskey]['total'][$totalkey]
+                        )));
+                    }
+                    else
+                    {
+                        $pecah_storage = explode('|', $value['EntryMeta'][$dbkey]['value'] );
+                        $storage_key = key(preg_grep("/^".$logismove['destination']['content']."_.*/", $pecah_storage));
+                        if($storage_key >= 0)
+                        {
+                            $pecah_total = explode('_', $pecah_storage[$storage_key]);
+                            $pecah_total[1] += $data['EntryMeta'][$logiskey]['total'][$totalkey];
+                            $pecah_storage[$storage_key] = implode('_', $pecah_total);
+                            $value['EntryMeta'][$dbkey]['value'] = implode('|', $pecah_storage);
+                        }
+                        else
+                        {
+                            $value['EntryMeta'][$dbkey]['value'] .= '|'.$logismove['destination']['content'].'_'.$data['EntryMeta'][$logiskey]['total'][$totalkey];
+                        }
+                        
+                        $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
+                        $this->EntryMeta->saveField('value', $value['EntryMeta'][$dbkey]['value'] );
+                    }
+                }
+            }
+        }
+        
+        // UPDATE INVOICE DATA !!
         
     }
     

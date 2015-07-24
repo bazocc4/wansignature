@@ -958,8 +958,8 @@ class EntriesController extends AppController {
 		// if form submit is taken...
 		if (!empty($this->request->data)) 
 		{
-            dpr($this->request->data);
-            exit;
+//            dpr($this->request->data);
+//            exit;
             
             if(empty($lang_code) && !empty($myEntry) && substr($myEntry['Entry']['lang_code'], 0,2) != $this->request->data['language'])
 			{

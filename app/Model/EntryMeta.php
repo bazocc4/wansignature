@@ -1044,6 +1044,9 @@ class EntryMeta extends AppModel {
             'prev_sold_note'        => $value[70],
         );
         
+        // update report_type !!
+        if(!empty($dmd['return_date'])) $dmd['report_type'] = 'RR';
+        
         // synchronize product with other entity ...
         $this->sync_product($dmd, 'diamond');
         
@@ -1058,17 +1061,19 @@ class EntryMeta extends AppModel {
             $data['EntryMeta'][$value] = array_unique(array_filter($data['EntryMeta'][$value]));
         }
         
+        // ========================== >>
         // product ...
+        // ========================== >>
         $pushdata = array();
         if(!empty($data['EntryMeta']['diamond']) || !empty($data['EntryMeta']['cor_jewelry']))
         {
             if($data['Entry'][3]['value'] == 2) // on repair at WAN ...
             {
-                $pushdata['form-product_status'] = 'REPARASI';
+                $pushdata['form-product_status'] = 'REPARASI #'.$data['Entry'][0]['value'];
             }
             else if($data['Entry'][3]['value'] == 0) // On Process ...
             {
-                $pushdata['form-product_status'] = 'CONSIGNMENT';
+                $pushdata['form-product_status'] = 'CONSIGNMENT #'.$data['Entry'][0]['value'];
             }
 
             // destination ...
@@ -1096,9 +1101,18 @@ class EntryMeta extends AppModel {
             if(!empty($data['EntryMeta']['vendor']))
             {
                 $pushdata['form-vendor'] = $data['EntryMeta']['vendor'];
-                if( !empty($data['EntryMeta']['warehouse_origin']) && $data['Entry'][3]['value'] == 1 ) // Accepted ...
+                if(!empty($data['EntryMeta']['warehouse_origin']) && $data['Entry'][3]['value'] == 1) // Accepted ...
                 {
                     $pushdata['form-product_status'] = 'RETURN';
+                    if(!empty($data['EntryMeta']['diamond']))
+                    {
+                        $pushdata['form-report_type'] = 'RR';
+                        $pushdata['form-return_date'] = $data['EntryMeta']['date'];
+                        if(!empty($data['Entry'][1]['value']))
+                        {
+                            $pushdata['form-return_detail'] = $data['Entry'][1]['value'];
+                        }
+                    }
                 }
             }
 
@@ -1126,12 +1140,12 @@ class EntryMeta extends AppModel {
         }
         
         // push to database product ...
+        $invoice_price = 0; // for invoice update later ...
         foreach(array('diamond', 'cor_jewelry') as $typekey => $typevalue)
         {
             if(!empty($data['EntryMeta'][$typevalue]))
             {
-                $entry_type = get_slug($typevalue);
-                $query = $this->Entry->findAllByEntryTypeAndSlug($entry_type, $data['EntryMeta'][$typevalue] );
+                $query = $this->Entry->findAllByEntryTypeAndSlug(get_slug($typevalue), $data['EntryMeta'][$typevalue] );
                 foreach($query as $key => $value)
                 {
                     $dbkey_haystack = array_column($value['EntryMeta'], 'key');
@@ -1159,7 +1173,51 @@ class EntryMeta extends AppModel {
                             else if($value['EntryMeta'][$dbkey]['value'] != $subvalue)
                             {
                                 $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
+                                if($subkey == 'form-return_detail')
+                                {
+                                    $subvalue = $value['EntryMeta'][$dbkey]['value'].chr(10).$subvalue;
+                                }
                                 $this->EntryMeta->saveField('value', $subvalue );
+                            }
+                        }
+                    }
+                    
+                    // search for product price ...
+                    if($data['Entry'][3]['value'] == 1) // Accepted ...
+                    {
+                        if(!empty($data['EntryMeta']['warehouse_origin']))
+                        {
+                            if(!empty($data['EntryMeta']['dmd_vendor_invoice']))
+                            {
+                                $dbkey = array_search('form-vendor_usd', $dbkey_haystack);
+                                if($dbkey !== FALSE)    $invoice_price += $value['EntryMeta'][$dbkey]['value'];
+                            }
+                            else if(!empty($data['EntryMeta']['cor_vendor_invoice']))
+                            {
+                                $dbkey = array_search('form-item_weight', $dbkey_haystack);
+                                if($dbkey !== FALSE)    $invoice_price += $value['EntryMeta'][$dbkey]['value'];
+                            }
+                        }
+                        else if(!empty($data['EntryMeta']['warehouse_destination']))
+                        {
+                            if(!empty($data['EntryMeta']['dmd_client_invoice']))
+                            {
+                                $dbkey = array_search('form-total_sold_price', $dbkey_haystack);
+                                if($dbkey !== FALSE)    $invoice_price += $value['EntryMeta'][$dbkey]['value'];
+                            }
+                            else if(!empty($data['EntryMeta']['cor_client_invoice']))
+                            {
+                                $dbkey = array_search('form-item_weight', $dbkey_haystack);
+                                if($dbkey !== FALSE)
+                                {
+                                    $client_x = 1;
+                                    $x_dbkey = array_search('form-client_x', $dbkey_haystack);
+                                    if($x_dbkey !== FALSE && is_numeric($value['EntryMeta'][$x_dbkey]['value']))
+                                    {
+                                        $client_x = $value['EntryMeta'][$x_dbkey]['value'];
+                                    }
+                                    $invoice_price += $value['EntryMeta'][$dbkey]['value'] * $client_x;
+                                }
                             }
                         }
                     }
@@ -1167,10 +1225,14 @@ class EntryMeta extends AppModel {
             }
         }
         
+        // ========================== >>
         // logistic ...
+        // ========================== >>
         if(!empty($data['EntryMeta']['logistic']))
         {
-            $logiskey = array_search('form-logistic', array_column($data['EntryMeta'], 'key'));
+            $init_column = array_column($data['EntryMeta'], 'key');
+            $logiskey = array_search('form-logistic', array_combine(array_slice(array_keys($data['EntryMeta']), 0, count($init_column)), $init_column));
+            
             $logismove = array();
             foreach(array('origin', 'destination') as $key => $value)
             {
@@ -1227,7 +1289,7 @@ class EntryMeta extends AppModel {
                     {
                         $pecah_storage = explode('|', $value['EntryMeta'][$dbkey]['value'] );
                         $storage_key = key(preg_grep("/^".$logismove['destination']['content']."_.*/", $pecah_storage));
-                        if($storage_key >= 0)
+                        if(is_numeric($storage_key))
                         {
                             $pecah_total = explode('_', $pecah_storage[$storage_key]);
                             $pecah_total[1] += $data['EntryMeta'][$logiskey]['total'][$totalkey];
@@ -1246,18 +1308,83 @@ class EntryMeta extends AppModel {
             }
         }
         
+        // ========================== >>
         // UPDATE INVOICE DATA !!
-        
+        // ========================== >>
+        if( (!empty($data['EntryMeta']['diamond']) || !empty($data['EntryMeta']['cor_jewelry'])) && $data['Entry'][3]['value'] == 1 ) // Accepted ...
+        {
+            $entry_type = '';
+            $invslug = '';
+            if(!empty($data['EntryMeta']['dmd_vendor_invoice']))
+            {
+                $entry_type = 'dmd-vendor-invoice';
+                $invslug = $data['EntryMeta']['dmd_vendor_invoice'];
+            }
+            else if(!empty($data['EntryMeta']['cor_vendor_invoice']))
+            {
+                $entry_type = 'cor-vendor-invoice';
+                $invslug = $data['EntryMeta']['cor_vendor_invoice'];
+            }
+            else if(!empty($data['EntryMeta']['dmd_client_invoice']))
+            {
+                $entry_type = 'dmd-client-invoice';
+                $invslug = $data['EntryMeta']['dmd_client_invoice'];
+            }
+            else if(!empty($data['EntryMeta']['cor_client_invoice']))
+            {
+                $entry_type = 'cor-client-invoice';
+                $invslug = $data['EntryMeta']['cor_client_invoice'];
+            }
+            
+            // final process !!
+            if(!empty($entry_type) && !empty($invslug))
+            {
+                $itemsent = count($data['EntryMeta']['diamond']) + count($data['EntryMeta']['cor_jewelry']);
+                $pcs = 0;
+                if($invoice_price > 0)
+                {
+                    $pcs = $itemsent *= -1;
+                    $invoice_price *= -1;
+                }
+                
+                $value = $this->Entry->findByEntryTypeAndSlug($entry_type, $invslug);
+                $dbkey_haystack = array_column($value['EntryMeta'], 'key');
+                foreach(array_filter(array(
+                    'form-total_item_sent'  => $itemsent,
+                    'form-total_pcs'        => $pcs,
+                    'form-'.(strpos($entry_type, 'dmd-') !== FALSE?'total_price':'total_weight') => $invoice_price
+                )) as $subkey => $subvalue)
+                {
+                    $dbkey = array_search($subkey, $dbkey_haystack);
+                    if($dbkey === FALSE)
+                    {
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save(array('EntryMeta' => array(
+                            'entry_id'  => $value['Entry']['id'],
+                            'key'       => $subkey,
+                            'value'     => $subvalue
+                        )));
+                    }
+                    else
+                    {
+                        $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
+                        $this->EntryMeta->saveField('value', $value['EntryMeta'][$dbkey]['value'] + $subvalue );
+                    }
+                }
+            }
+        }
     }
     
     function update_product_by_invoice($myTypeSlug, $data)
     {
-        $new_total_pcs = 0;
+        $init_column = array_column($data['EntryMeta'], 'key');
+        $custom_column = array_combine(array_slice(array_keys($data['EntryMeta']), 0, count($init_column)), $init_column);
         
+        $new_total_pcs = 0;
         if($myTypeSlug == 'dmd-vendor-invoice')
         {
             // to search vd barcode for each product ...
-            $prodkey = array_search('temp-diamond', array_column($data['EntryMeta'], 'key'));
+            $prodkey = array_search('temp-diamond', $custom_column);
 
             $data['EntryMeta']['temp-diamond'] = array_unique(array_filter($data['EntryMeta']['temp-diamond']));
             
@@ -1302,7 +1429,7 @@ class EntryMeta extends AppModel {
         else if($myTypeSlug == 'cor-vendor-invoice')
         {
             // to search item weight for each product ...
-            $prodkey = array_search('temp-cor_jewelry', array_column($data['EntryMeta'], 'key'));
+            $prodkey = array_search('temp-cor_jewelry', $custom_column);
             
             $data['EntryMeta']['temp-cor_jewelry'] = array_unique(array_filter($data['EntryMeta']['temp-cor_jewelry']));
             
@@ -1342,7 +1469,7 @@ class EntryMeta extends AppModel {
         else if($myTypeSlug == 'dmd-client-invoice')
         {
             // to search sell barcode for each product ...
-            $prodkey = array_search('temp-diamond', array_column($data['EntryMeta'], 'key'));
+            $prodkey = array_search('temp-diamond', $custom_column);
 
             $data['EntryMeta']['temp-diamond'] = array_unique(array_filter($data['EntryMeta']['temp-diamond']));
             
@@ -1391,7 +1518,7 @@ class EntryMeta extends AppModel {
         }
         else if($myTypeSlug == 'cor-client-invoice')
         {
-            $cor_haystack = array_filter(array_column($data['EntryMeta'], 'key'), function($v){
+            $cor_haystack = array_filter($custom_column, function($v){
                 return strpos($v, 'temp-cor_jewelry') !== FALSE;
             });
             

@@ -177,7 +177,7 @@
                         
                         richvalue += ' ['+item_weight+' x '+client_x+']';
                     }
-                    else // cor vendor ...
+                    else // cor vendor OR cor-client-invoice ...
                     {
                         richvalue += ' / ' + $(this).find('td.form-product_brand h5').text();
                         

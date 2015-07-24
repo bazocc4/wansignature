@@ -71,11 +71,10 @@ class EntryMeta extends AppModel {
 			'conditions' => array('EntryMeta.key' => 'image_'.$type),
             'recursive' => -1
 		));
+        
+        $imgTypeList = array_column(array_column($imgReason, 'EntryMeta'), 'value', 'entry_id');
 		$imgTypeList[0] = 'jpg';
-		foreach ($imgReason as $key20 => $value20)
-		{
-			$imgTypeList[$value20['EntryMeta']['entry_id']] = $value20['EntryMeta']['value'];			
-		}
+        
 		return $imgTypeList;
 	}
 	
@@ -107,13 +106,8 @@ class EntryMeta extends AppModel {
     
     function get_diamond_type()
     {
-        $result = array();
         $query = $this->findAllByKeyAndValue('form-category', 'Diamond');
-        foreach($query as $key => $value)
-        {
-            $result[$value['Entry']['slug']] = $value['Entry']['title'];
-        }
-        return $result;
+        return array_column(array_column($query, 'Entry'), 'title', 'slug');
     }
     
     function push_product($obj = array(), $myTypeSlug, $title, $description = NULL)
@@ -1230,9 +1224,7 @@ class EntryMeta extends AppModel {
         // ========================== >>
         if(!empty($data['EntryMeta']['logistic']))
         {
-            $init_column = array_column($data['EntryMeta'], 'key');
-            $logiskey = array_search('form-logistic', array_combine(array_slice(array_keys($data['EntryMeta']), 0, count($init_column)), $init_column));
-            
+            $logiskey = array_search('form-logistic', array_map(function($el){ return $el['key']; }, $data['EntryMeta']));
             $logismove = array();
             foreach(array('origin', 'destination') as $key => $value)
             {
@@ -1377,14 +1369,11 @@ class EntryMeta extends AppModel {
     
     function update_product_by_invoice($myTypeSlug, $data)
     {
-        $init_column = array_column($data['EntryMeta'], 'key');
-        $custom_column = array_combine(array_slice(array_keys($data['EntryMeta']), 0, count($init_column)), $init_column);
-        
         $new_total_pcs = 0;
         if($myTypeSlug == 'dmd-vendor-invoice')
         {
             // to search vd barcode for each product ...
-            $prodkey = array_search('temp-diamond', $custom_column);
+            $prodkey = array_search('temp-diamond', array_map(function($el){ return $el['key']; }, $data['EntryMeta']));
 
             $data['EntryMeta']['temp-diamond'] = array_unique(array_filter($data['EntryMeta']['temp-diamond']));
             
@@ -1429,7 +1418,7 @@ class EntryMeta extends AppModel {
         else if($myTypeSlug == 'cor-vendor-invoice')
         {
             // to search item weight for each product ...
-            $prodkey = array_search('temp-cor_jewelry', $custom_column);
+            $prodkey = array_search('temp-cor_jewelry', array_map(function($el){ return $el['key']; }, $data['EntryMeta']));
             
             $data['EntryMeta']['temp-cor_jewelry'] = array_unique(array_filter($data['EntryMeta']['temp-cor_jewelry']));
             
@@ -1469,7 +1458,7 @@ class EntryMeta extends AppModel {
         else if($myTypeSlug == 'dmd-client-invoice')
         {
             // to search sell barcode for each product ...
-            $prodkey = array_search('temp-diamond', $custom_column);
+            $prodkey = array_search('temp-diamond', array_map(function($el){ return $el['key']; }, $data['EntryMeta']));
 
             $data['EntryMeta']['temp-diamond'] = array_unique(array_filter($data['EntryMeta']['temp-diamond']));
             
@@ -1518,7 +1507,7 @@ class EntryMeta extends AppModel {
         }
         else if($myTypeSlug == 'cor-client-invoice')
         {
-            $cor_haystack = array_filter($custom_column, function($v){
+            $cor_haystack = array_filter(array_map(function($el){ return $el['key']; }, $data['EntryMeta']), function($v){
                 return strpos($v, 'temp-cor_jewelry') !== FALSE;
             });
             

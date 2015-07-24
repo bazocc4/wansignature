@@ -201,24 +201,19 @@ function lang_unslug($str)
 }
 /**
 	* retrieve list of language option used in settings form
-	* @param array $src contains group of used language in settings
+	* @param string $src contains group of used language in settings
 	* @return array $langlist contains array of language that will be displayed as language option
 	* @public
 	**/
-function get_list_lang($src = array())
+function get_list_lang($src = NULL)
 {
     $langlist = array('en_english', 'id_indonesia', 'zh_chinese');
 	$existlang = array_map('trim' , explode(chr(10), $src) );
     return array_unique( array_merge( $langlist , $existlang ) );
 }
-function parse_lang($src = array())
+function parse_lang($src = NULL)
 {
-	$temp = explode(chr(13).chr(10), $src);
-	foreach ($temp as $key => $value) 
-	{
-		$result[] = strtoupper(substr($value, 0,2))." - ".strtoupper(substr($value, 3,1)).substr($value, 4);
-	}
-	return $result;
+	return array_map(function($value){ return strtoupper(substr($value, 0,2))." - ".strtoupper(substr($value, 3,1)).substr($value, 4); }, explode(chr(13).chr(10), $src));
 }
 function get_more_extension($url)
 {

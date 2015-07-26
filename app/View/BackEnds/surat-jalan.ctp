@@ -352,7 +352,6 @@
 			<form id="global-action" style="margin: 0;" action="#" accept-charset="utf-8" method="post" enctype="multipart/form-data">
 				<select REQUIRED name="data[action]" class="input-small" id="action-status">
 					<option style="font-weight: bold;" value="">Action :</option>
-					<option value="active">Accepted</option>
 					<option value="delete">Delete</option>
 				</select>
 				<input type="hidden" name="data[record]" id="action-records" />

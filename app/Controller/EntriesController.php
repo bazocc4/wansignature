@@ -832,7 +832,7 @@ class EntriesController extends AppController {
         if(strpos( serialize($options) , 'EntryMeta.key_value') !== FALSE)
 		{
             $options['joins'] = array(array(
-				'table' => '(SELECT EntryMeta.entry_id, CONCAT("{#}", GROUP_CONCAT(EntryMeta.key, "=", EntryMeta.value SEPARATOR "{#}"), "{#}") as key_value FROM cms_entry_metas as EntryMeta GROUP BY EntryMeta.entry_id)',
+				'table' => '(SELECT EntryMeta.entry_id, CONCAT("{#}", GROUP_CONCAT(EntryMeta.key, "=", EntryMeta.value ORDER BY EntryMeta.id SEPARATOR "{#}"), "{#}") as key_value FROM cms_entry_metas as EntryMeta GROUP BY EntryMeta.entry_id)',
 	            'alias' => 'EntryMeta',
 	            'type' => 'LEFT',
 	            'conditions' => array('Entry.id = EntryMeta.entry_id')

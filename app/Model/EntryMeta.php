@@ -1097,7 +1097,7 @@ class EntryMeta extends AppModel {
                 $pushdata['form-vendor'] = $data['EntryMeta']['vendor'];
                 if(!empty($data['EntryMeta']['warehouse_origin']) && $data['Entry'][3]['value'] == 1) // Accepted ...
                 {
-                    $pushdata['form-product_status'] = 'RETURN';
+                    $pushdata['form-product_status'] = 'RETURN #'.$data['Entry'][0]['value'];
                     if(!empty($data['EntryMeta']['diamond']))
                     {
                         $pushdata['form-report_type'] = 'RR';
@@ -1114,9 +1114,16 @@ class EntryMeta extends AppModel {
             if(!empty($data['EntryMeta']['client']))
             {
                 $pushdata['form-client'] = $data['EntryMeta']['client'];
-                if( (!empty($data['EntryMeta']['warehouse_origin']) || !empty($data['EntryMeta']['exhibition_origin'])) && $data['Entry'][3]['value'] == 1) // Accepted ...
+                if($data['Entry'][3]['value'] == 1) // Accepted ...
                 {
-                    $pushdata['form-product_status'] = 'SOLD';
+                    if(!empty($data['EntryMeta']['warehouse_origin']) || !empty($data['EntryMeta']['exhibition_origin'])) 
+                    {
+                        $pushdata['form-product_status'] = 'SOLD';
+                    }
+                    else if(!empty($data['EntryMeta']['warehouse_destination']))
+                    {
+                        $pushdata['form-product_status'] = 'STOCK (CLIENT RETURN #'.$data['Entry'][0]['value'].')';
+                    }
                 }
             }
             
@@ -1126,7 +1133,7 @@ class EntryMeta extends AppModel {
                 $pushdata['form-salesman'] = $data['EntryMeta']['salesman'];
                 if(!empty($data['EntryMeta']['warehouse_origin']) || !empty($data['EntryMeta']['exhibition_origin']))
                 {
-                    $pushdata['form-product_status'] = 'KLLG';
+                    $pushdata['form-product_status'] = 'KLLG #'.$data['Entry'][0]['value'];
                 }
             }
             

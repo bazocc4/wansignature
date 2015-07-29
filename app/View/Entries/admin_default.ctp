@@ -51,7 +51,7 @@
 			});
 
 			$('input#check-all').change(function(){
-				$('input.check-record').attr('checked' , $(this).attr('checked')?true:false);
+				$('input.check-record').attr('checked' , $(this).is(':checked') );
                 $('input.check-record').change(); // update background color on each TR record...
 				$.fn.updateAttachButton();
 			});

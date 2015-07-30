@@ -826,7 +826,7 @@ class EntriesController extends AppController {
         }
         else 
         {
-            $options['order'] = array('Entry.'.(isset($innerFieldMeta)||empty($_SESSION['order_by'])||empty($this->request->params['admin'])?$this->generalOrder:$_SESSION['order_by']));
+            $options['order'] = array('Entry.'.(empty($_SESSION['order_by'])?$this->generalOrder:$_SESSION['order_by']));
         }
         
         if(strpos( serialize($options) , 'EntryMeta.key_value') !== FALSE)

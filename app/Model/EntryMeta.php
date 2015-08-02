@@ -41,6 +41,7 @@ class EntryMeta extends AppModel {
 	var $Entry = NULL;
     var $EntryMeta = NULL;
     var $Account = NULL;
+    
     // CURRENT USER DETAIL ...
     var $myCreator = NULL;
 	
@@ -51,6 +52,7 @@ class EntryMeta extends AppModel {
         // set needed database model ...
 		$this->Type = ClassRegistry::init('Type');
 		$this->TypeMeta = ClassRegistry::init('TypeMeta');
+        
 		$this->Entry = ClassRegistry::init('Entry');
         $this->EntryMeta = $this; // just as alias ...
 		$this->Account = ClassRegistry::init('Account');
@@ -1091,13 +1093,20 @@ class EntryMeta extends AppModel {
                 }
             }
             
+            // RETURN AS PAYMENT status variable ...
+            $middle_status = '';
+            if(strpos($data['EntryMeta']['delivery_type'], 'Payment') !== FALSE)
+            {
+                $middle_status = ' AS PAYMENT';
+            }
+            
             // vendor ...
             if(!empty($data['EntryMeta']['vendor']))
             {
                 $pushdata['form-vendor'] = $data['EntryMeta']['vendor'];
                 if(!empty($data['EntryMeta']['warehouse_origin']) && $data['Entry'][3]['value'] == 1) // Accepted ...
                 {
-                    $pushdata['form-product_status'] = 'RETURN #'.$data['Entry'][0]['value'];
+                    $pushdata['form-product_status'] = 'RETURN'.$middle_status.' #'.$data['Entry'][0]['value'];
                     if(!empty($data['EntryMeta']['diamond']))
                     {
                         $pushdata['form-report_type'] = 'RR';
@@ -1122,7 +1131,7 @@ class EntryMeta extends AppModel {
                     }
                     else if(!empty($data['EntryMeta']['warehouse_destination']))
                     {
-                        $pushdata['form-product_status'] = 'STOCK (CLIENT RETURN #'.$data['Entry'][0]['value'].')';
+                        $pushdata['form-product_status'] = 'STOCK (CLIENT RETURN'.$middle_status.' #'.$data['Entry'][0]['value'].')';
                     }
                 }
             }
@@ -1310,7 +1319,7 @@ class EntryMeta extends AppModel {
         // ========================== >>
         // UPDATE INVOICE DATA !!
         // ========================== >>
-        if( (!empty($data['EntryMeta']['diamond']) || !empty($data['EntryMeta']['cor_jewelry'])) && $data['Entry'][3]['value'] == 1 ) // Accepted ...
+        if( (!empty($data['EntryMeta']['diamond']) || !empty($data['EntryMeta']['cor_jewelry'])) && strpos($data['EntryMeta']['delivery_type'], 'Payment') === FALSE && $data['Entry'][3]['value'] == 1 ) // Accepted ...
         {
             $entry_type = '';
             $invslug = '';

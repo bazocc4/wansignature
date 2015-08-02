@@ -286,11 +286,15 @@ $(document).ready(function(){
             }
 
             // show it off !!
-            $('span.total_<?php echo $shortkey; ?>').html(number_format(totalprice,2)+'<input type="hidden" value="'+totalprice+'">');
+            $('span.total_<?php echo $shortkey; ?>').html(number_format(totalprice,2)+'<input type="hidden" value="'+totalprice.toFixed(2)+'">');
             
             // update other attribute related ...
             if($('#myTypeSlug').val().indexOf('-payment') >= 0)
             {
+                <?php
+                    if($shortkey != 'payment_jewelry')
+                    {
+                        ?>
                 if($('input.gold_loss').length > 0)
                 {
                     $('input.gold_loss').trigger('keyup', [init]);
@@ -298,7 +302,10 @@ $(document).ready(function(){
                 else if($('input.additional_charge').length > 0)
                 {
                     $('input.additional_charge').trigger('keyup', [init]);
-                }
+                }            
+                        <?php
+                    }
+                ?>
             }
             else if($('#myTypeSlug').val().indexOf('-invoice') >= 0)
             {

@@ -424,6 +424,8 @@ class EntriesController extends AppController {
         if(strpos($myChildTypeSlug , '-payment') !== FALSE)
 		{
 			$this->request->params['page'] = 0; // must be one full page !!
+            
+            $tempOrder = (isset($_SESSION['order_by'])? $_SESSION['order_by'] : '' );
             $_SESSION['order_by'] = 'form-date asc';
 		}
         
@@ -450,6 +452,12 @@ class EntriesController extends AppController {
 		{
 			$this->render('admin_default');
 		}
+        
+        // get back $_SESSION['order_by'] if any ...
+        if(isset($tempOrder))
+        {
+            $_SESSION['order_by'] = $tempOrder;
+        }
 	}
 	
 	/**
@@ -739,9 +747,20 @@ class EntriesController extends AppController {
         {
             if(!empty($this->request->query['storage']) && !empty($this->request->query['content']) )
             {
-                array_push($options['conditions'], array(
-                    'EntryMeta.key_value LIKE' => '%{#}form-product_status=%'.($this->request->query['storage'] == 'exhibition'?'exhibition':'stock').'%{#}form-'.$this->request->query['storage'].'='.$this->request->query['content'].'{#}%'
-                ));
+                $temp_status = '{#}form-product_status='.($this->request->query['storage'] == 'exhibition'?'exhibition':'stock');
+                $temp_storage = '{#}form-'.$this->request->query['storage'].'='.$this->request->query['content'];
+                
+                $temp_like = '';
+                if($myType['Type']['slug'] == 'diamond')
+                {
+                    $temp_like = '%'.$temp_status.'%'.$temp_storage.'%';
+                }
+                else // cor-jewelry ...
+                {
+                    $temp_like = '%'.$temp_storage.'%'.$temp_status.'%';
+                }
+                
+                array_push($options['conditions'], array('EntryMeta.key_value LIKE' => $temp_like));
             }
         }
         else if($myType['Type']['slug'] == 'surat-jalan')
@@ -1185,25 +1204,31 @@ class EntriesController extends AppController {
         /*
         note 1: pada saat pengiriman barang retur, sistem akan otomatis mengurangi total pcs,
                 total item sent & total price / weight dari invoice yg berkaitan ...
-        
-        note 2: pada saat bayar invoice, jikalau ada cash amount + payment jewelry dlm transaksi tsb,
-                maka sistem otomatis langsung buat 2 record payment (1 untuk payment original input,
-                dan 1 untuk payment return goods)...
         */
-        
-        if(empty($myEntry)) // ADD MODE ONLY !!
-        {
-            if(strpos($myTypeSlug, '-invoice') !== FALSE && empty($myChildTypeSlug))
-            {
-                $this->EntryMeta->update_product_by_invoice($myTypeSlug , $this->request->data);
-            }
-        }
         
         if($myTypeSlug == 'surat-jalan')
         {
-            if(empty($myEntry) || $myEntry['Entry']['status'] != 1) // executed ONLY IF still not accepted ...
+            if($myEntry['Entry']['status'] != 1) // executed ONLY IF still not accepted ...
             {
                 $this->EntryMeta->update_surat_jalan($this->request->data, $myEntry);
+            }
+        }
+        else if(strpos($myTypeSlug, '-invoice') !== FALSE)
+        {
+            if(empty($myChildTypeSlug))
+            {
+                if(empty($myEntry)) // ADD MODE ONLY !!
+                {
+                    $this->EntryMeta->update_product_by_invoice($myTypeSlug , $this->request->data);
+                }
+            }
+            else if(strpos($myChildTypeSlug, '-payment') !== FALSE)
+            {
+                // JUST ONCE WHEN PAYMENT STATUS IS COMPLETED !!
+                if($myEntry['Entry']['status'] != 1 && $this->request->data['Entry'][3]['value'] == 1)
+                {
+                    $this->Entry->update_invoice_payment($myParentEntry, $this->request->data);
+                }
             }
         }
 	}

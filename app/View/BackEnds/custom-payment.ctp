@@ -501,10 +501,6 @@
                             {
                                 echo '<span class="label '.($displayValue=='Debit'?'label-info':'label-important').'">'.$displayValue.'</span>';
                             }
-                            else if($shortkey == 'checks_status')
-                            {
-                                echo '<span class="label '.($displayValue=='Cek Lunas'?'label-success':'label-inverse').'">'.$displayValue.'</span>';
-                            }
                             else
                             {
                                 echo $this->Get->outputConverter($value10['input_type'] , $displayValue , $myImageTypeList , $shortkey);
@@ -552,14 +548,7 @@
                 echo "<td class='action-btn'>";
                 echo $this->Html->link('<i class="icon-edit icon-white"></i>', $editUrl, array('escape'=>false, 'class'=>'btn btn-info','data-toggle'=>'tooltip', 'title'=>'CLICK TO EDIT / VIEW DETAIL') );
                 
-                // update status ...
-                $targetURL = 'entries/change_status/'.$value['Entry']['id'];
-                if($value['Entry']['status'] == 0)
-                {
-                    echo '&nbsp;&nbsp;<a data-toggle="tooltip" title="CLICK TO SET AS COMPLETE" href="javascript:void(0)" onclick="changeLocation(\''.$targetURL.'\')" class="btn btn-success"><i class="icon-ok icon-white"></i></a>';					
-                }
-                
-				?>
+                ?>
             &nbsp;<a data-toggle="tooltip" title="CLICK TO DELETE RECORD" href="javascript:void(0)" onclick="show_confirm('Are you sure want to delete <?php echo strtoupper($value['Entry']['title']); ?> ?','entries/delete/<?php echo $value['Entry']['id']; ?>')" class="btn btn-danger"><i class="icon-trash icon-white"></i></a>
 				<?php
 				echo "</td>";

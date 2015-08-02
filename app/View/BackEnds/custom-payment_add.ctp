@@ -46,7 +46,7 @@
 	$myChildTypeLink = (!empty($myParentEntry)&&$myType['Type']['slug']!=$myChildType['Type']['slug']?'?type='.$myChildType['Type']['slug']:'');
 	$myTranslation = ( empty($lang)||empty($myEntry) ? '' : (empty($myChildTypeLink)?'?':'&').'lang='.$lang);
 	$targetSubmit = (empty($myType)?'pages':$myType['Type']['slug']).(empty($myChildType)?'':'/'.$myParentEntry['Entry']['slug']).(empty($myEntry)?'/add':'/edit/'.$myEntry['Entry']['slug']).$myChildTypeLink.$myTranslation;
-	$saveButton = (empty($myEntry)?'Add New as Complete Payment':(empty($lang)?'Save Changes':'Add Translation'));
+	$saveButton = (empty($myEntry)?'Add New as Complete Payment<span class="span-checks hide"> (Cek Lunas)</span>':(empty($lang)?'Save Changes':'Add Translation'));
 	echo $this->Form->create('Entry', array('action'=>$targetSubmit,'type'=>'file','class'=>'notif-change form-horizontal fl','inputDefaults' => array('label' =>false , 'div' => false)));	
 ?>
 	<fieldset>
@@ -142,17 +142,73 @@
                     var result = ( $.isNumeric( $(this).val() ) ? source * parseFloat($(this).val()) / 100 : 0 );
                     $('span.total_additional_charge').html(number_format(result,2));
                     
-                    var barter = 0;
-                    if($('span.total_payment_jewelry').length > 0)  barter += parseFloat($('span.total_payment_jewelry input[type=hidden]').val());
-                    
                     // update amount too ...
                     if(init == null)
                     {
-                        var amount = source + result - barter;
+                        var amount = source + result;
                         $('input.amount').val(amount.toFixed(2));
                     }
                     $('input.amount').keyup();
                 });
+                
+                // onchange payment type callback ...
+                $('select.type').change(function(){
+                    
+                    // toggle payment_jewelry to be hidden / showed ...
+                    if($('div.payment-jewelry-group').length)
+                    {
+                        if($(this).val() == 'Return Goods')
+                        {
+                            $('div.payment-jewelry-group').closest('div.control-group').show();
+                        }
+                        else
+                        {
+                            $('div.payment-jewelry-group').html('').closest('div.control-group').hide().find('a.add-raw').click();
+                            $('span.total_payment_jewelry').html('0.00<input type="hidden" value="0">');
+                        }
+                    }
+                    
+                    // checks ...
+                    if($(this).val() == 'Checks')
+                    {
+                        $('input.checks_date').attr('required', 'required').closest('div.control-group').show();
+                        $('span.span-checks').removeClass('hide');
+                    }
+                    else
+                    {
+                        $('input.checks_date').val('').removeAttr('required').closest('div.control-group').hide();
+                        $('span.span-checks').addClass('hide');
+                    }
+                    
+                    // Cicilan ...
+                    if($('input.loan_period').length && $('input.loan_interest_rate').length)
+                    {
+                        if($(this).val() == 'Cicilan')
+                        {
+                            $('input.loan_period, input.loan_interest_rate').attr('required', 'required').closest('div.control-group').show();
+                        }
+                        else
+                        {
+                            $('input.loan_period, input.loan_interest_rate').val('').removeAttr('required').closest('div.control-group').hide();
+                        }
+                    }
+                    
+                }).trigger('change');
+                
+                $('form').submit(function(){
+                    if( $('div.payment-jewelry-group').length && $('div.payment-jewelry-group').is(':visible') )
+                    {
+                        var total_payment = parseFloat($('span.total_payment_jewelry input[type=hidden]').val());
+                        var amount = parseFloat($('input.amount').val());
+                        if(amount != total_payment)
+                        {
+                            alert('Total payment jewelry price MUST BE SAME WEIGHT as paid Amount!');
+                            $('input.amount').focus();
+                            return false;
+                        }
+                    }
+                });
+                
 			});
 		</script>
 		<script src="<?php echo $imagePath; ?>js/gold_loss.js"></script>
@@ -239,6 +295,12 @@
 							break;
 					}
                     
+                    // on-the-fly validation ...
+                    if($value['key'] == 'form-checks_date' || $value['key'] == 'form-loan_period' || $value['key'] == 'form-loan_interest_rate' || $value['key'] == 'form-payment_jewelry')
+                    {
+                        $value['validation'] .= 'not_empty|';
+                    }
+                    
                     // view mode ...
                     if(!empty($myEntry))
                     {
@@ -247,6 +309,16 @@
                         if($value['key'] == 'form-cost_currency')
                         {
                             $value['display'] = 'none';
+                        }
+                    }
+                    else // ADD MODE !!
+                    {
+                        if($value['key'] == 'form-diamond' || $value['key'] == 'form-cor_jewelry')
+                        {
+                            $value['request_query'] = array(
+                                'key' => ($VENDOR? 'vendor_invoice_code' : 'client_invoice_code' ),
+                                'value' => $myParentEntry['Entry']['slug']
+                            );
                         }
                     }
                     
@@ -288,9 +360,9 @@
 			$value['model'] = 'Entry';
 			$value['input_type'] = 'dropdown';
 			$value['list'][0]['id'] = '1';
-			$value['list'][0]['name'] = 'Complete';
+			$value['list'][0]['name'] = ($myEntry['EntryMeta']['type'] == 'Checks'?'Cek Lunas':'Complete');
 			$value['list'][1]['id'] = '0';
-			$value['list'][1]['name'] = 'Pending';
+			$value['list'][1]['name'] = ($myEntry['EntryMeta']['type'] == 'Checks'?'Cek Titip':'Pending');
             
             $value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['status']);
 			
@@ -399,7 +471,7 @@
 			<?php
 				if(empty($myEntry) && !empty($myType))
 				{
-					echo '<button id="save-as-draft" type="button" class="btn btn-inverse">Save as Pending Payment</button>';
+					echo '<button id="save-as-draft" type="button" class="btn btn-inverse">Save as Pending Payment<span class="span-checks hide"> (Cek Titip)</span></button>';
 				}
 
                 $langUrlCancel = '';

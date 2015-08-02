@@ -1,15 +1,6 @@
 <?php
 class Entry extends AppModel {
 	var $name = 'Entry';
-	private $Resize=null;
-	
-	// DATABASE MODEL...
-	var $Type = NULL;
-	var $TypeMeta = NULL;
-	var $Setting = NULL;
-	var $EntryMeta = NULL;
-	var $Account = NULL;
-	
 	var $validate = array(
 		'entry_type' => array(
 			'notempty' => array(
@@ -194,6 +185,20 @@ class Entry extends AppModel {
 			'counterQuery' => ''
 		)
 	);
+    
+    private $Resize=null;
+	
+	// DATABASE MODEL...
+	var $Type = NULL;
+	var $TypeMeta = NULL;
+	var $Setting = NULL;
+    
+    var $Entry = NULL;
+	var $EntryMeta = NULL;
+	var $Account = NULL;
+    
+    // CURRENT USER DETAIL ...
+    var $myCreator = NULL;
 
 	public function __construct( $id = false, $table = NULL, $ds = NULL )
 	{
@@ -206,8 +211,13 @@ class Entry extends AppModel {
 		$this->Type = ClassRegistry::init('Type');
 		$this->TypeMeta = ClassRegistry::init('TypeMeta');
 		$this->Setting = ClassRegistry::init('Setting');
+        
+        $this->Entry = $this; // just as alias ...
 		$this->EntryMeta = ClassRegistry::init('EntryMeta');
 		$this->Account = ClassRegistry::init('Account');
+        
+        // set current user ...
+        $this->myCreator = $this->getCurrentUser();
 	}
     
     function _convertEntrySlug($slug)
@@ -478,10 +488,9 @@ class Entry extends AppModel {
 		}
         
         // renew the modifier !!
-        $myCreator = $this->getCurrentUser();
-        if(!empty($myCreator))
+        if(!empty($this->myCreator))
         {
-            $this->data['Entry']['modified_by'] = $myCreator['id'];
+            $this->data['Entry']['modified_by'] = $this->myCreator['id'];
         }
 		return true;
 	}
@@ -644,12 +653,11 @@ class Entry extends AppModel {
 		// generate slug from title...
 		$input['Entry']['slug'] = $this->get_slug($input['Entry']['title']);
 		// write my creator...
-		$myCreator = $this->getCurrentUser();
-		$input['Entry']['modified_by'] = $myCreator['id'];
+		$input['Entry']['modified_by'] = $this->myCreator['id'];
 		$input['Entry']['parent_id'] = $parentImage['Entry']['id'];
 		if(empty($data['childImageId']))
 		{
-			$input['Entry']['created_by'] = $myCreator['id'];
+			$input['Entry']['created_by'] = $this->myCreator['id'];
 			$this->create();
 		}
 		else
@@ -1041,5 +1049,70 @@ class Entry extends AppModel {
             }
         }
         return false;
+    }
+    
+    function update_invoice_payment($myParentEntry = array(), $data = array())
+    {
+        // update invoice payment balance ...
+        $updated_balance = ($data['EntryMeta']['statement']=='Debit'?1:-1) * $data['EntryMeta']['amount'] * ( strpos($myParentEntry['Entry']['entry_type'], '-vendor-') !== FALSE ?1:-1);
+        
+        $dbkey_invoice = array_column($myParentEntry['EntryMeta'], 'key');
+        $dbkey = array_search('form-payment_balance', $dbkey_invoice);
+        if($dbkey === FALSE)
+        {
+            $this->EntryMeta->create();
+            $this->EntryMeta->save(array('EntryMeta' => array(
+                'entry_id'  => $myParentEntry['Entry']['id'],
+                'key'       => 'form-payment_balance',
+                'value'     => $updated_balance
+            )));
+        }
+        else
+        {
+            $this->EntryMeta->id = $myParentEntry['EntryMeta'][$dbkey]['id'];
+            $this->EntryMeta->saveField('value', $myParentEntry['EntryMeta'][$dbkey]['value'] + $updated_balance );
+        }
+        
+        foreach(array('diamond', 'cor_jewelry', 'payment_jewelry') as $key => $value)
+        {
+            $data['EntryMeta'][$value] = array_unique(array_filter($data['EntryMeta'][$value]));
+        }
+        
+        if(!empty($data['EntryMeta']['payment_jewelry']))
+        {
+            $subkey = 'form-transaction_history';
+            $subvalue = 'RETURN '.(strpos($myParentEntry['Entry']['entry_type'], '-client-') !== FALSE?'FROM CLIENT':'TO VENDOR').' AS PAYMENT FOR INV# '.$myParentEntry['Entry']['title'];
+            
+            $query = $this->Entry->findAllByEntryTypeAndSlug('cor-jewelry', $data['EntryMeta']['payment_jewelry'] );
+            foreach($query as $key => $value)
+            {
+                $dbkey_haystack = array_column($value['EntryMeta'], 'key');
+                $dbkey = array_search($subkey, $dbkey_haystack);
+                if($dbkey === FALSE)
+                {
+                    $this->EntryMeta->create();
+                    $this->EntryMeta->save(array('EntryMeta' => array(
+                        'entry_id'  => $value['Entry']['id'],
+                        'key'       => $subkey,
+                        'value'     => $subvalue
+                    )));
+                }
+                else
+                {
+                    $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
+                    $this->EntryMeta->saveField('value', $value['EntryMeta'][$dbkey]['value'].chr(10).$subvalue );
+                }
+            }
+        }
+        
+        // =============================================================== >>>
+        // update products attribute (client outstanding, payment blabla ) ...
+        // =============================================================== >>>
+        if(strpos($myParentEntry['Entry']['entry_type'], '-client-') !== FALSE)
+        {
+            // for diamond and cor-jewelry !!
+            
+        }
+        
     }
 }

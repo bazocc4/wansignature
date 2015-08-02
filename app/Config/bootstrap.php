@@ -541,7 +541,10 @@ function breakEntryMetas($myEntry , $metatable = 'EntryMeta')
 {
 	foreach ($myEntry[$metatable] as $key => $value) 
 	{
-		$myEntry[$metatable][(substr($value['key'], 0,5)=='form-'?substr($value['key'], 5):$value['key'])] = $value['value'];
+		if(!empty($value['key']))
+        {
+            $myEntry[$metatable][ str_replace('form-', '', $value['key']) ] = $value['value'];
+        }
 	}
 	return $myEntry;
 }

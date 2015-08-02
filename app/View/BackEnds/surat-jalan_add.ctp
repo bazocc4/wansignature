@@ -117,7 +117,7 @@
                     // ===================================== >>>
                     // origin toggle ...
                     // ===================================== >>>
-                    if($(this).val() == 'Diamond Sale Return' || $(this).val() == 'Cor Jewelry Sale Return' || $(this).val() == 'Stock Souvenir' || $(this).val() == 'Diamond Purchase' || $(this).val() == 'Cor Jewelry Purchase' || $(this).val() == 'Salesman To Warehouse')
+                    if($(this).val() == 'Diamond Sale Return' || $(this).val() == 'Cor Jewelry Sale Return' || $(this).val() == 'Cor Jewelry Sale Payment' || $(this).val() == 'Stock Souvenir' || $(this).val() == 'Diamond Purchase' || $(this).val() == 'Cor Jewelry Purchase' || $(this).val() == 'Salesman To Warehouse')
                     {
                         barang_masuk = true;
                         if($('input#warehouse-origin').is(':visible') || $('input#exhibition-origin').is(':visible'))

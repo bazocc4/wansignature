@@ -217,7 +217,7 @@
 <script>
     $('input.amount').keyup(function(){
         var result = parseFloat($('#neutral_balance').val());
-        if( $.isNumeric($(this).val()) )
+        if( $(this).is(':visible') && $.isNumeric($(this).val()) )
         {
             if($('input.statement:first').is(':checked'))
             {

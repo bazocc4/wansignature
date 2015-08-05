@@ -208,9 +208,10 @@
         <div class="view-mode">
             <span id="display_balance"></span> <?php echo $unit_amount; ?>
             <input type="hidden" id="neutral_balance" value="<?php echo (empty($myParentEntry['EntryMeta']['payment_balance'])?'0':$myParentEntry['EntryMeta']['payment_balance']); ?>">
+            <input type="hidden" id="max_balance" value="<?php echo $myParentEntry['EntryMeta'][$max_balance]; ?>">
         </div>
         <p class="help-block">
-            Pembayaran invoice menjadi <span class="label label-success">LUNAS</span> <strong>APABILA</strong> balance mencapai nilai <?php echo '<span class="label label-success">'.toMoney($myParentEntry['EntryMeta'][$max_balance]  , true , true).' '.$unit_amount.'</span> (Invoice '.string_unslug($max_balance).').'; ?>
+            Pembayaran invoice menjadi <span class="label label-success">LUNAS</span> <strong>APABILA</strong> balance mencapai nilai <?php echo '<span class="label label-success">'.toMoney($myParentEntry['EntryMeta'][$max_balance] , true , true).' '.$unit_amount.'</span> (Invoice '.string_unslug($max_balance).').'; ?>
         </p>
     </div>
 </div>
@@ -228,7 +229,10 @@
                 result -= parseFloat($(this).val());
             }
         }
-        $('#display_balance').text( number_format(result,2) );
+        
+        // give red color if live balance exceeds max balance !!
+        var max_balance = parseFloat($('#max_balance').val());
+        $('#display_balance').text( number_format(result,2) ).closest('div.view-mode').css('color', (result > max_balance?'red':'black') );
     });
     
     $(document).ready(function(){

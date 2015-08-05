@@ -132,7 +132,7 @@
                 
                 // Auto calculate Total Weight for Cor Client ...
                 var $sold = $('input[type=number][class^="sold_1"]'); // this is readonly input !!
-                if($sold.length > 0)
+                if($sold.length)
                 {
                     $('input[type=number][class^="x_1"], input.disc_adjustment').keyup(function(e, init){
                         if(init == null)
@@ -194,6 +194,18 @@
                         alert('Jumlah produk tidak sesuai dengan total perhiasan yang didaftarkan!\nMohon mengecek kembali inputan Anda.');
                         $('input.total_pcs').focus();
                         return false;
+                    }
+                    
+                    // delete client X value for empty GR ...
+                    if($sold.length)
+                    {
+                        $sold.each(function(i,el){
+                            var value = parseFloat( $(el).val() );
+                            if(value <= 0)
+                            {
+                                $('input[type=number][class^="x_1"]:eq('+i+')').val('');
+                            }
+                        });
                     }
                 });
 			});

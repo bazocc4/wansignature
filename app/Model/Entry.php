@@ -1069,10 +1069,13 @@ class Entry extends AppModel {
         }
         else
         {
+            $updated_balance += $myParentEntry['EntryMeta'][$dbkey]['value'];
+            
             $this->EntryMeta->id = $myParentEntry['EntryMeta'][$dbkey]['id'];
-            $this->EntryMeta->saveField('value', $myParentEntry['EntryMeta'][$dbkey]['value'] + $updated_balance );
+            $this->EntryMeta->saveField('value', $updated_balance );
         }
         
+        // firstly, filter array products !!
         foreach(array('diamond', 'cor_jewelry', 'payment_jewelry') as $key => $value)
         {
             $data['EntryMeta'][$value] = array_unique(array_filter($data['EntryMeta'][$value]));
@@ -1111,8 +1114,53 @@ class Entry extends AppModel {
         if(strpos($myParentEntry['Entry']['entry_type'], '-client-') !== FALSE)
         {
             // for diamond and cor-jewelry !!
-            
+            foreach(array('diamond', 'cor_jewelry') as $typekey => $typevalue)
+            {
+                if(!empty($data['EntryMeta'][$typevalue]))
+                {
+                    $query = $this->Entry->findAllByEntryTypeAndSlug(get_slug($typevalue), $data['EntryMeta'][$typevalue] );
+                    foreach($query as $key => $value)
+                    {
+                        // update client outstanding ...
+                        if(stripos($value['Entry']['description'], $data['Entry'][1]['value']) === FALSE)
+                        {
+                            $this->Entry->id = $value['Entry']['id'];
+                            $this->Entry->saveField('description', trim($value['Entry']['description'].chr(10).$data['Entry'][1]['value']) );
+                        }
+                        
+                        // update payment description & balance ...
+                        $dbkey_haystack = array_column($value['EntryMeta'], 'key');
+                        foreach(array(
+                            'form-payment_'.strtolower(str_replace(' ','_', $data['EntryMeta']['type'])) => $data['Entry'][0]['value'],
+                            'form-payment_balance' => $updated_balance
+                        ) as $subkey => $subvalue)
+                        {
+                            $dbkey = array_search($subkey, $dbkey_haystack);
+                            if($dbkey === FALSE)
+                            {
+                                $this->EntryMeta->create();
+                                $this->EntryMeta->save(array('EntryMeta' => array(
+                                    'entry_id'  => $value['Entry']['id'],
+                                    'key'       => $subkey,
+                                    'value'     => $subvalue
+                                )));
+                            }
+                            else
+                            {
+                                $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
+                                if($subkey != 'form-payment_balance')
+                                {
+                                    $subvalue = $value['EntryMeta'][$dbkey]['value'].chr(10).$subvalue;
+                                }
+                                $this->EntryMeta->saveField('value', $subvalue );
+                            }
+                        }
+
+                        // end of updating entry ...
+                    }
+                }
+            }
         }
-        
+        // end of function ...
     }
 }

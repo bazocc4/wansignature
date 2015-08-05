@@ -291,6 +291,12 @@ class EntryMeta extends AppModel {
         
         if(isset($obj[ $entity = 'warehouse' ]))
         {
+            // update product_status to STOCK if have same value as warehouse ...
+            if( !empty($obj[$entity]) && (empty($obj['product_status']) || strtolower($obj['product_status']) == strtolower($obj[$entity])) )
+            {
+                $obj['product_status'] = 'STOCK';
+            }
+            
             $this->push_general_entry($obj[$entity], $entity);
         }
         

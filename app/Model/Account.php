@@ -134,58 +134,6 @@ class Account extends AppModel {
 			'finderQuery' => '',
 			'counterQuery' => ''
 		),
-		'EntryCreatedBy' => array(
-			'className' => 'Entry',
-			'foreignKey' => 'created_by',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		),
-		'EntryModifiedBy' => array(
-			'className' => 'Entry',
-			'foreignKey' => 'modified_by',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		),
-		'TypeCreatedBy' => array(
-			'className' => 'Type',
-			'foreignKey' => 'created_by',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		),
-		'TypeModifiedBy' => array(
-			'className' => 'Type',
-			'foreignKey' => 'modified_by',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		),
 		'UserCreatedBy' => array(
 			'className' => 'User',
 			'foreignKey' => 'created_by',

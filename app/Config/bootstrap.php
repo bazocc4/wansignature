@@ -261,7 +261,6 @@ function redirectSessionNow($url)
 }
 function gmt_adjustment()
 {
-    date_default_timezone_set("Asia/Jakarta");
     return time();
 }
 function getAppRootPath()

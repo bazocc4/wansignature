@@ -279,7 +279,7 @@
                         
                         if($shortkey == 'statement')
                         {
-                            echo '<th>balance</th>';
+                            echo '<th>accumulated balance</th>';
                             echo '<th>status</th>';
                         }
 					}
@@ -511,7 +511,14 @@
                         if($shortkey == 'statement')
                         {
                             echo "<td class='form-balance'>";
-                            if($value['Entry']['status'] == 1)
+                            
+                            $allowed_balance = true;
+                            if( !empty($value['EntryMeta']['checks_date']) && strtotime($value['EntryMeta']['checks_date']) > strtotime(date('m/d/Y')) || !empty($value['EntryMeta']['loan_period']) )
+                            {
+                                $allowed_balance = false;
+                            }
+                            
+                            if($value['Entry']['status'] == 1 && $allowed_balance)
                             {
                                 $walking_balance += ($value['EntryMeta']['statement']=='Debit'?1:-1) * $value['EntryMeta']['amount'] * ($VENDOR?1:-1);
                             }
@@ -519,18 +526,20 @@
                             echo "</td>";
                             
                             // echo payment status too ...
-                            ?>
-        <td>
-			<span class="label <?php echo $value['Entry']['status']==0?'label-important':'label-success'; ?>">
-				<?php
-					if($value['Entry']['status'] == 0)
-						echo "Pending";
-					else
-						echo "Complete";
-				?>
-			</span>
-		</td>
-                            <?php
+                            echo "<td>";
+                            if($value['Entry']['status']==0) // Pending
+                            {
+                                echo '<span class="label label-important">Pending</span>';
+                            }
+                            else if($allowed_balance == false) // Waiting
+                            {
+                                echo '<span class="label label-info">Waiting</span>';
+                            }
+                            else // Complete
+                            {
+                                echo '<span class="label label-success">Complete</span>';
+                            }
+                            echo "</td>";
                         }
 					}
 				}

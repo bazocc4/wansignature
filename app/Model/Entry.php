@@ -1053,26 +1053,35 @@ class Entry extends AppModel {
     
     function update_invoice_payment($myParentEntry = array(), $data = array())
     {
-        // update invoice payment balance ...
-        $updated_balance = ($data['EntryMeta']['statement']=='Debit'?1:-1) * $data['EntryMeta']['amount'] * ( strpos($myParentEntry['Entry']['entry_type'], '-vendor-') !== FALSE ?1:-1);
-        
-        $dbkey_invoice = array_column($myParentEntry['EntryMeta'], 'key');
-        $dbkey = array_search('form-payment_balance', $dbkey_invoice);
-        if($dbkey === FALSE)
+        $allowed_balance = true;
+        if( !empty($data['EntryMeta']['checks_date']) && strtotime($data['EntryMeta']['checks_date']) > strtotime(date('m/d/Y')) || !empty($data['EntryMeta']['loan_period']) )
         {
-            $this->EntryMeta->create();
-            $this->EntryMeta->save(array('EntryMeta' => array(
-                'entry_id'  => $myParentEntry['Entry']['id'],
-                'key'       => 'form-payment_balance',
-                'value'     => $updated_balance
-            )));
+            $allowed_balance = false;
         }
-        else
+        
+        if($allowed_balance)
         {
-            $updated_balance += $myParentEntry['EntryMeta'][$dbkey]['value'];
-            
-            $this->EntryMeta->id = $myParentEntry['EntryMeta'][$dbkey]['id'];
-            $this->EntryMeta->saveField('value', $updated_balance );
+            // update invoice payment balance ...
+            $updated_balance = ($data['EntryMeta']['statement']=='Debit'?1:-1) * $data['EntryMeta']['amount'] * ( strpos($myParentEntry['Entry']['entry_type'], '-vendor-') !== FALSE ?1:-1);
+
+            $dbkey_invoice = array_column($myParentEntry['EntryMeta'], 'key');
+            $dbkey = array_search('form-payment_balance', $dbkey_invoice);
+            if($dbkey === FALSE)
+            {
+                $this->EntryMeta->create();
+                $this->EntryMeta->save(array('EntryMeta' => array(
+                    'entry_id'  => $myParentEntry['Entry']['id'],
+                    'key'       => 'form-payment_balance',
+                    'value'     => $updated_balance
+                )));
+            }
+            else
+            {
+                $updated_balance += $myParentEntry['EntryMeta'][$dbkey]['value'];
+
+                $this->EntryMeta->id = $myParentEntry['EntryMeta'][$dbkey]['id'];
+                $this->EntryMeta->saveField('value', $updated_balance );
+            }
         }
         
         // firstly, filter array products !!
@@ -1118,6 +1127,9 @@ class Entry extends AppModel {
             {
                 if(!empty($data['EntryMeta'][$typevalue]))
                 {
+                    $subkey = 'form-payment_'.strtolower(str_replace(' ','_', $data['EntryMeta']['type']));
+                    $subvalue = $data['Entry'][0]['value'];
+                    
                     $query = $this->Entry->findAllByEntryTypeAndSlug(get_slug($typevalue), $data['EntryMeta'][$typevalue] );
                     foreach($query as $key => $value)
                     {
@@ -1128,35 +1140,47 @@ class Entry extends AppModel {
                             $this->Entry->saveField('description', trim($value['Entry']['description'].chr(10).$data['Entry'][1]['value']) );
                         }
                         
-                        // update payment description & balance ...
+                        // update payment description ...
                         $dbkey_haystack = array_column($value['EntryMeta'], 'key');
-                        foreach(array(
-                            'form-payment_'.strtolower(str_replace(' ','_', $data['EntryMeta']['type'])) => $data['Entry'][0]['value'],
-                            'form-payment_balance' => $updated_balance
-                        ) as $subkey => $subvalue)
+                        $dbkey = array_search($subkey, $dbkey_haystack);
+                        if($dbkey === FALSE)
                         {
-                            $dbkey = array_search($subkey, $dbkey_haystack);
-                            if($dbkey === FALSE)
-                            {
-                                $this->EntryMeta->create();
-                                $this->EntryMeta->save(array('EntryMeta' => array(
-                                    'entry_id'  => $value['Entry']['id'],
-                                    'key'       => $subkey,
-                                    'value'     => $subvalue
-                                )));
-                            }
-                            else
-                            {
-                                $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
-                                if($subkey != 'form-payment_balance')
-                                {
-                                    $subvalue = $value['EntryMeta'][$dbkey]['value'].chr(10).$subvalue;
-                                }
-                                $this->EntryMeta->saveField('value', $subvalue );
-                            }
+                            $this->EntryMeta->create();
+                            $this->EntryMeta->save(array('EntryMeta' => array(
+                                'entry_id'  => $value['Entry']['id'],
+                                'key'       => $subkey,
+                                'value'     => $subvalue
+                            )));
                         }
-
-                        // end of updating entry ...
+                        else
+                        {
+                            $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
+                            $this->EntryMeta->saveField('value', $value['EntryMeta'][$dbkey]['value'].chr(10).$subvalue );
+                        }
+                    }
+                }
+            }
+            
+            if($allowed_balance)
+            {
+                // update all products payment_balance on selected invoice !!
+                $query = $this->EntryMeta->findAllByKeyAndValue('form-client_invoice_code', $myParentEntry['Entry']['slug']);
+                foreach($query as $key => $value)
+                {
+                    $search_balance = $this->EntryMeta->findByEntryIdAndKey($value['EntryMeta']['entry_id'], 'form-payment_balance');
+                    if(empty($search_balance))
+                    {
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save(array('EntryMeta' => array(
+                            'entry_id'  => $value['EntryMeta']['entry_id'],
+                            'key'       => 'form-payment_balance',
+                            'value'     => $updated_balance
+                        )));
+                    }
+                    else
+                    {
+                        $this->EntryMeta->id = $search_balance['EntryMeta']['id'];
+                        $this->EntryMeta->saveField('value', $updated_balance);
                     }
                 }
             }

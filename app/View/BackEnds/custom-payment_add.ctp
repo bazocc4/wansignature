@@ -235,7 +235,7 @@
 			$value['model'] = 'Entry';
 			$value['counter'] = 0;
 			$value['input_type'] = 'text';
-            $value['p'] = "Keterangan singkat mengenai transaksi ini.";
+            $value['p'] = "Keterangan singkat mengenai transaksi ini (spt bank, jumlah pembayaran, tanggal, dll).";
 			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['title']);
 			echo $this->element('input_'.$value['input_type'] , $value);
 

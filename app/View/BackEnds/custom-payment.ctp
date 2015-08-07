@@ -201,6 +201,13 @@
                 $(el).find('td.form-additional_cost strong').append(' ' + $(el).find('td.form-cost_currency a').text() );
             }
         });
+        
+        $('a.withdraw_checks').click(function(e){
+            if(!confirm('Are you sure to withdraw this checks today?\nNB: This action will automatically update invoice balance too.'))
+            {
+                e.preventDefault();
+            }
+        });
 	});
 </script>
 <?php if($totalList <= 0){ ?>
@@ -534,6 +541,10 @@
                             else if($allowed_balance == false) // Waiting
                             {
                                 echo '<span class="label label-info">Waiting</span>';
+                                if(!empty($value['EntryMeta']['checks_date']))
+                                {
+                                    echo '<br><a title="CLICK TO WITHDRAW FUND CHECKS TODAY." data-toggle="tooltip" class="btn btn-mini withdraw_checks" href="'.$imagePath.'entry_metas/withdraw_checks/'.$value['Entry']['id'].'">Withdraw</a>';
+                                }
                             }
                             else // Complete
                             {

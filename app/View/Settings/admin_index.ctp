@@ -162,9 +162,9 @@
 			$value['list'][0]['id'] = 'Y-m-d';
 			$value['list'][1]['id'] = 'd-m-Y';
 			$value['list'][2]['id'] = 'm-d-Y';
-			$value['list'][3]['id'] = 'Y F d';
-			$value['list'][4]['id'] = 'd F Y';
-			$value['list'][5]['id'] = 'F d, Y';
+			$value['list'][3]['id'] = 'Y M d';
+			$value['list'][4]['id'] = 'd M Y';
+			$value['list'][5]['id'] = 'M d, Y';
 			for ($i=0; $i <= 5 ; $i++) $value['list'][$i]['name'] = date($value['list'][$i]['id'] , gmt_adjustment());
 			echo $this->element('input_'.$value['input_type'] , $value);
 			unset($value['list']);

@@ -1600,7 +1600,7 @@ class EntryMeta extends AppModel {
             
             if(!empty($pushdata))
             {
-                $query = $this->Entry->findByEntryTypeAndSlug('client', $data['EntryMeta']['client'] );                
+                $query = $this->Entry->findByEntryTypeAndSlug('client', $data['EntryMeta']['client'] );
                 $dbkey_haystack = array_column($query['EntryMeta'], 'key');
                 
                 foreach($pushdata as $subkey => $subvalue)

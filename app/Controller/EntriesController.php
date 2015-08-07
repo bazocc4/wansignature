@@ -21,8 +21,8 @@ class EntriesController extends AppController {
     {
         // download cor jewelry command here ...
     }
-	
-	function index() // front End view !!
+    
+    function index() // front End view !!
 	{
 		throw new NotFoundException('Error 404 - Not Found');
 	}

@@ -84,7 +84,7 @@
 			}
 			
 			$value = array();
-			$value['key'] = 'form-'.Inflector::slug($titlekey);
+			$value['key'] = 'form-'.Inflector::slug(strtolower($titlekey));
 			$value['validation'] = 'not_empty';
 			$value['model'] = 'Entry';
 			$value['counter'] = 0;
@@ -94,7 +94,7 @@
 		?>
 		<!-- BEGIN TO LIST META ATTRIBUTES -->
 		<?php
-			$counter = 3;
+			$counter = 0;
 			foreach ($myAutomatic as $key => $value)
 			{
 				if(substr($value['key'], 0 , 5) == 'form-')

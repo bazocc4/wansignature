@@ -3,11 +3,26 @@ class EntryMetasController extends AppController {
 	var $name = 'EntryMetas';
 	public function beforeFilter(){
         parent::beforeFilter();
-        $this->Auth->allow('cronjob_checks', 'cronjob_cicilan');
+        $this->Auth->allow('cronjob_reminder');
     }
     
-    /* Cronjob Function ( run daily @ 03.00 AM ) !! */
-    public function cronjob_checks()
+    /*
+        Cronjob Function ( run daily @ 03.00 AM ) !!
+    */
+    public function cronjob_reminder()
+    {
+        // open E-mail library stream !!
+        App::uses('CakeEmail', 'Network/Email');
+        
+        $this->_checksWithdrawal();
+        
+        $this->_cicilanPerBulan();
+        
+        // end of cronjob !!
+        exit;
+    }
+    
+    public function _checksWithdrawal()
     {
         $query = $this->EntryMeta->find('all', array(
             'conditions' => array(
@@ -17,21 +32,106 @@ class EntryMetasController extends AppController {
             )
         ));
         
+        $invoice = array();
         foreach($query as $key => $value)
         {
-            $this->Entry->update_invoice_payment(
-                $this->Entry->meta_details(NULL , NULL , NULL , $value['Entry']['parent_id'] ),
-                $this->Entry->meta_details(NULL , NULL , NULL , $value['Entry']['id'] )
-            );
+            $myParentEntry = $this->Entry->meta_details(NULL , NULL , NULL , $value['Entry']['parent_id'] );
+            $data = $this->Entry->meta_details(NULL , NULL , NULL , $value['Entry']['id'] );
+            $this->Entry->update_invoice_payment($myParentEntry, $data);
+            
+            array_push($invoice, '('.sprintf("%02d", $key+1).') INV# <a href="'.$this->get_host_name().'admin/entries/'.$myParentEntry['Entry']['entry_type'].'/'.$myParentEntry['Entry']['slug'].'?type='.$data['Entry']['entry_type'].'">'.strtoupper($myParentEntry['Entry']['title']).' ('.$data['Entry']['title'].')</a>');
         }
         
-        // end of cronjob !!
-        exit;
+        if(!empty($invoice))
+        {
+            // Create the message !!
+            $subject = 'WAN System - Checks Withdrawal ('.date($this->mySetting['date_format']).') Alert Reminder';
+
+            $header = "<strong>== Checks Withdrawal Today Reminder ==</strong><br/><br/>";
+            $header .= "Dear Administrator,<br/>You are receiving this E-mail to remind about some invoice, having payment checks that can be withdrawn / is due today as follow :<br/>";
+
+            $footer = "<br/>NB: WAN System had already automatically updated payment balance for each invoice related.<br/>Thank you for your attention.";
+
+            // compose the message body !!
+            $mybody = $header;
+            $mybody .= implode('<br>', $invoice )."<br>";
+            $mybody .= $footer;
+
+            // Execute E-mail ...
+            $Email = new CakeEmail();
+            try{
+                $Email->from(array('reminder@wansignature.com'=>'WAN Reminder System'))
+                      ->to( array_map("trim" , explode(',' , $this->mySetting['custom-email_admin'] )) )
+                      ->subject($subject)
+                      ->emailFormat('html')
+                      ->template('default','default')
+                      ->send($mybody);
+            } catch(Exception $e){}
+        }
     }
     
-    public function cronjob_cicilan()
+    public function _cicilanPerBulan()
     {
+        $query = 'SELECT L.entry_id FROM cms_entry_metas as L, cms_entry_metas as D WHERE 
+        L.entry_id = D.entry_id AND 
+        L.key = "form-loan_period" AND 
+        D.key = "form-date" AND 
+        ( CURDATE() BETWEEN DATE_ADD(STR_TO_DATE(D.value, "%m/%d/%Y"), INTERVAL 1 MONTH) AND DATE_ADD(STR_TO_DATE(D.value, "%m/%d/%Y"), INTERVAL L.value MONTH) ) AND 
+        ( DAYOFMONTH(CURDATE()) = DAYOFMONTH(STR_TO_DATE(D.value, "%m/%d/%Y")) OR 
+        LAST_DAY(CURDATE()) = CURDATE() AND 
+        DAYOFMONTH(CURDATE()) < DAYOFMONTH(STR_TO_DATE(D.value, "%m/%d/%Y")) )';
         
+        $result = $this->EntryMeta->query($query);
+        if(!empty($result))
+        {
+            $query = array_map('breakEntryMetas', $this->Entry->findAllById(array_column(array_column($result, 'L'), 'entry_id')));
+            
+            // Create the message !!
+            $subject = 'WAN System - Loan Installment Withdrawal ('.date($this->mySetting['date_format']).') Alert Reminder';
+
+            $header = "<strong>== Loan Installment Withdrawal (pencairan dana cicilan) Today Reminder ==</strong><br/><br/>";
+            $header .= "Dear Administrator,<br/>You are receiving this E-mail to remind about some invoice, having loan installment that can be withdrawn today as follow :<br/>";
+
+            $footer = "<br/>NB: For each invoice above, please add monthly loan installment payment record <strong>ONLY IF</strong> the payer had already made a (cash / transfer) payment.";
+            $footer .= "<br/>Thank you for your attention.";
+
+            // compose the message body !!
+            $mybody = $header;
+            $nowDate = getdate();
+            foreach($query as $key => $value)
+            {
+                $loandate = getdate(strtotime($value['EntryMeta']['date']));
+                $bulanke = ($nowDate['mon'] - $loandate['mon'] + 12) % 12;
+                
+                $mybody .= '('.sprintf("%02d", $key+1).') INV# <a href="'.$this->get_host_name().'admin/entries/'.$value['ParentEntry']['entry_type'].'/'.$value['ParentEntry']['slug'].'?type='.$value['Entry']['entry_type'].'">'.strtoupper($value['ParentEntry']['title']).' ('.$value['Entry']['title'].')</a>';
+                
+                $price = round($value['EntryMeta']['amount'] / $value['EntryMeta']['loan_period'], 2);
+                
+                $mybody .= ' : Amount $'.toMoney($price, true, true);
+                
+                if(!empty($value['EntryMeta']['loan_interest_rate']))
+                {
+                    $price += round($value['EntryMeta']['loan_interest_rate'] * $price / 100, 2);
+                    
+                    $mybody .= ' + charge ('.$value['EntryMeta']['loan_interest_rate'].'% / month) = $'.toMoney($price, true, true);
+                }
+                
+                $mybody .= ' <a href="'.$this->get_host_name().'admin/entries/'.$value['ParentEntry']['entry_type'].'/'.$value['ParentEntry']['slug'].'/add?type='.$value['Entry']['entry_type'].'">#Add this '.ordinalSuffix($bulanke).' monthly payment record.</a><br>';
+            }
+            
+            $mybody .= $footer;
+
+            // Execute E-mail ...
+            $Email = new CakeEmail();
+            try{
+                $Email->from(array('reminder@wansignature.com'=>'WAN Reminder System'))
+                      ->to( array_map("trim" , explode(',' , $this->mySetting['custom-email_admin'] )) )
+                      ->subject($subject)
+                      ->emailFormat('html')
+                      ->template('default','default')
+                      ->send($mybody);
+            } catch(Exception $e){}
+        }
     }
     
     function deleteTempThumbnails()
@@ -118,6 +218,4 @@ class EntryMetasController extends AppController {
         $this->Session->setFlash('Withdrawal fund checks has been executed successfully.','success');
         $this->redirect( redirectSessionNow($_SESSION['now']) );
     }
-	
-	
 }

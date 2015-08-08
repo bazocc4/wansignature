@@ -164,6 +164,11 @@ function date_converter($value , $date , $time=NULL)
 	$newTime = date($time , $value);
 	return $newDate.(empty($time)?'':' @ '.$newTime);
 }
+
+function ordinalSuffix( $n )
+{
+  return $n.date('S',mktime(1,1,1,1,( (($n>=10)+($n>=20)+($n==0))*10 + $n%10) ));
+}
 /**
 	* retrieve certain value attribute of selected input validation
 	* @param string $str contains source of validation value, separated by "|"

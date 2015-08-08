@@ -181,15 +181,17 @@
                     }
                     
                     // Cicilan ...
-                    if($('input.loan_period').length && $('input.loan_interest_rate').length)
+                    if($('input.loan_period').length)
                     {
                         if($(this).val() == 'Cicilan')
                         {
-                            $('input.loan_period, input.loan_interest_rate').attr('required', 'required').closest('div.control-group').show();
+                            $('input.loan_period, input.loan_interest_rate').closest('div.control-group').show();
+                            $('input.loan_period').attr('required', 'required');
                         }
                         else
                         {
-                            $('input.loan_period, input.loan_interest_rate').val('').removeAttr('required').closest('div.control-group').hide();
+                            $('input.loan_period, input.loan_interest_rate').val('').closest('div.control-group').hide();
+                            $('input.loan_period').removeAttr('required');
                         }
                     }
                     
@@ -230,7 +232,7 @@
 			}
 			
 			$value = array();
-			$value['key'] = 'form-'.Inflector::slug($titlekey);
+			$value['key'] = 'form-'.Inflector::slug(strtolower($titlekey));
 			$value['validation'] = 'not_empty';
 			$value['model'] = 'Entry';
 			$value['counter'] = 0;
@@ -251,7 +253,7 @@
 		?>
 		<!-- BEGIN TO LIST META ATTRIBUTES -->
 		<?php
-			$counter = 3;
+			$counter = 0;
 			foreach ($myAutomatic as $key => $value)
 			{
 				if(substr($value['key'], 0 , 5) == 'form-')
@@ -296,7 +298,7 @@
 					}
                     
                     // on-the-fly validation ...
-                    if($value['key'] == 'form-checks_date' || $value['key'] == 'form-loan_period' || $value['key'] == 'form-loan_interest_rate' || $value['key'] == 'form-payment_jewelry')
+                    if($value['key'] == 'form-checks_date' || $value['key'] == 'form-loan_period' || $value['key'] == 'form-payment_jewelry')
                     {
                         $value['validation'] .= 'not_empty|';
                     }
@@ -360,7 +362,7 @@
 			$value['model'] = 'Entry';
 			$value['input_type'] = 'dropdown';
 			$value['list'][0]['id'] = '1';
-			$value['list'][0]['name'] = ($myEntry['EntryMeta']['type'] == 'Checks'?'Cek Lunas':'Complete');
+			$value['list'][0]['name'] = ($myEntry['EntryMeta']['type'] == 'Checks'?'Cek Lunas':(!empty($myEntry['EntryMeta']['loan_period'])?'Waiting':'Complete'));
 			$value['list'][1]['id'] = '0';
 			$value['list'][1]['name'] = ($myEntry['EntryMeta']['type'] == 'Checks'?'Cek Titip':'Pending');
             

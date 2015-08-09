@@ -237,8 +237,16 @@
 			$value['model'] = 'Entry';
 			$value['counter'] = 0;
 			$value['input_type'] = 'text';
+            $value['inputsize'] = 'large'; // special case for payment ...
             $value['p'] = "Keterangan singkat mengenai transaksi ini (spt bank, jumlah pembayaran, tanggal, dll).";
 			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['title']);
+
+            // SPECIAL ADD CASE FROM EMAIL LINK !!
+            if(!empty($this->request->query['cicilan']) && empty($_POST))
+            {
+                $cicilan = $this->Get->meta_details(NULL, NULL, NULL, $this->request->query['cicilan']);
+                $value['value'] = ordinalSuffix($this->request->query['mo']).' installment payment of '.$cicilan['EntryMeta']['loan_period'].' mo. ('.date_converter($cicilan['EntryMeta']['date'], $mySetting['date_format']).')';
+            }
 			echo $this->element('input_'.$value['input_type'] , $value);
 
             // Our CKEditor Description Field !!
@@ -249,6 +257,12 @@
 			$value['counter'] = 1;
 			$value['input_type'] = 'ckeditor';
 			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['description']);
+
+            // SPECIAL ADD CASE FROM EMAIL LINK !!
+            if(!empty($cicilan))
+            {
+                $value['value'] = $cicilan['Entry']['title'];
+            }
 			echo $this->element('input_'.$value['input_type'] , $value);
 		?>
 		<!-- BEGIN TO LIST META ATTRIBUTES -->
@@ -321,6 +335,30 @@
                                 'key' => ($VENDOR? 'vendor_invoice_code' : 'client_invoice_code' ),
                                 'value' => $myParentEntry['Entry']['slug']
                             );
+                        }
+                        
+                        // SPECIAL ADD CASE FROM EMAIL LINK !!
+                        if(!empty($cicilan))
+                        {
+                            if($value['key'] == 'form-statement')
+                            {
+                                $value['value'] = $cicilan['EntryMeta']['statement'];
+                            }
+                            else if($value['key'] == 'form-amount')
+                            {
+                                $value['value'] = $this->request->query['amount'];
+                                ?>
+                    <script>
+                        $(document).ready(function(){
+                            $('input.amount').trigger('keyup');
+                        });
+                    </script>            
+                                <?php
+                            }
+                            else if($value['key'] == 'form-bank')
+                            {
+                                $value['value'] = $cicilan['EntryMeta']['bank'];
+                            }
                         }
                     }
                     

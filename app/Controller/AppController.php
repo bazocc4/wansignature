@@ -214,7 +214,6 @@ class AppController extends Controller {
 			'Form' => array(
 				'fields' => array('username' => 'email', 'password' => 'password'),
 				'userModel' => 'Account',
-				'scope' => array('Account.role_id' => array(1,2,3)),
 			),
 		);
 		$this->Auth->authError= 'Authorized access is required.';
@@ -230,12 +229,7 @@ class AppController extends Controller {
 			foreach ($myUser['UserMeta'] as $key => $value) $this->user['UserMeta'][ $value['key'] ] = $value['value'];
 		}
         
-		// check role if admin or not...
-		if( !empty($this->request->params['admin']) && !empty($this->user) && $this->user['role_id'] > 2 )
-		{
-            $this->Session->setFlash(__('Authorized access is required.'),'default',array() , 'auth');
-            $this->redirect($this->Auth->logout());
-		}
+        // set other general attributes ...
 		$temp = $this->Setting->findByKey("custom-pagination");
 		$this->countListPerPage = (empty($temp['Setting']['value'])?10:$temp['Setting']['value']);
 		$this->mediaPerPage = 24;

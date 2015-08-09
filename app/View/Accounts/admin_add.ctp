@@ -47,7 +47,7 @@
 			</div>
 		</div>
 		
-		<div class="control-group hide"> <!-- hide role option for default -->
+		<div class="control-group">
 			<label style="color: red;" class="control-label">Role</label>
 			<div class="controls">
 				<select id="select-role" name="data[Account][role_id]">

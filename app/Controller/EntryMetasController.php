@@ -116,7 +116,7 @@ class EntryMetasController extends AppController {
                     $mybody .= ' + charge ('.$value['EntryMeta']['loan_interest_rate'].'% / month) = $'.toMoney($price, true, true);
                 }
                 
-                $mybody .= ' <a href="'.$this->get_host_name().'admin/entries/'.$value['ParentEntry']['entry_type'].'/'.$value['ParentEntry']['slug'].'/add?type='.$value['Entry']['entry_type'].'">#Add this '.ordinalSuffix($bulanke).' monthly payment record.</a><br>';
+                $mybody .= ' <a href="'.$this->get_host_name().'admin/entries/'.$value['ParentEntry']['entry_type'].'/'.$value['ParentEntry']['slug'].'/add?type='.$value['Entry']['entry_type'].'&cicilan='.$value['Entry']['id'].'&amount='.$price.'&mo='.$bulanke.'">#Add this '.ordinalSuffix($bulanke).' monthly payment record.</a>'.($bulanke == $value['EntryMeta']['loan_period']?' (last installment)':'').'<br>';
             }
             
             $mybody .= $footer;

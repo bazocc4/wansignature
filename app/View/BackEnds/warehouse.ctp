@@ -380,15 +380,28 @@
                                 $brokevalue = $brokeWithTotal[0];
                                 $broketotal = $brokeWithTotal[1];
                                 
-								$mydetails = $this->Get->meta_details($brokevalue , $browse_slug );
-								if(!empty($mydetails))
-								{
-									$emptybrowse = 1;
-									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']);
-                                    
-									echo '<p>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).(!empty($broketotal)?' ('.$broketotal.' pc)':'').'</p>';
-                                    echo '<input data-total="'.$broketotal.'" type="hidden" value="'.$mydetails['Entry']['slug'].'">';
-								}
+								if($shortkey == 'warehouse_employee') // Account ID
+                                {
+                                    $outputResult = trim($this->Get->account_name(NULL, $brokevalue));
+                                    if(!empty($outputResult))
+                                    {
+                                        $emptybrowse = 1;
+                                        echo '<p>'.$outputResult.'</p>';
+                                        echo '<input type="hidden" value="'.$brokevalue.'">';
+                                    }
+                                }
+                                else // general usage ...
+                                {
+                                    $mydetails = $this->Get->meta_details($brokevalue , $browse_slug );
+                                    if(!empty($mydetails))
+                                    {
+                                        $emptybrowse = 1;
+                                        $outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']);
+
+                                        echo '<p>'.(empty($popup)?$this->Html->link($outputResult,array('controller'=>'entries','action'=>$mydetails['Entry']['entry_type'],'edit',$mydetails['Entry']['slug']),array('target'=>'_blank')):$outputResult).(!empty($broketotal)?' ('.$broketotal.' pc)':'').'</p>';
+                                        echo '<input data-total="'.$broketotal.'" type="hidden" value="'.$mydetails['Entry']['slug'].'">';
+                                    }
+                                }
 							}
 							
 							if($emptybrowse == 0)

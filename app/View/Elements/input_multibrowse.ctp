@@ -3,6 +3,20 @@
 	$shortkey = substr($key, 5 );
 	$var_stream = $shortkey.'_stream';	
 	$browse_slug = get_slug($shortkey);
+
+    if(empty($controller))
+    {
+        $controller = 'entries';
+    }
+
+    if(empty($action))
+    {
+        $action = $browse_slug;
+    }
+    else if($action == 'none')
+    {
+        $action = NULL;
+    }
 ?>
 <div class="control-group" <?php echo (empty($display)?'':'style="display:none"'); ?>>
 	<label class="control-label" <?php echo (strpos(strtolower($validation), 'not_empty') !== FALSE && !$view_mode?'style="color: red;"':''); ?>>
@@ -11,6 +25,12 @@
 	<div class="controls <?php echo $browse_slug; ?>-group">
 		<?php
 			$raw_stream = 1;
+            $popupExtensions = array('popup'=>'init');
+
+            if(is_array($request_query))
+            {
+                $popupExtensions = array_merge($popupExtensions, $request_query);
+            }
 			
 			// Check data POST first !!
 			if(!empty($_POST['data'][$model][$counter]['value']) && !$view_mode)
@@ -20,8 +40,10 @@
 					if(!empty($metavalue))
 					{
 						echo '<div class="row-fluid '.$browse_slug.'-detail bottom-spacer">';					
-						echo '<input REQUIRED id="'.$browse_slug.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$_POST['data'][$model][$counter]['temp'][$metakey].'" readonly="true"/>';					
-						echo '&nbsp;'.$this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>array('popup'=>'init', 'stream'=>$raw_stream)),array('class'=>'btn btn-info get-from-table'));
+						echo '<input REQUIRED id="'.$browse_slug.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$_POST['data'][$model][$counter]['temp'][$metakey].'" readonly="true"/>';
+                        
+                        $popupExtensions['stream'] = $raw_stream;
+                        echo '&nbsp;'.$this->Html->link('Browse',array('controller'=>$controller,'action'=>$action,'admin'=>true,'?'=>$popupExtensions),array('class'=>'btn btn-info get-from-table'));
 	                    echo '<input class="'.$shortkey.'" type="hidden" name="data['.$model.']['.$counter.'][value][]" value="'.$metavalue.'"/>';
 	                    echo '&nbsp;<a class="btn btn-danger del-raw" href="javascript:void(0)"><i class="icon-trash icon-white"></i></a>';					
 						echo '</div>';
@@ -35,7 +57,23 @@
 				$metaslugs = explode('|', $value);
 				foreach ($metaslugs as $metakey => $metavalue) 
 				{
-					$metaDetails = $this->Get->meta_details($metavalue , $browse_slug);
+					if($controller == 'accounts')
+                    {
+                        $metaDetails = trim($this->Get->account_name(NULL, $metavalue));
+                        // adjust $metaDetails value ...
+                        if(!empty($metaDetails))
+                        {
+                            $metaDetails = array('Entry' => array(
+                                'title' => $metaDetails,
+                                'slug'  => $metavalue
+                            ));
+                        }
+                    }
+                    else // general usage ...
+                    {
+                        $metaDetails = $this->Get->meta_details($metavalue , $browse_slug);
+                    }
+                    
 					if(!empty($metaDetails))
 					{
                         // check language is matching or not !!
@@ -98,7 +136,9 @@
         <div class="<?php echo ($view_mode?'hide':''); ?>">
         <?php
             echo '<input REQUIRED id="'.$browse_slug.$raw_stream.'" class="input-xlarge" type="text" name="data['.$model.']['.$counter.'][temp][]" value="'.$richvalue.'" readonly="true"/>';
-            echo '&nbsp;'.$this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>array('popup'=>'init', 'stream'=>$raw_stream)),array('class'=>'btn btn-info get-from-table'));
+            
+            $popupExtensions['stream'] = $raw_stream;            
+            echo '&nbsp;'.$this->Html->link('Browse',array('controller'=>$controller,'action'=>$action,'admin'=>true,'?'=>$popupExtensions),array('class'=>'btn btn-info get-from-table'));
             echo '<input class="'.$shortkey.'" type="hidden" name="data['.$model.']['.$counter.'][value][]" value="'.$metaDetails['Entry']['slug'].'"/>';
             echo '&nbsp;<a class="btn btn-danger del-raw" href="javascript:void(0)"><i class="icon-trash icon-white"></i></a>';     
         ?>
@@ -123,7 +163,7 @@
 		<p class="help-block">
         
 		    <?php if(!$view_mode): ?>
-			Want to create new one? Click <?php echo $this->Html->link('here<img alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>'entries','action'=>$browse_slug.'/add'),array("onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;","escape"=>false)); ?>.<br/>
+			Want to create new one? Click <?php echo $this->Html->link('here<img alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>$controller,'action'=>$action.'/add'),array("onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;","escape"=>false)); ?>.<br/>
             <?php endif; ?>
             
 	        <?php echo $p; ?>
@@ -135,7 +175,10 @@
 	<input type="hidden" value="<?php echo $validation; ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][validation]"/>
 	<input type="hidden" value="<?php echo $p; ?>" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][instruction]"/>
 </div>
-
+<?php
+    // unset this var because later will be using javascript value !!
+    unset($popupExtensions['stream']);
+?>
 <script type="text/javascript">
 // special counter variable ...    
 var <?php echo $var_stream; ?> = <?php echo $raw_stream; ?>;
@@ -155,7 +198,7 @@ $(document).ready(function(){
             storage += '&key='+$(this).attr('data-key')+'&value='+$(this).attr('data-value');
         }
 
-        content += '&nbsp;<a class="btn btn-info get-from-table" href="'+linkpath+'admin/entries/<?php echo $browse_slug; ?>?popup=init&stream='+<?php echo $var_stream; ?>+storage+'">Browse</a>';
+        content += '&nbsp;<a class="btn btn-info get-from-table" href="'+linkpath+'admin/<?php echo $controller.'/'.$action.get_more_extension($popupExtensions); ?>&stream='+<?php echo $var_stream; ?>+storage+'">Browse</a>';
         content += '<input class="<?php echo $shortkey; ?>" type="hidden" name="data[<?php echo $model; ?>][<?php echo $counter; ?>][value][]" />';
         content += '&nbsp;<a class="btn btn-danger del-raw" href="javascript:void(0)"><i class="icon-trash icon-white"></i></a>';
         content += '</div>';

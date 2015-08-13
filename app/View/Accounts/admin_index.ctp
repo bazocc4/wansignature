@@ -45,6 +45,10 @@
 					if(!empty($popup))
 					{
 						$cakeUrl['?'] = array('popup'=>'ajax' , 'role' => $popupRole);
+                        if(!empty($this->request->query['stream']))
+                        {
+                            $cakeUrl['?']['stream'] = $this->request->query['stream'];
+                        }
 					}
 					echo $this->Html->link('<i class="icon-search"></i>', $cakeUrl , array("class"=>"ajax_mypage searchMeLink","escape"=>false));
 				?>
@@ -76,16 +80,24 @@
 ?>
 <script>
 	$(document).ready(function(){
-		if("<?php echo (empty($popup)?'kosong':'berisi'); ?>"=="berisi")
-		{
-			// just for choose employee !!
-			$('table#myTableList tr').css('cursor' , 'pointer');
-			$("table#myTableList tr").click(function(){
-				// $("input#employee").val( $(this).find("td.name-code").html().trim() );
-				// $("input#employee").nextAll('input[type=hidden]').val( $(this).find("input[type=hidden].id-code").val() );
-				$.colorbox.close();
-			});
-		}
+        <?php
+            if( !empty($popup) )
+            {
+                ?>
+        // just for choosing employee !!
+        $('table#myTableList tr').css('cursor' , 'pointer');
+        $("table#myTableList tr").click(function(){
+            var targetID = '<?php echo get_slug($popupRole).$this->request->query['stream']; ?>';
+            var richvalue = $(this).find("td.name-code").text();
+
+            $("input#"+targetID).val(richvalue).nextAll("input[type=hidden]").val( $(this).find("input[type=hidden].id-code").val() );
+            $("input#"+targetID).trigger('change');
+
+            $.colorbox.close();
+        });            
+                <?php
+            }
+        ?>
 	});
 </script>
 <?php if($totalList <= 0){ ?>
@@ -125,26 +137,25 @@
 	<tr>
 		<td>
 			<input class="id-code" type="hidden" value="<?php echo $value['Account']['id']; ?>" />
-			<h5>
-				<?php
-					if(empty($popup) && ($user['role_id'] < $value['Account']['role_id'] || $user['id'] == $value['Account']['created_by'] || $user['email'] == $value['Account']['email'] ) )
-					{
-                        echo $this->Html->link($value['Account']['email'],array('action'=>'edit', $value['Account']['id']));
-					}
-					else 
-					{
-						echo $value['Account']['email'];
-					} 
-				?>
-			</h5>
+			
+			<h5 class="title-code"><?php
+                if(empty($popup) && ($user['role_id'] < $value['Account']['role_id'] || $user['id'] == $value['Account']['created_by'] || $user['email'] == $value['Account']['email'] ) )
+                {
+                    echo $this->Html->link($value['Account']['email'],array('action'=>'edit', $value['Account']['id']));
+                }
+                else 
+                {
+                    echo $value['Account']['email'];
+                } 
+            ?></h5>
+            
 			<p><?php echo $value['Account']['username']; ?></p>
 		</td>
-		<td class="name-code">
-			<?php
-				echo $value['User']['firstname'] . ' ' . $value['User']['lastname']; 
-			?>
-		</td>
+		
+		<td class="name-code"><?php echo $value['User']['firstname'] . ' ' . $value['User']['lastname']; ?></td>
+		
 		<?php echo (empty($popup)?"<td>".$value['Role']['name']."</td>":""); ?>
+		
 		<td>
 			<?php
 				if(substr($value['Account']['last_login'], 0 , 4) == '0000')
@@ -188,31 +199,31 @@
 	<?php
 		if($totalList > 0){
 			?>
-				<!-- per 15 content -->
+				<!-- default: per 10 content -->
 				<div class="pagination fr">
 					<ul>
 						<?php
 							echo '<li id="myPagingFirst" class="'.($paging<=1?"disabled":"").'">';
-							echo $this->Html->link("First",array("action"=>"index",'1','?'=>(empty($popup)?'':array('popup'=>'ajax' , 'role' => $popupRole))) , array("class"=>"ajax_mypage"));
+							echo $this->Html->link("First",array("action"=>"index",'1','?'=>$cakeUrl['?']) , array("class"=>"ajax_mypage"));
 							echo '</li>';
 							
 							echo '<li id="myPagingPrev" class="'.($paging<=1?"disabled":"").'">';
-							echo str_replace("amp;", "", $this->Html->link("&laquo;",array("action"=>"index",($paging-1),'?'=>(empty($popup)?'':array('popup'=>'ajax' , 'role' => $popupRole))), array("class"=>"ajax_mypage")));
+							echo str_replace("amp;", "", $this->Html->link("&laquo;",array("action"=>"index",($paging-1),'?'=>$cakeUrl['?']), array("class"=>"ajax_mypage")));
 							echo '</li>';
 							
 							for ($i = $left_limit , $index = 1; $i <= $right_limit; $i++ , $index++)
 							{
 								echo '<li id="myPagingNum'.$index.'" class="'.($i==$paging?"active":"").'">';
-								echo $this->Html->link($i,array("action"=>"index",$i,'?'=>(empty($popup)?'':array('popup'=>'ajax' , 'role' => $popupRole))) , array("class"=>"ajax_mypage"));				
+								echo $this->Html->link($i,array("action"=>"index",$i,'?'=>$cakeUrl['?']) , array("class"=>"ajax_mypage"));				
 								echo '</li>';
 							}
 						
 							echo '<li id="myPagingNext" class="'.($paging>=$countPage?"disabled":"").'">';
-							echo str_replace("amp;", "", $this->Html->link("&raquo;",array("action"=>"index",($paging+1),'?'=>(empty($popup)?'':array('popup'=>'ajax' , 'role' => $popupRole))) , array("class"=>"ajax_mypage")));
+							echo str_replace("amp;", "", $this->Html->link("&raquo;",array("action"=>"index",($paging+1),'?'=>$cakeUrl['?']) , array("class"=>"ajax_mypage")));
 							echo '</li>';
 							
 							echo '<li id="myPagingLast" class="'.($paging>=$countPage?"disabled":"").'">';
-							echo $this->Html->link("Last",array("action"=>"index",$countPage,'?'=>(empty($popup)?'':array('popup'=>'ajax' , 'role' => $popupRole))), array("class"=>"ajax_mypage"));
+							echo $this->Html->link("Last",array("action"=>"index",$countPage,'?'=>$cakeUrl['?']), array("class"=>"ajax_mypage"));
 							echo '</li>';
 						?>
 					</ul>

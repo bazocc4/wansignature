@@ -21,11 +21,14 @@
 <script>
     $(document).ready(function(){
         // initialize bootstrap tooltip !!
-        $('[data-toggle=tooltip]').not('[data-original-title]').tooltip({
-            container: ($('#cboxContent').length>0&&$('#cboxContent').is(':visible')?'#cboxContent':'body'),
-            html: true,
-        }).each(function(){
-            $(this).attr('title' , $(this).attr('alt') );
-        });
+        if( $.isFunction($.fn.tooltip) )
+        {
+            $('[data-toggle=tooltip]').not('[data-original-title]').tooltip({
+                container: ($('#cboxContent').length>0&&$('#cboxContent').is(':visible')?'#cboxContent':'body'),
+                html: true,
+            }).each(function(){
+                $(this).attr('title' , $(this).attr('alt') );
+            });
+        }
     });
 </script>

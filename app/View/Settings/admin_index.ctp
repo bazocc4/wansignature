@@ -265,6 +265,7 @@
 			$value['list'][1]['id'] = 'complex';
 			$value['list'][1]['name'] = 'Complex';
 			$value['p'] = "Table view mode in Admin Panel.";
+            $value['display'] = 'none';
 			echo $this->element('input_'.$value['input_type'] , $value);
 			unset($value['list']);
 			unset($value['p']);

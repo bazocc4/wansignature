@@ -239,6 +239,14 @@ class EntryMeta extends AppModel {
             if(empty($obj['barcode']))          $obj['barcode'] = (empty($obj['sell_barcode'])?1:floor($obj['sell_barcode']));
         }
         
+        if(isset($obj['sell_barcode']))
+        {
+            if(empty($obj['sell_barcode']) && $obj['barcode'] > 1)
+            {
+                $obj['sell_barcode'] = ceil($obj['barcode']);
+            }
+        }
+        
         if(isset($obj['vendor_barcode']))
         {
             if(empty($obj['vendor_barcode']))   $obj['vendor_barcode'] = 1;
@@ -1415,6 +1423,13 @@ class EntryMeta extends AppModel {
                 $pushdata['form-vendor_barcode'] = $data['EntryMeta'][$prodkey]['total'][array_search($value['Entry']['slug'], $data['EntryMeta']['temp-diamond'] )];
                 $pushdata['form-vendor_usd'] = round($pushdata['form-vendor_barcode'] * (is_numeric($pushdata['form-vendor_x'])?$pushdata['form-vendor_x']:1) , 2);
                 $pushdata['form-vendor_hkd'] = round($pushdata['form-vendor_usd'] * $data['EntryMeta']['hkd_rate'], 2);
+                
+                // barcode X
+                if(is_numeric($data['EntryMeta']['temp-barcode_x']))
+                {
+                    $pushdata['form-barcode'] = round( $pushdata['form-vendor_usd'] / $data['EntryMeta']['temp-barcode_x'] , 2);
+                    $pushdata['form-sell_barcode'] = ceil($pushdata['form-barcode']);
+                }
 
                 foreach(array_filter( array_map('trim', $pushdata) ) as $subkey => $subvalue)
                 {

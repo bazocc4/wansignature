@@ -747,20 +747,12 @@ class EntriesController extends AppController {
         {
             if(!empty($this->request->query['storage']) && !empty($this->request->query['content']) )
             {
-                $temp_status = '{#}form-product_status='.($this->request->query['storage'] == 'exhibition'?'exhibition':'stock');
-                $temp_storage = '{#}form-'.$this->request->query['storage'].'='.$this->request->query['content'];
+                array_push($options['conditions'], array('SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-'.$this->request->query['storage'].'=", -1) LIKE' => $this->request->query['content'].'{#}%') );
                 
-                $temp_like = '';
-                if($myType['Type']['slug'] == 'diamond')
-                {
-                    $temp_like = '%'.$temp_status.'%'.$temp_storage.'%';
-                }
-                else // cor-jewelry ...
-                {
-                    $temp_like = '%'.$temp_storage.'%'.$temp_status.'%';
-                }
-                
-                array_push($options['conditions'], array('EntryMeta.key_value LIKE' => $temp_like));
+                array_push($options['conditions'], array('OR' => array(
+                    array('SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-product_status=", -1) LIKE' => 'kllg%'),
+                    array('SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-product_status=", -1) LIKE' => ($this->request->query['storage'] == 'exhibition'?'exhibition':'stock').'%')
+                )));
             }
         }
         else if($myType['Type']['slug'] == 'surat-jalan')
@@ -768,8 +760,8 @@ class EntriesController extends AppController {
             if(!empty($this->request->query['storage']) && !empty($this->request->query['content']) )
             {
                 array_push($options['conditions'], array('OR' => array(
-                    array('SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-'.$this->request->query['storage'].'_origin=", -1) LIKE' => $this->request->query['content'].'%'),
-                    array('SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-'.$this->request->query['storage'].'_destination=", -1) LIKE' => $this->request->query['content'].'%'),
+                    array('SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-'.$this->request->query['storage'].'_origin=", -1) LIKE' => $this->request->query['content'].'{#}%'),
+                    array('SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-'.$this->request->query['storage'].'_destination=", -1) LIKE' => $this->request->query['content'].'{#}%'),
                 )));
             }
         }

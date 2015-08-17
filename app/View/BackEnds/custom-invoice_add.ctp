@@ -374,6 +374,17 @@
                                     'counter'       => $counter++
                                 ));
                             }
+                            else if($value['key'] == 'form-total_price')
+                            {
+                                echo $this->element('input_text' , array(
+                                    'key'           => 'temp-barcode_x',
+                                    'validation'    => 'is_numeric|not_empty|',
+                                    'p'             => 'Vendor Barcode X value for above diamond.',
+                                    'model'         => 'EntryMeta',
+                                    'counter'       => $counter++,
+                                    'inputsize'     => 'input-mini'
+                                ));
+                            }
                         }
                         else if(!$DMD && $VENDOR)
                         {

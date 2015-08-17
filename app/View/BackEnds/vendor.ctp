@@ -132,7 +132,7 @@
 					$("input#"+targetID).change();
 
 					// update other attribute ...
-                    if($('input.capital_x').length > 0)
+                    if($('input.capital_x').length)
                     {
                         var capital_x = $(this).find('td.form-capital_x').text();
                         if($.isNumeric(capital_x))
@@ -141,8 +141,17 @@
                         }
                     }
                     
+                    if($('input.barcode_x').length)
+                    {
+                        var barcode_x = $(this).find('td.form-barcode_x').text();
+                        if($.isNumeric(barcode_x))
+                        {
+                            $('input.barcode_x').val(barcode_x);
+                        }
+                    }
+                    
                     var $trytotal = $("input#"+targetID).nextAll('input[type=number]');
-                    if($trytotal.length > 0)
+                    if($trytotal.length)
                     {
                         $trytotal.removeAttr('readonly').focus();
                     }

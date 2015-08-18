@@ -56,7 +56,7 @@
                     var targetvalue = $(this).nextAll('input[type=hidden]:first').val();
                     var key = '';
                     var value = '';
-                    if(targetvalue.length > 0)
+                    if(targetvalue.length && $('select.delivery_type').val().indexOf('Payment') < 0 )
                     {
                         key = ( $(this).attr('id').indexOf('-client-') >= 0 ? 'client_invoice_code' : 'vendor_invoice_code' );
                         value = targetvalue;
@@ -79,7 +79,7 @@
                     var storage = '';
                     var content = '';
                     var cleaning = true;
-                    if(targetvalue.length > 0)
+                    if(targetvalue.length)
                     {
                         storage = targetid.split('-');
                         storage = storage[0];
@@ -300,10 +300,16 @@
                         }
                     }
                     
-                    var invoice_now = $('input[id$="-invoice"]:visible').val();
-                    if(invoice_old != null && invoice_old.length > 0 && (invoice_now == null || invoice_now.length == 0) )
+                    if(invoice_old != null && invoice_old.length )
                     {
-                        $('input[id$="-invoice"]:first').trigger('change');
+                        if($('input[id$="-invoice"]:visible').length)
+                        {
+                            $('input[id$="-invoice"]:visible').trigger('change');
+                        }
+                        else
+                        {
+                            $('input[id$="-invoice"]:first').trigger('change');
+                        }
                     }
                     
                     // ===================================== >>>

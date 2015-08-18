@@ -1091,17 +1091,33 @@ class Entry extends AppModel {
         }
         
         // firstly, filter array products !!
-        foreach(array('diamond', 'cor_jewelry', 'payment_jewelry') as $key => $value)
+        foreach(array('diamond', 'cor_jewelry', 'payment_jewelry', 'payment_diamond') as $key => $value)
         {
             $data['EntryMeta'][$value] = array_unique(array_filter($data['EntryMeta'][$value]));
         }
         
-        if(!empty($data['EntryMeta']['payment_jewelry']))
+        // initializing alias variable ...
+        $subkey = '';
+        $payment_alias = '';
+        $type_alias = '';
+        if(strpos($myParentEntry['Entry']['entry_type'], 'dmd-') !== FALSE)
+        {
+            $subkey = 'form-prev_sold_note';
+            $payment_alias = 'payment_diamond';
+            $type_alias = 'diamond';
+        }
+        else
         {
             $subkey = 'form-transaction_history';
+            $payment_alias = 'payment_jewelry';
+            $type_alias = 'cor-jewelry';
+        }
+        
+        if(!empty($data['EntryMeta'][$payment_alias]))
+        {
             $subvalue = 'RETURN '.(strpos($myParentEntry['Entry']['entry_type'], '-client-') !== FALSE?'FROM CLIENT':'TO VENDOR').' AS PAYMENT FOR INV# '.$myParentEntry['Entry']['title'];
             
-            $query = $this->Entry->findAllByEntryTypeAndSlug('cor-jewelry', $data['EntryMeta']['payment_jewelry'] );
+            $query = $this->Entry->findAllByEntryTypeAndSlug($type_alias, $data['EntryMeta'][$payment_alias] );
             foreach($query as $key => $value)
             {
                 $dbkey_haystack = array_column($value['EntryMeta'], 'key');

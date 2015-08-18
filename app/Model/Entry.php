@@ -1059,11 +1059,17 @@ class Entry extends AppModel {
             $allowed_balance = false;
         }
         
+        // update invoice payment balance ...
+        $updated_balance = ($data['EntryMeta']['statement']=='Debit'?1:-1) * $data['EntryMeta']['amount'] * ( strpos($myParentEntry['Entry']['entry_type'], '-vendor-') !== FALSE ?1:-1);
+        
+        $return_status = 0;
+        if($updated_balance < 0)
+        {
+            $return_status = 1;
+        }
+        
         if($allowed_balance)
         {
-            // update invoice payment balance ...
-            $updated_balance = ($data['EntryMeta']['statement']=='Debit'?1:-1) * $data['EntryMeta']['amount'] * ( strpos($myParentEntry['Entry']['entry_type'], '-vendor-') !== FALSE ?1:-1);
-
             $dbkey_invoice = array_column($myParentEntry['EntryMeta'], 'key');
             $dbkey = array_search('form-payment_balance', $dbkey_invoice);
             if($dbkey === FALSE)
@@ -1130,6 +1136,9 @@ class Entry extends AppModel {
                     $subkey = 'form-payment_'.strtolower(str_replace(' ','_', $data['EntryMeta']['type']));
                     $subvalue = $data['Entry'][0]['value'];
                     
+                    $subkey_sold = 'form-product_status';
+                    $subvalue_sold = 'SOLD';
+                    
                     $query = $this->Entry->findAllByEntryTypeAndSlug(get_slug($typevalue), $data['EntryMeta'][$typevalue] );
                     foreach($query as $key => $value)
                     {
@@ -1157,13 +1166,33 @@ class Entry extends AppModel {
                             $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
                             $this->EntryMeta->saveField('value', $value['EntryMeta'][$dbkey]['value'].chr(10).$subvalue );
                         }
+                        
+                        // check product status !!
+                        if(empty($return_status))
+                        {
+                            $dbkey = array_search($subkey_sold, $dbkey_haystack);
+                            if($dbkey === FALSE)
+                            {
+                                $this->EntryMeta->create();
+                                $this->EntryMeta->save(array('EntryMeta' => array(
+                                    'entry_id'  => $value['Entry']['id'],
+                                    'key'       => $subkey_sold,
+                                    'value'     => $subvalue_sold
+                                )));
+                            }
+                            else if(stripos($value['EntryMeta'][$dbkey]['value'], $subvalue_sold ) === FALSE)
+                            {
+                                $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
+                                $this->EntryMeta->saveField('value', $subvalue_sold );
+                            }
+                        }
                     }
                 }
             }
             
+            // update all products payment_balance on selected invoice !!
             if($allowed_balance)
             {
-                // update all products payment_balance on selected invoice !!
                 $query = $this->EntryMeta->findAllByKeyAndValue('form-client_invoice_code', $myParentEntry['Entry']['slug']);
                 foreach($query as $key => $value)
                 {
@@ -1181,6 +1210,42 @@ class Entry extends AppModel {
                     {
                         $this->EntryMeta->id = $search_balance['EntryMeta']['id'];
                         $this->EntryMeta->saveField('value', $updated_balance);
+                    }
+                }
+            }
+        }
+        else if(strpos($myParentEntry['Entry']['entry_type'], '-vendor-') !== FALSE)
+        {
+            if(empty($return_status))
+            {
+                // for diamond and cor-jewelry !!
+                foreach(array('diamond', 'cor_jewelry') as $typekey => $typevalue)
+                {
+                    if(!empty($data['EntryMeta'][$typevalue]))
+                    {
+                        $subkey = 'form-report_type';
+                        $subvalue = 'SR';
+
+                        $query = $this->Entry->findAllByEntryTypeAndSlug(get_slug($typevalue), $data['EntryMeta'][$typevalue] );
+                        foreach($query as $key => $value)
+                        {
+                            $dbkey_haystack = array_column($value['EntryMeta'], 'key');
+                            $dbkey = array_search($subkey, $dbkey_haystack);
+                            if($dbkey === FALSE)
+                            {
+                                $this->EntryMeta->create();
+                                $this->EntryMeta->save(array('EntryMeta' => array(
+                                    'entry_id'  => $value['Entry']['id'],
+                                    'key'       => $subkey,
+                                    'value'     => $subvalue
+                                )));
+                            }
+                            else if($value['EntryMeta'][$dbkey]['value'] != $subvalue)
+                            {
+                                $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
+                                $this->EntryMeta->saveField('value', $subvalue );
+                            }
+                        }
                     }
                 }
             }

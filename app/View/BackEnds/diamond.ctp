@@ -333,7 +333,7 @@
                         }
                         
                         $datefield = '';
-                        if($shortkey == 'carat' || $shortkey == 'item_ref_code')
+                        if($shortkey == 'carat' || $shortkey == 'item_ref_code' || $shortkey == 'product_status')
                         {
                             $datefield = 'date-field';
                         }

@@ -10,6 +10,10 @@
     {
         $browse_slug = 'cor-jewelry';
     }
+    else if(strpos($shortkey, 'diamond') !== FALSE)
+    {
+        $browse_slug = 'diamond';
+    }
     else
     {
         $browse_slug = $browse_alias;
@@ -19,7 +23,7 @@
     $unit = '';
     $unit_size = '';
     $unit_step_min = '';
-    if($shortkey == 'diamond')
+    if(strpos($shortkey, 'diamond') !== FALSE)
     {
         $unit = 'USD';
         $unit_size = 'input-small';
@@ -192,7 +196,7 @@
 	    
 	    <strong>
 	    <?php
-            if($shortkey == 'diamond')
+            if(strpos($shortkey, 'diamond') !== FALSE)
             {
                 echo 'TOTAL DIAMOND PRICE : $<span class="total_'.$shortkey.'"></span> USD';
             }
@@ -292,7 +296,7 @@ $(document).ready(function(){
             if($('#myTypeSlug').val().indexOf('-payment') >= 0)
             {
                 <?php
-                    if($shortkey != 'payment_jewelry')
+                    if(strpos($shortkey, 'payment_') === FALSE)
                     {
                         ?>
                 if($('input.gold_loss').length > 0)

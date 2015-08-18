@@ -152,19 +152,20 @@
                 });
                 
                 // onchange payment type callback ...
+                var payment_alias = '<?php echo ($DMD?'diamond':'jewelry'); ?>';
                 $('select.type').change(function(){
                     
                     // toggle payment_jewelry to be hidden / showed ...
-                    if($('div.payment-jewelry-group').length)
+                    if($('div.payment-'+payment_alias+'-group').length)
                     {
                         if($(this).val() == 'Return Goods')
                         {
-                            $('div.payment-jewelry-group').closest('div.control-group').show();
+                            $('div.payment-'+payment_alias+'-group').closest('div.control-group').show();
                         }
                         else
                         {
-                            $('div.payment-jewelry-group').html('').closest('div.control-group').hide().find('a.add-raw').click();
-                            $('span.total_payment_jewelry').html('0.00<input type="hidden" value="0">');
+                            $('div.payment-'+payment_alias+'-group').html('').closest('div.control-group').hide().find('a.add-raw').click();
+                            $('span.total_payment_'+payment_alias).html('0.00<input type="hidden" value="0">');
                         }
                     }
                     
@@ -198,13 +199,13 @@
                 }).trigger('change');
                 
                 $('form').submit(function(){
-                    if( $('div.payment-jewelry-group').length && $('div.payment-jewelry-group').is(':visible') )
+                    if( $('div.payment-'+payment_alias+'-group').length && $('div.payment-'+payment_alias+'-group').is(':visible') )
                     {
-                        var total_payment = parseFloat($('span.total_payment_jewelry input[type=hidden]').val());
+                        var total_payment = parseFloat($('span.total_payment_'+payment_alias+' input[type=hidden]').val());
                         var amount = parseFloat($('input.amount').val());
                         if(amount != total_payment)
                         {
-                            alert('Total payment jewelry price MUST BE SAME WEIGHT as paid Amount!');
+                            alert('Total payment '+payment_alias+' price MUST BE SAME as paid Amount!');
                             $('input.amount').focus();
                             return false;
                         }
@@ -312,7 +313,7 @@
 					}
                     
                     // on-the-fly validation ...
-                    if($value['key'] == 'form-checks_date' || $value['key'] == 'form-loan_period' || $value['key'] == 'form-payment_jewelry')
+                    if($value['key'] == 'form-checks_date' || $value['key'] == 'form-loan_period' || strpos($value['key'], 'form-payment_') !== FALSE)
                     {
                         $value['validation'] .= 'not_empty|';
                     }

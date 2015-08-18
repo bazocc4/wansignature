@@ -143,6 +143,9 @@
                             echo '<div class="alert alert-info full fl"><strong>VENDOR INFORMATION</strong></div>';
                             break;
                         case 'form-vendor_gr':
+                            echo '<div class="alert alert-info full fl"><strong>SOLD & RETURN REPORT TO VENDOR</strong></div>';
+                            break;
+                        case 'form-return_detail':
                             echo '<div class="alert alert-info full fl"><strong>JEWELRY STATUS</strong></div>';
                             break;
                         case 'form-product_status':

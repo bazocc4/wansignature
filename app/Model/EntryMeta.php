@@ -1012,8 +1012,7 @@ class EntryMeta extends AppModel {
             'vendor_item_code'      => $value[23],
             'vendor_invoice_code'   => strtoupper($value[24]),
             'vendor_invoice_date'   => ( excelDateToDate($value[25], $rawDate) ? date('m/d/Y', $rawDate ) : '' ),
-            'vendor_status'         => $value[26],
-            'vendor_note'           => $value[27],
+            'vendor_note'           => ( !empty($value[26]) && !empty($value[27]) ? $value[26].' ('.$value[27].')' : $value[26].$value[27] ),
             'vendor_currency'       => ( strtoupper($value[28]) == 'HKD' ? 'HKD' : 'USD' ),
             'vendor_barcode'        => round(floatval($value[29]), 2),
             'vendor_x'              => round(floatval($value[30]), 2),
@@ -1022,7 +1021,7 @@ class EntryMeta extends AppModel {
             
             /* SOLD & RETURN REPORT TO VD */
             'report_date'           => ( excelDateToDate($value[38], $rawDate) ? date('m/d/Y', $rawDate ) : '' ),
-            'report_type'           => ( strtoupper($value[39]) == 'RR' ? 'RR' : 'SR' ),
+            'report_type'           => ( strtoupper($value[39]) == 'RR' || strtoupper($value[39]) == 'SR' ? strtoupper($value[39]) : 'Consignment' ),
             'temp_report'           => ( excelDateToDate($value[40], $rawDate) ? date( $mySetting['date_format'] , $rawDate ) : $value[40] ),
             'return_date'           => ( excelDateToDate($value[41], $rawDate) ? date('m/d/Y', $rawDate ) : '' ),
             'return_detail'         => $value[42],
@@ -1083,7 +1082,7 @@ class EntryMeta extends AppModel {
             }
             else if($data['Entry'][3]['value'] == 0) // On Process ...
             {
-                $pushdata['form-product_status'] = 'CONSIGNMENT #'.$data['Entry'][0]['value'];
+                $pushdata['form-product_status'] = 'OTW #'.$data['Entry'][0]['value'];
             }
 
             // destination ...
@@ -1118,11 +1117,11 @@ class EntryMeta extends AppModel {
             if(!empty($data['EntryMeta']['vendor']))
             {
                 $pushdata['form-vendor'] = $data['EntryMeta']['vendor'];
-                if(!empty($data['EntryMeta']['warehouse_origin']) && $data['Entry'][3]['value'] == 1) // Accepted ...
+                if(!empty($data['EntryMeta']['warehouse_origin']))
                 {
-                    $pushdata['form-product_status'] = 'RETURN'.$middle_status.' #'.$data['Entry'][0]['value'];
-                    if(!empty($data['EntryMeta']['diamond']))
+                    if($data['Entry'][3]['value'] == 1) // Accepted ...
                     {
+                        $pushdata['form-product_status'] = 'RETURN'.$middle_status.' #'.$data['Entry'][0]['value'];
                         $pushdata['form-report_type'] = 'RR';
                         $pushdata['form-return_date'] = $data['EntryMeta']['date'];
                         if(!empty($data['Entry'][1]['value']))
@@ -1130,6 +1129,10 @@ class EntryMeta extends AppModel {
                             $pushdata['form-return_detail'] = $data['Entry'][1]['value'];
                         }
                     }
+                }
+                else if(!empty($data['EntryMeta']['warehouse_destination']))
+                {
+                    $pushdata['form-report_type'] = 'Consignment';
                 }
             }
 
@@ -1141,7 +1144,7 @@ class EntryMeta extends AppModel {
                 {
                     if(!empty($data['EntryMeta']['warehouse_origin']) || !empty($data['EntryMeta']['exhibition_origin'])) 
                     {
-                        $pushdata['form-product_status'] = 'SOLD';
+                        $pushdata['form-product_status'] = 'CONSIGNMENT'; // will be SOLD if has been paid ...
                     }
                     else if(!empty($data['EntryMeta']['warehouse_destination']))
                     {
@@ -1200,6 +1203,10 @@ class EntryMeta extends AppModel {
                                 if($subkey == 'form-return_detail')
                                 {
                                     $subvalue = $value['EntryMeta'][$dbkey]['value'].chr(10).$subvalue;
+                                }
+                                else if($subkey == 'form-product_status' && $subvalue == 'CONSIGNMENT' && stripos($value['EntryMeta'][$dbkey]['value'], 'sold') !== FALSE || $subkey == 'form-report_type' && $subvalue == 'Consignment')
+                                {
+                                    $subvalue = $value['EntryMeta'][$dbkey]['value'];
                                 }
                                 $this->EntryMeta->saveField('value', $subvalue );
                             }

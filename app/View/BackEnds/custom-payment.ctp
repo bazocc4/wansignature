@@ -392,6 +392,10 @@
                             {
                                 $browse_slug = 'cor-jewelry';
                             }
+                            else if($shortkey == 'payment_diamond')
+                            {
+                                $browse_slug = 'diamond';
+                            }
                             else
                             {
                                 $browse_slug = get_slug($shortkey);
@@ -412,7 +416,7 @@
 									$emptybrowse = 1;
 									$outputResult = (empty($mydetails['EntryMeta']['name'])?$mydetails['Entry']['title']:$mydetails['EntryMeta']['name']);
                                     
-                                    if($shortkey == 'diamond')
+                                    if(strpos($shortkey, 'diamond') !== FALSE)
                                     {
                                         $outputResult .= ' '.$diamondType[$mydetails['EntryMeta']['product_type']];
                                     }

@@ -11,8 +11,13 @@ class EntryMetasController extends AppController {
     */
     public function cronjob_reminder()
     {
+        set_time_limit(0);
+	    ini_set('memory_limit', '-1'); // unlimited memory limit for cronjob process.
+        
         // open E-mail library stream !!
         App::uses('CakeEmail', 'Network/Email');
+        
+        $this->_checksAlmostDue();
         
         $this->_checksWithdrawal();
         
@@ -20,6 +25,58 @@ class EntryMetasController extends AppController {
         
         // end of cronjob !!
         exit;
+    }
+    
+    public function _checksAlmostDue($days = 1)
+    {
+        $myTimeStamp = strtotime('+ '.$days.' day');
+        $query = $this->EntryMeta->find('all', array(
+            'conditions' => array(
+                'EntryMeta.key' => 'form-checks_date',
+                'STR_TO_DATE( EntryMeta.value ,"%m/%d/%Y")' => date('Y-m-d', $myTimeStamp ),
+            )
+        ));
+        
+        if(!empty($query))
+        {
+            $duedate = date($this->mySetting['date_format'], $myTimeStamp );
+            
+            // Create the message !!
+            $subject = 'WAN System - Checks Almost Due ('.$duedate.') Alert Reminder';
+
+            $header = "<strong>== Checks Almost Due Reminder ==</strong><br/><br/>";
+            $header .= "Dear Administrator,<br/>You are receiving this E-mail to remind about some invoice, having payment checks that almost due on <span style='color:red'>".$duedate."</span> as follow :<br/>";
+
+            $footer = "<br/>NB: Please cross-check those payment checks first before their due date.<br/>In any case if some checks are not right, you can cancel those checks by deleting checks data on the website.<br/>Thank you for your attention.";
+
+            // compose the message body !!
+            $mybody = $header;
+            foreach($query as $key => $value)
+            {
+                $myParentEntry = $this->Entry->findById($value['Entry']['parent_id']);
+                
+                $mybody .= '('.sprintf("%02d", $key+1).') INV# <a href="'.$this->get_host_name().'admin/entries/'.$myParentEntry['Entry']['entry_type'].'/'.$myParentEntry['Entry']['slug'].'?type='.$value['Entry']['entry_type'].'">'.strtoupper($myParentEntry['Entry']['title']).' ('.$value['Entry']['title'].')</a>';
+                
+                if(empty($value['Entry']['status']))
+                {
+                    $mybody .= ' [Cek Titip]';
+                }
+                
+                $mybody .= '<br>';
+            }
+            $mybody .= $footer;
+
+            // Execute E-mail ...
+            $Email = new CakeEmail();
+            try{
+                $Email->from(array('reminder@wansignature.com'=>'WAN Reminder System'))
+                      ->to( array_map("trim" , explode(',' , $this->mySetting['custom-email_admin'] )) )
+                      ->subject($subject)
+                      ->emailFormat('html')
+                      ->template('default','default')
+                      ->send($mybody);
+            } catch(Exception $e){}
+        }
     }
     
     public function _checksWithdrawal()

@@ -228,6 +228,8 @@
             {
                 result -= parseFloat($(this).val());
             }
+            
+            result = result.toFixed(2);
         }
         
         // give red color if live balance exceeds max balance !!

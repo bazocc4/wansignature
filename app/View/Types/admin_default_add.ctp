@@ -79,8 +79,8 @@
             if(!empty($myParentType))
             {
                 $value['readonly'] = 'readonly';
-                $myParentType = breakEntryMetas($myParentType, 'TypeMeta');
-                $value['value'] = $myParentType['TypeMeta']['category'];
+                $dbhaystack = array_column($myParentType['TypeMeta'], 'key');
+                $value['value'] = $myParentType['TypeMeta'][array_search('category', $dbhaystack )]['value'];
             }
 			echo $this->element('input_'.$value['input_type'] , $value);
 			

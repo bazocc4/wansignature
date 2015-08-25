@@ -135,7 +135,16 @@ class EntryMeta extends AppModel {
             
             $query['Entry']['id'] = $this->Entry->id;
         }
+        else // update Entry description if any...
+        {
+            if(!empty($description) && stripos($query['Entry']['description'], $description) === FALSE)
+            {
+                $this->Entry->id = $query['Entry']['id'];
+                $this->Entry->saveField('description', $query['Entry']['description'].chr(10).$description);
+            }
+        }
         
+        // PROCESS ENTRYMETA ...
         foreach($query['EntryMeta'] as $qKey => $qValue )
         {
             if(substr($qValue['key'] , 0 , 5) == 'form-' && isset($obj[ $shortkey = substr($qValue['key'], 5) ]))

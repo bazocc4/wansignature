@@ -119,13 +119,6 @@ function dpr($text)
 	echo '</pre>';
 }
 
-function scrollBottomWithFlush()
-{
-    echo '<script>window.scrollTo(0,document.body.scrollHeight);</script>';
-    ob_flush();
-    flush();
-}
-
 function redirectUsingScript($url)
 {
     echo '<script type="text/javascript">window.location.href="'.$url.'";</script>';

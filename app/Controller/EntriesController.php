@@ -266,6 +266,8 @@ class EntriesController extends AppController {
     {
         set_time_limit(0); // unlimited time limit execution.
         ini_set('memory_limit', '-1'); // unlimited memory limit to process batch.
+        ob_implicit_flush(true);
+        ob_end_flush();
                 
         /**  Define how many rows we want for each "chunk" and other helper variable  **/
         $chunkSize = $counterRow = 50;
@@ -284,7 +286,7 @@ class EntriesController extends AppController {
         {
             // Firstly, print loading process ...
             dpr('Processing Excel record : '.$startRow.' - '.($startRow + $chunkSize - 1).' '.$printSpace[abs( (floor($counterChunk / $intervalSpace) % 2) * $intervalSpace - ($counterChunk % $intervalSpace) )].'... Please wait a moment ...');
-            scrollBottomWithFlush();
+            echo '<script>window.scrollTo(0,document.body.scrollHeight);</script>';
             
             // begin load worksheet ...
             $this->PhpExcel->loadWorksheet($filepath , $startRow , $chunkSize , empty($counterChunk) );

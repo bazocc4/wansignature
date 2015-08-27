@@ -191,6 +191,7 @@ class AppController extends Controller {
         parent::beforeFilter();		
 		$this->_setInitLayout();
         $this->_convertEntrySlug();
+        $this->Entry->query('SET SESSION group_concat_max_len = 100000');
 
 		// url redirection for admin login kicked out !!
 		$urlext = "";

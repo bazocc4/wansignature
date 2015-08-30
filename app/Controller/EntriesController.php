@@ -378,6 +378,9 @@ class EntriesController extends AppController {
             error_reporting(E_ALL ^ E_NOTICE);
             if(empty($this->request->data['fileurl']['error']) && !empty($this->request->data['fileurl']['tmp_name']))
             {
+                // firstly, set possible warning message ...
+                $this->Session->setFlash('Batch Process has been interrupted due to server timeout.<br>Please contact your administrator and try again.', 'failed');
+                
                 $this->read_excel($this->request->data['fileurl']['tmp_name'], $myType['Type']['slug']);
                 $this->Session->setFlash('Batch Process from uploaded excel file has been executed successfully.','success');
                 redirectUsingScript($_SERVER['REQUEST_URI']);

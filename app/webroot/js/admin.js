@@ -17,6 +17,24 @@ var jcrop_api = new Array();
         }
     }
     
+    $(document).on('submit', 'form.form-upload-excel', function(){
+        
+        if($(this).find('button[type=submit] img').length > 0)
+        {
+            alert('Please wait, uploading excel is still in process...');
+            return false;
+        }
+
+        // final confirmation ...
+        if(!confirm('Are you sure to upload this database excel?\nNB: This process will take some minutes, depending on how large the data is.'))
+        {
+            return false;
+        }
+
+        $(this).find('button[type=submit]').html('<img src="'+site+'images/ajax-loader.gif" alt="loading">');
+        
+    });
+    
     $(document).ready(function()
 	{
         $.fn.generalColorbox('popup-image');

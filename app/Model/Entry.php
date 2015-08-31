@@ -968,42 +968,6 @@ class Entry extends AppModel {
         return $result;
     }
 
-    function getActiveComments($data , $sorted = NULL , $metatable = NULL)
-	{
-		if(empty($sorted))
-		{
-			$mysql = $data;
-		}
-		else
-		{
-			$mysql = orderby_metavalue($data , $metatable , 'created' , 'DESC');
-		}
-
-		$result = array();
-
-		if(empty($metatable))
-		{
-			foreach ($mysql as $key => $value) 
-			{
-				if($value['status'] == 1)
-				{
-					array_push($result, $value);
-				}
-			}
-		}
-		else
-		{
-			foreach ($mysql as $key => $value) 
-			{
-				if($value[$metatable]['status'] == 1)
-				{
-					array_push($result, $value);
-				}
-			}
-		}
-		return $result;
-	}
-
 	/*
 	Check if this entry data has already have all of language version or not.
 	- return true if there is still exist language that has not been translated yet, otherwise false.

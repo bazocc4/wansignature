@@ -1268,19 +1268,14 @@ class EntriesController extends AppController {
         // FIRSTLY, sorting our (image / entry) children !!
         if(!empty($data['myEntry']['ChildEntry']))
         {
-            $tempChild = $this->Entry->find('all' , array(
+            $options = array(
 	            'conditions' => array(
 	                'Entry.parent_id' => $myEntry['Entry']['id']
 	            ),
 	            'order' => array('Entry.'.$this->generalOrder )
-	        ));
-	        
-	        foreach ($tempChild as $key => $value) 
-        	{
-        		$tempChild[$key] = breakEntryMetas($value);
-        	}
+	        );
 
-	        $data['myEntry']['ChildEntry'] = $tempChild;
+	        $data['myEntry']['ChildEntry'] = array_map('breakEntryMetas', $this->Entry->find('all', $options) );
         }
         
 		// for image input type reason...

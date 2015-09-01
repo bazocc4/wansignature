@@ -322,16 +322,7 @@
 			{
 				foreach ($myType['ChildType'] as $key10 => $value10)
 				{
-					$childCount = 0;
-					foreach ($value['EntryMeta'] as $key20 => $value20) 
-					{
-						if($value20['key'] == 'count-'.$value10['slug'])
-						{
-							$childCount = $value20['value'];
-							break;
-						}
-					}
-					echo '<td><span class="badge badge-info">'.$this->Html->link($childCount,array('action'=>$myType['Type']['slug'],$value['Entry']['slug'],'?'=>array('type'=>$value10['slug'], 'lang'=>$_SESSION['lang']))).'</span></td>';
+					echo '<td><span class="badge badge-info">'.$this->Html->link((empty($value['EntryMeta']['count-'.$value10['slug']])?'0':$value['EntryMeta']['count-'.$value10['slug']]),array('action'=>$myType['Type']['slug'],$value['Entry']['slug'],'?'=>array('type'=>$value10['slug'], 'lang'=>$_SESSION['lang']))).'</span></td>';
 				}
 			}
 

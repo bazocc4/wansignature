@@ -34,9 +34,7 @@
 class AppModel extends Model {
 	function getCurrentUser()
 	{
-		App::uses('SessionComponent' , 'Controller/Component');
-		$Session = new SessionComponent();		
-		$this_user = $Session->read('Auth.User');
+		$this_user = CakeSession::read('Auth.User');
 		if(!empty($this_user))
 		{
 			$User = ClassRegistry::init('User');
@@ -44,7 +42,8 @@ class AppModel extends Model {
 			$myUser = $User->findById($this_user['user_id']);
 			foreach ($myUser['UserMeta'] as $key => $value) $this_user['UserMeta'][ $value['key'] ] = $value['value'];
 		}
-		return $this_user;
+        
+        return $this_user;
 	}
 	
 	public function get_slug($value)

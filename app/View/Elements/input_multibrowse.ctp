@@ -144,7 +144,7 @@
         ?>
         </div>
                         <?php
-						echo '</div>'; // end of $browse_alias.'-detail '
+						echo '</div>'; // end of $browse_slug.'-detail '
 						
 						$raw_stream++;
 					}

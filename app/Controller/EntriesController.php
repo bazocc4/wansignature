@@ -285,7 +285,7 @@ class EntriesController extends AppController {
         for ($startRow = 4, $counterChunk = 0; $counterRow >= $chunkSize ; $startRow += $chunkSize, ++$counterChunk)
         {
             // Firstly, print loading process ...
-            dpr('Processing Excel record : '.$startRow.' - '.($startRow + $chunkSize - 1).' '.$printSpace[abs( (floor($counterChunk / $intervalSpace) % 2) * $intervalSpace - ($counterChunk % $intervalSpace) )].'... Please wait a moment ...');
+            dpr('Processing Excel record : '.$startRow.' - '.($startRow + $chunkSize - 1).' '.$printSpace[abs( (floor($counterChunk / $intervalSpace) % 2) * $intervalSpace - ($counterChunk % $intervalSpace) )].'... Please wait a moment ... RAM: '.(memory_get_peak_usage(true)/(1024*1024)).' MB');
             echo '<script>window.scrollTo(0,document.body.scrollHeight);</script>';
             
             // begin load worksheet ...

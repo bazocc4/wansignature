@@ -55,6 +55,11 @@ class PhpExcelComponent extends Component {
         // load vendor classes
         App::import('Vendor', 'phpexcel');
         
+        // cache_in_memory_serialized just fixed my script for a huge upload. :)
+        // ref: http://phpexcel.codeplex.com/discussions/234150
+        $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_in_memory_serialized;
+        PHPExcel_Settings::setCacheStorageMethod($cacheMethod);
+        
         $inputFileType = PHPExcel_IOFactory::identify($inputPath);
         $this->_objReader = PHPExcel_IOFactory::createReader($inputFileType);
         $this->_objReader->setReadDataOnly(true);

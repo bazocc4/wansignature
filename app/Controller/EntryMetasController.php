@@ -24,6 +24,7 @@ class EntryMetasController extends AppController {
         $this->_cicilanPerBulan();
         
         // end of cronjob !!
+        echo "Cronjob SUCCESS!";
         exit;
     }
     

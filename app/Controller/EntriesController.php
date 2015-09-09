@@ -604,7 +604,7 @@ class EntriesController extends AppController {
 	**/
 	public function _admin_default($myType = array(),$paging = NULL , $myEntry = array() , $myMetaKey = NULL , $myMetaValue = NULL , $myChildTypeSlug = NULL , $searchMe = NULL , $popup = NULL , $lang = NULL , $manualset = NULL)
 	{
-        set_time_limit(300); // 5 MINUTE time limit execution.
+        set_time_limit(120); // 2 MINUTES time limit execution.
         if(is_null($paging))
 		{
 			$paging = 1;
@@ -770,6 +770,13 @@ class EntriesController extends AppController {
                 )));
             }
         }
+        
+        // SPECIAL THREAT FOR $myMetaKey !!
+        if(empty($myMetaKey))
+        {
+            $myMetaKey = 'dummy';
+        }
+        // END OF SPECIAL THREAT ...
         
         if( !empty($myMetaKey) )
 		{

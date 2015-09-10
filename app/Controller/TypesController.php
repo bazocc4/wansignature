@@ -9,8 +9,7 @@ class TypesController extends AppController {
         parent::beforeFilter();		
 		if($this->user['role_id'] > 1)
 		{
-			throw new NotFoundException('Error 404 - Not Found'); 
-			return;
+			throw new NotFoundException('Error 404 - Not Found');
 		}
     }
 

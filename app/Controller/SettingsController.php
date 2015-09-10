@@ -15,8 +15,7 @@ class SettingsController extends AppController {
 
 	function error404()
 	{
-		throw new NotFoundException('Error 404 - Not Found'); 
-		return;
+		throw new NotFoundException('Error 404 - Not Found');
 	}
 	
 	function admin_index() 

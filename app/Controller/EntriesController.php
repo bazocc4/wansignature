@@ -477,8 +477,7 @@ class EntriesController extends AppController {
 			
 			if($this->user['role_id'] > 1)
 			{
-				throw new NotFoundException('Error 404 - Not Found'); 
-				return;
+				throw new NotFoundException('Error 404 - Not Found');
 			}
 			// manually set pages data !!
 			$myType['Type']['name'] = 'Pages';			
@@ -549,7 +548,6 @@ class EntriesController extends AppController {
         if(empty($myEntry))
         {
             throw new NotFoundException('Error 404 - Not Found');
-            return;
         }
 		
 		// if this action is going to edit CHILD list...

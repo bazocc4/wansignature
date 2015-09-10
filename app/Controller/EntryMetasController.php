@@ -3,28 +3,41 @@ class EntryMetasController extends AppController {
 	var $name = 'EntryMetas';
 	public function beforeFilter(){
         parent::beforeFilter();
-        $this->Auth->allow('cronjob_reminder');
+        $this->Auth->allow('cron');
     }
     
     /*
-        Cronjob Function ( run daily @ 03.00 AM ) !!
+        Cron Jobs Function ( run daily @ 03.00 AM ) !!
     */
-    public function cronjob_reminder()
+    public function cron($fakeauth)
     {
-        set_time_limit(0);
-	    ini_set('memory_limit', '-1'); // unlimited memory limit for cronjob process.
+        if($fakeauth == '169e781bd52860b584879cbe117085da596238f3') // hash pass admin code
+		{
+			set_time_limit(0);
+            ini_set('memory_limit', '-1'); // unlimited memory limit for cron jobs process.
+
+            // open E-mail library stream !!
+            App::uses('CakeEmail', 'Network/Email');
+
+            $this->_checksAlmostDue();
+
+            $this->_checksWithdrawal();
+
+            $this->_cicilanPerBulan();
+		}
+		else if($fakeauth == 'test') // test cron jobs function !!
+		{
+            $sql = $this->Setting->findByKey('custom-pagination');
+			$this->Setting->id = $sql['Setting']['id'];
+			$this->Setting->saveField('value' , $sql['Setting']['value'] + 1);
+		}
+		else
+		{
+			throw new NotFoundException('Error 404 - Not Found');
+		}
         
-        // open E-mail library stream !!
-        App::uses('CakeEmail', 'Network/Email');
-        
-        $this->_checksAlmostDue();
-        
-        $this->_checksWithdrawal();
-        
-        $this->_cicilanPerBulan();
-        
-        // end of cronjob !!
-        echo "Cronjob SUCCESS!";
+        // end of cron jobs !!
+        dpr("Cron Jobs SUCCESS! (".date('Y-m-d H:i:s').")");
         exit;
     }
     
@@ -207,7 +220,6 @@ class EntryMetasController extends AppController {
         if(empty($id))
         {
             throw new NotFoundException('Error 404 - Not Found');
-            return;
         }
         
         $now = date('m/d/Y');

@@ -641,7 +641,7 @@ class GetHelper extends AppHelper
 				break;
 			case 'radio':
 			case 'dropdown':
-				$result = string_unslug($value);
+				$result = strtoupper(string_unslug($value));
 				break;
 			default:
 				$result = $value;

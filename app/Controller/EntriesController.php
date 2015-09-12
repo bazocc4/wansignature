@@ -772,7 +772,12 @@ class EntriesController extends AppController {
         // SPECIAL THREAT FOR $myMetaKey !!
         if(empty($myMetaKey))
         {
-            $myMetaKey = 'dummy';
+            // second check, is there any field that is a required one?
+            $validation = implode('|', array_column($myAutomaticValidation , 'validation' ) );
+            if(strpos($validation, 'not_empty') !== FALSE)
+            {
+                $myMetaKey = 'dummy';
+            }
         }
         // END OF SPECIAL THREAT ...
         
@@ -803,10 +808,7 @@ class EntriesController extends AppController {
             $myMetaKey = array_filter($myMetaKey);
             if(!empty($myMetaKey))
             {
-                array_push($options['conditions'], array('OR' => array(
-                    array('NOT' => array_map(function($value){ return array('EntryMeta.key_value LIKE' => '%{#}form-'.$value.'=%'); }, $myMetaKey) ),
-                    array('EntryMeta.key_value' => NULL)
-                )));
+                $options['conditions']['NOT'] = array_map(function($value){ return array('EntryMeta.key_value LIKE' => '%{#}form-'.$value.'=%'); }, $myMetaKey);
             }
 		}
         

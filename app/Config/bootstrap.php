@@ -355,6 +355,7 @@ function convertExcelVersion($inputPath,$outputPath)
     $objReader = PHPExcel_IOFactory::createReader($inputFileType);
   
     $objExcel = $objReader->load($inputPath);
+	$objExcel->setActiveSheetIndex(0); // set first sheet as active (default) ...
 
     $outputFileType = 'Excel2007';
     $objWriter = PHPExcel_IOFactory::createWriter($objExcel,$outputFileType);

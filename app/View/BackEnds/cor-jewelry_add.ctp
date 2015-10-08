@@ -81,12 +81,16 @@
 			
 			$value = array();
 			$value['key'] = 'form-'.Inflector::slug(strtolower($titlekey));
-			$value['validation'] = 'not_empty';
 			$value['model'] = 'Entry';
 			$value['counter'] = 0;
 			$value['input_type'] = 'text';
-            $value['inputsize'] = 'input-medium';
 			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['title']);
+
+            if( empty($value['value']) )
+            {
+                $value['value'] = 1; // set just as temp value...
+            }            
+            $value['display'] = 'none';
 			echo $this->element('input_'.$value['input_type'] , $value);
 		?>
 		<!-- BEGIN TO LIST META ATTRIBUTES -->

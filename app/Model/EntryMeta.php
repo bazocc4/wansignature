@@ -270,7 +270,6 @@ class EntryMeta extends AppModel {
         if(isset($obj[ $entity = 'product_type' ]))
         {
             $query = $this->push_general_entry($obj[$entity], $entity, TRUE);
-            
             if(empty($query))
             {
                 $input = array();
@@ -280,9 +279,33 @@ class EntryMeta extends AppModel {
                 {
                     $input['EntryMeta']['value'] = 'Diamond';
                 }
-                else // 999 cor-jewelry ...
+                else // cor-jewelry ...
                 {
-                    if(strpos($obj[$entity], '3d') !== FALSE)
+                    if(strpos($obj[$entity], 'italy') !== FALSE)
+                    {
+                        $input['EntryMeta']['value'] = 'Italy (125%)';
+                        
+                        // add kode type ...
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save(array('EntryMeta' => array(
+                            'entry_id'  => $input['EntryMeta']['entry_id'],
+                            'key'       => 'form-kode_type',
+                            'value'     => '9', // default type code ...
+                        )));
+                    }
+                    else if(strpos($obj[$entity], 'korea') !== FALSE)
+                    {
+                        $input['EntryMeta']['value'] = 'Korea (100%)';
+                        
+                        // add kode type ...
+                        $this->EntryMeta->create();
+                        $this->EntryMeta->save(array('EntryMeta' => array(
+                            'entry_id'  => $input['EntryMeta']['entry_id'],
+                            'key'       => 'form-kode_type',
+                            'value'     => '9', // default type code ...
+                        )));
+                    }
+                    else if(strpos($obj[$entity], '3d') !== FALSE)
                     {
                         $input['EntryMeta']['value'] = '999 3D (115%)';
                     }
@@ -303,7 +326,30 @@ class EntryMeta extends AppModel {
         
         if(isset($obj[ $entity = 'product_brand' ]))
         {
-            $this->push_general_entry($obj[$entity], $entity);
+            $query = $this->push_general_entry($obj[$entity], $entity);
+            if(empty($query))
+            {
+                $input = array();
+                $input['EntryMeta']['entry_id'] = $this->Entry->id;
+                $input['EntryMeta']['key'] = 'form-kode_brand';
+                $input['EntryMeta']['value'] = '9'; // default brand code ...
+                $this->EntryMeta->create();
+                $this->EntryMeta->save($input);
+            }
+        }
+        
+        if(isset($obj[ $entity = 'product_color' ]))
+        {
+            $query = $this->push_general_entry($obj[$entity], $entity);
+            if(empty($query))
+            {
+                $input = array();
+                $input['EntryMeta']['entry_id'] = $this->Entry->id;
+                $input['EntryMeta']['key'] = 'form-kode_color';
+                $input['EntryMeta']['value'] = '9'; // default color code ...
+                $this->EntryMeta->create();
+                $this->EntryMeta->save($input);
+            }
         }
         
         if(isset($obj[ $entity = 'warehouse' ]))
@@ -925,52 +971,53 @@ class EntryMeta extends AppModel {
             /* COR DETAIL INFORMATION */
             'product_type'          => $value[3],
             'product_brand'         => $value[4],
-            'item_weight'           => round(floatval($value[5]), 2),
-            'item_size'             => intval($value[7]),
+            'product_color'         => $value[5], // NEW FIELD !!!
+            'item_weight'           => round(floatval($value[1+5]), 2),
+            'item_size'             => intval($value[1+7]),
             
             /* VENDOR INFO */
-            'vendor'                => strtoupper($value[8]),
-            'vendor_invoice_code'   => strtoupper($value[11]),
-            'vendor_pcs'            => intval($value[12]),
-            'vendor_gr'             => round(floatval($value[13]), 2),
+            'vendor'                => strtoupper($value[1+8]),
+            'vendor_invoice_code'   => strtoupper($value[1+11]),
+            'vendor_pcs'            => intval($value[1+12]),
+            'vendor_gr'             => round(floatval($value[1+13]), 2),
             
             /* STATUS BARANG */
-            'warehouse'             => $value[14],
-            'stock_date'            => ( excelDateToDate($value[15], $rawDate) ? date('m/d/Y', $rawDate ) : '' ),
-            'product_status'        => $value[16],
+            'warehouse'             => $value[1+14],
+            'stock_date'            => ( excelDateToDate($value[1+15], $rawDate) ? date('m/d/Y', $rawDate ) : '' ),
+            'product_status'        => $value[1+16],
             
             /* CLIENT INFO */
-            'wholesaler'                => $value[17],
-            'client'                    => $value[18],
+            'wholesaler'                => $value[1+17],
+            'client'                    => $value[1+18],
             
             /* SOLD INVOICE TO CLIENT */
-            'client_invoice_date'   => ( excelDateToDate($value[22], $rawDate) ? date('m/d/Y', $rawDate ) : '' ),
-            'client_invoice_code'   => strtoupper($value[23]),
-            'client_invoice_pcs'    => intval($value[24]),
-            'form-sold_110'         => round(floatval($value[25]), 2),
-            'form-x_110'            => round(floatval($value[26]), 2),            
-            'form-sold_115'         => round(floatval($value[27]), 2),
-            'form-x_115'            => round(floatval($value[28]), 2),
-            'form-disc_adjustment'  => round(floatval($value[29]), 2),
-            'client_invoice_sold_24k' => round(floatval($value[30]), 2),
-            'gold_price'            => intval(str_replace(array(',', '.'), '' , trim($value[32], 'IDR'))),
+            'client_invoice_date'   => ( excelDateToDate($value[1+22], $rawDate) ? date('m/d/Y', $rawDate ) : '' ),
+            'client_invoice_code'   => strtoupper($value[1+23]),
+            'client_invoice_pcs'    => intval($value[1+24]),
+            'form-sold_110'         => round(floatval($value[1+25]), 2),
+            'form-x_110'            => round(floatval($value[1+26]), 2),            
+            'form-sold_115'         => round(floatval($value[1+27]), 2),
+            'form-x_115'            => round(floatval($value[1+28]), 2),
+            'form-disc_adjustment'  => round(floatval($value[1+29]), 2),
+            'client_invoice_sold_24k' => round(floatval($value[1+30]), 2),
+            'gold_price'            => intval(str_replace(array(',', '.'), '' , trim($value[1+32], 'IDR'))),
             
             /* TYPE OF PAYMENT */
-            'payment_ct_ld'         => $value[33],
-            'payment_rosok'         => $value[34],
-            'payment_checks'        => $value[35],
-            'payment_cash'          => $value[36],
-            'payment_credit_card'   => $value[37],
-            'payment_return_goods'  => $value[38],
-            'payment_balance'       => round(floatval($value[ empty(floatval($value[39])) ? 31 : 39 ]), 2),
+            'payment_ct_ld'         => $value[1+33],
+            'payment_rosok'         => $value[1+34],
+            'payment_checks'        => $value[1+35],
+            'payment_cash'          => $value[1+36],
+            'payment_credit_card'   => $value[1+37],
+            'payment_return_goods'  => $value[1+38],
+            'payment_balance'       => round(floatval($value[1+ (empty(floatval($value[1+39])) ? 31 : 39) ]), 2),
             
             /* HISTORY OF TRANSACTIONS */
-            'transaction_history'   => $value[41],
-            'form-description'      => $value[42], // keterangan / detail barang ...
+            'transaction_history'   => $value[1+41],
+            'form-description'      => $value[1+42], // keterangan / detail barang ...
         );
         
         // calculate client_x ...
-        $tempX = intval($value[9]);
+        $tempX = intval($value[1+9]);
         $cor['client_x'] = $cor['form-x_'.$tempX];
         if(empty($cor['client_x']))     $cor['client_x'] = $tempX / 100;
         

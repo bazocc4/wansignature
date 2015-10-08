@@ -271,7 +271,7 @@ class EntriesController extends AppController {
                 
         /**  Define how many rows we want for each "chunk" and other helper variable  **/
         $chunkSize = $counterRow = 50;
-        $maxCols = ( $myTypeSlug == 'diamond' ? 71 : 43 );
+        $maxCols = ( $myTypeSlug == 'diamond' ? 71 : 44 );
         $printSpace = array('', '&nbsp;','&nbsp;&nbsp;', '&nbsp;&nbsp;&nbsp;', '&nbsp;&nbsp;&nbsp;&nbsp;');
         $intervalSpace = count($printSpace) - 1;
         
@@ -992,7 +992,7 @@ class EntriesController extends AppController {
 				$myEntry = $this->Entry->findByLangCode($this->request->data['language'].substr($myEntry['Entry']['lang_code'], 2));
 			}	
 			// PREPARE DATA !!	
-			$this->request->data['Entry']['title'] = $this->request->data['Entry'][0]['value'];
+			$this->request->data['Entry']['title'] = $this->Entry->get_serial_title($myType['Type']['slug'], $this->request->data['Entry'][0]['value'], $this->request->data['EntryMeta'] );
 			$this->request->data['Entry']['description'] = $this->request->data['Entry'][1]['value'];
 			$this->request->data['Entry']['main_image'] = $this->request->data['Entry'][2]['value'];
 			if(isset($this->request->data['Entry'][3]['value']))

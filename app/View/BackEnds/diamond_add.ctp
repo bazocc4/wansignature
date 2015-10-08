@@ -81,15 +81,16 @@
 			
 			$value = array();
 			$value['key'] = 'form-'.Inflector::slug(strtolower($titlekey));
-			$value['validation'] = 'not_empty|is_numeric';
 			$value['model'] = 'Entry';
 			$value['counter'] = 0;
 			$value['input_type'] = 'text';
             $value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['title']);
-            if(empty($value['value']) && ($autoserial = $this->Get->meta_details(NULL , 'diamond' , NULL , NULL , 'Entry.title DESC')) )
+
+            if( empty($value['value']) )
             {
-                $value['value'] = $autoserial['Entry']['title'] + 1;
-            }
+                $value['value'] = 1; // set just as temp value...
+            }            
+            $value['display'] = 'none';
 			echo $this->element('input_'.$value['input_type'] , $value);
 		?>
 		<!-- BEGIN TO LIST META ATTRIBUTES -->

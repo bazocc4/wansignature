@@ -1232,4 +1232,71 @@ class Entry extends AppModel {
         }
         // end of function ...
     }
+    
+    function get_serial_title($myTypeSlug, $title, $EntryMeta = array())
+    {
+        if($myTypeSlug == 'diamond' || $myTypeSlug == 'cor-jewelry')
+        {
+            $options = array(
+                'conditions' => array(
+                    'Entry.entry_type' => $myTypeSlug,
+                ),
+                'order' => array('(Entry.title + 0) DESC'),
+                'recursive' => -1
+            );
+            
+            // check for product_type ...
+            $branded = 0;
+            if($myTypeSlug == 'cor-jewelry')
+            {
+                $EntryMeta = array_column($EntryMeta, 'value', 'key');
+                
+                if(!empty($EntryMeta['form-product_type']) && (strpos($EntryMeta['form-product_type'], 'italy') !== FALSE || strpos($EntryMeta['form-product_type'], 'korea') !== FALSE) )
+                {
+                    $branded = 1;
+                    $options['conditions']['Entry.title LIKE'] = 'G%';
+                    $options['order'] = array('(SUBSTRING(Entry.title, 5) + 0) DESC');
+                }
+                else
+                {
+                    $options['conditions']['Entry.title NOT LIKE'] = 'G%';
+                }
+            }
+            
+            $sql = $this->Entry->find('first', $options);
+            
+            $result = '';
+            if($branded)
+            {
+                // get counter title ...
+                $result = substr($sql['Entry']['title'], 4) + 1;                
+                
+                $kode = array('type' => 9, 'brand' => 9, 'color' => 9);                
+                foreach($kode as $key => $value)
+                {
+                    if(!empty($EntryMeta['form-product_'.$key]))
+                    {
+                        $sql = $this->meta_details($EntryMeta['form-product_'.$key] , 'product-'.$key);
+                        
+                        if(is_numeric($sql['EntryMeta']['kode_'.$key]))
+                        {
+                            $kode[$key] = $sql['EntryMeta']['kode_'.$key];
+                        }
+                    }
+                }
+                
+                $result = 'G'.implode('', $kode).$result;
+            }
+            else
+            {
+                $result = $sql['Entry']['title'] + 1;
+            }
+
+            return $result;
+        }
+        else
+        {
+            return $title;
+        }
+    }
 }

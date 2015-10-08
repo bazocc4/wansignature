@@ -114,7 +114,7 @@
 	echo $this->Form->create('Setting', array('action'=>'index','type'=>'file','class'=>'notif-change form-horizontal fl','inputDefaults' => array('label' =>false , 'div' => false)));
 ?>
 	<fieldset>
-		<p class="notes important" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>
+		<p class="notes important <?php echo ($user['role_id'] > 2?'hide':''); ?>" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>
 <!-- 		Basic Setting -->
 		<div class="alert alert-info full fl">
 			<strong>Basic Setting</strong>
@@ -408,8 +408,25 @@
 		?>
 	<!-- SAVE BUTTON -->
 		<div class="control-action">
-			<button type="submit" class="btn btn-primary">Save Changes</button>
-	        <button type="button" class="btn" onclick="javascript: window.location=site+'admin/settings'">Cancel</button>
+			<?php
+                if($user['role_id'] <= 2)
+                {
+                    ?>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+	        <button type="button" class="btn" onclick="javascript: window.location=site+'admin/settings'">Cancel</button>        
+                    <?php
+                }
+                else
+                {
+                    ?>
+            <script>
+                $(document).ready(function(){
+                    $('form#SettingIndexForm').find('input, select, textarea').attr('disabled', 'disabled');
+                });
+            </script>        
+                    <?php
+                }
+            ?>
 	    </div>
 	</fieldset>
 <?php echo $this->Form->end(); ?>

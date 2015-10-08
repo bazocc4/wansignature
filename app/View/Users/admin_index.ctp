@@ -37,8 +37,13 @@
 		</div>
 	</div>
 	<div class="span7">
-		<?php echo (empty($popup)?$this->Html->link('Add User',array('action'=>'add'),array('class'=>'btn btn-primary fr right-btn')):''); ?>
-		<div class="input-prepend" style="margin-right: 5px;">
+		<?php
+            if(empty($popup) && $user['role_id'] <= 2)
+            {
+                echo $this->Html->link('Add User',array('action'=>'add'),array('class'=>'btn btn-primary fr right-btn'));
+            }
+        ?>
+		<div class="input-prepend <?php echo ($user['role_id'] > 2?'hide':''); ?>" style="margin-right: 5px;">
 			<span class="add-on" style="margin-right: 3px; margin-top : 9px;">
 				<?php
 					echo $this->Html->link('<i class="icon-search"></i>',array("action"=>"index","1",'?'=>(empty($popup)?'':array('popup'=>'ajax'))) , array("class"=>"ajax_mypage searchMeLink","escape"=>false));
@@ -113,7 +118,7 @@
 			<th>LAST MODIFIED</th>
 			<th>STATUS</th>
 			<?php
-				if(empty($popup))
+				if(empty($popup) && $user['role_id'] <= 2)
 				{
 					echo "<th class='action'></th>";
 				}
@@ -123,6 +128,12 @@
 	<tbody>
 	<?php		
 		foreach ($myList as $value):
+        
+        // just show her / his user profile if regular user ...
+        if($user['role_id'] > 2 && $user['user_id'] != $value['User']['id'])
+        {
+            continue;
+        }
 	?>	
 	<tr>
 		<td>
@@ -159,7 +170,7 @@
 			</span>
 		</td>
 		<?php
-			if(empty($popup))
+			if(empty($popup) && $user['role_id'] <= 2)
 			{
 				echo "<td>";
 				$confirm = null;
@@ -197,7 +208,7 @@
 <!--      ----------------------------------------------------------------------------------------------------------		 -->
 	</div>	
 	<?php
-		if($totalList > 0){
+		if($totalList > 0 && $user['role_id'] <= 2){
 			?>
 				<!-- per 15 content -->
 				<div class="pagination fr">

@@ -135,7 +135,7 @@
 								echo $this->Html->link('Accounts',array('controller'=>'accounts','action'=>'index'),array('id'=>'accounts'));
 							?>
 						</li>
-						<li>
+						<li class="<?php echo ($user['role_id'] > 2?'hide':''); ?>">
 							<?php 
 								echo $this->Html->link('Media Library',array('controller'=>'entries','action'=>'media'),array('id'=>'media')); 
 							?>

@@ -971,9 +971,9 @@ class EntryMeta extends AppModel {
         {
             // auto generate product code !!
             $value[2] = $this->Entry->get_serial_title('cor-jewelry', NULL, array(
-                array('key' => 'form-product_type' , 'value' => $value[3] ),
-                array('key' => 'form-product_brand' , 'value' => $value[4] ),
-                array('key' => 'form-product_color' , 'value' => $value[5] ),
+                array('key' => 'form-product_brand' , 'value' => $value[4] ),   // (I)
+                array('key' => 'form-product_type' , 'value' => $value[3] ),    // (II)
+                array('key' => 'form-product_color' , 'value' => $value[5] ),   // (III)
             ), FALSE );
         }
         

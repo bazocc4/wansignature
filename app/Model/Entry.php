@@ -1271,7 +1271,7 @@ class Entry extends AppModel {
                 // get counter title ...
                 $result = substr($sql['Entry']['title'], 4) + 1;                
                 
-                $kode = array('type' => 9, 'brand' => 9, 'color' => 9);                
+                $kode = array( 'brand' => 9 , 'type' => 9 , 'color' => 9);
                 foreach($kode as $key => $value)
                 {
                     if(!empty($EntryMeta['form-product_'.$key]))

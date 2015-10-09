@@ -960,10 +960,21 @@ class EntryMeta extends AppModel {
     
     function upload_jewelry($value = array(), $mySetting = array())
     {
-        $test_title = trim($value[2], 'G');
-        if(!is_numeric($test_title) || empty($value[3]))
+        // check product_type and item_weight ?
+        if(empty($value[3]) || !is_numeric($value[1+5]) )
         {
             return false; // skip record ...
+        }
+        
+        $test_title = trim($value[2], 'G');
+        if(!is_numeric($test_title))
+        {
+            // auto generate product code !!
+            $value[2] = $this->Entry->get_serial_title('cor-jewelry', NULL, array(
+                array('key' => 'form-product_type' , 'value' => $value[3] ),
+                array('key' => 'form-product_brand' , 'value' => $value[4] ),
+                array('key' => 'form-product_color' , 'value' => $value[5] ),
+            ), FALSE );
         }
         
         // grouping value ...
@@ -1039,19 +1050,20 @@ class EntryMeta extends AppModel {
     
     function upload_diamond($value = array(), $mySetting = array())
     {
-        $test_title = intval($value[1]);
-        if(empty($test_title))
+        // check product_type?
+        if( ! (substr($value[2], 0, 1) == 'D' && strlen($value[2]) <= 3) )
         {
             return false; // skip record ...
         }
         
+        $test_title = intval($value[1]);
         // renew title !!
-        $value[1] = substr( $test_title + 1000000 , 1);
+        $value[1] = (empty($test_title)? $this->Entry->get_serial_title('diamond') : substr( $test_title + 1000000 , 1) );
         
         // grouping value ...
         $dmd = array(
             /* WAN DETAIL INFORMATION */
-            'product_type'          => ( empty($value[2]) ? 'D' : strtoupper($value[2]) ),
+            'product_type'          => strtoupper($value[2]),
             'barcode'               => round(floatval($value[3]), 2),
             'sell_barcode'          => round(floatval($value[4]), 2),
             'product_status'        => $value[5],            

@@ -1233,7 +1233,7 @@ class Entry extends AppModel {
         // end of function ...
     }
     
-    function get_serial_title($myTypeSlug, $title, $EntryMeta = array())
+    function get_serial_title($myTypeSlug, $title, $EntryMeta = array(), $slugmode = TRUE)
     {
         if($myTypeSlug == 'diamond' || $myTypeSlug == 'cor-jewelry')
         {
@@ -1251,7 +1251,7 @@ class Entry extends AppModel {
             {
                 $EntryMeta = array_column($EntryMeta, 'value', 'key');
                 
-                if(!empty($EntryMeta['form-product_type']) && (strpos($EntryMeta['form-product_type'], 'italy') !== FALSE || strpos($EntryMeta['form-product_type'], 'korea') !== FALSE) )
+                if(!empty($EntryMeta['form-product_type']) && (stripos($EntryMeta['form-product_type'], 'italy') !== FALSE || stripos($EntryMeta['form-product_type'], 'korea') !== FALSE) )
                 {
                     $branded = 1;
                     $options['conditions']['Entry.title LIKE'] = 'G%';
@@ -1276,7 +1276,9 @@ class Entry extends AppModel {
                 {
                     if(!empty($EntryMeta['form-product_'.$key]))
                     {
-                        $sql = $this->meta_details($EntryMeta['form-product_'.$key] , 'product-'.$key);
+                        $sql = ($slugmode?
+                                $this->meta_details($EntryMeta['form-product_'.$key] , 'product-'.$key) :
+                                $this->meta_details(NULL , 'product-'.$key,NULL,NULL,NULL,NULL,$EntryMeta['form-product_'.$key]) );
                         
                         if(is_numeric($sql['EntryMeta']['kode_'.$key]))
                         {

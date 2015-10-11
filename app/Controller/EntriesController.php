@@ -14,7 +14,186 @@ class EntriesController extends AppController {
     
     public function download_diamond()
     {
-        // download diamond command here ...
+        if(!empty($this->request->data))
+		{
+			App::import('Vendor', 'excel/worksheet');
+            App::import('Vendor', 'excel/workbook');
+            
+            $query = array_map('breakEntryMetas', $this->Entry->findAllById(explode(',', $this->request->data['record'])) );
+            $filename = 'WAN_DIAMOND_'.date('dmy_Hi');
+            $excel1995 = getTempFolderPath().$filename.'.xls';
+            $excel2007 = getTempFolderPath().$filename.'.xlsx';
+
+            // Creating a workbook
+            $workbook = new Workbook($excel1995);
+            // Creating the worksheet
+            $worksheet1 =& $workbook->add_worksheet();
+
+            // $worksheet1->hide_gridlines();
+            $worksheet1->set_landscape();
+            $worksheet1->fit_to_pages(0,0);
+            $worksheet1->repeat_rows(0,2);
+
+            $worksheet1->set_column(0, 0, 8);
+            $worksheet1->set_column(1, 70, 15);
+
+            // Format for the headings
+            $formatot =& $workbook->add_format();
+            $formatot->set_size(12);
+            $formatot->set_bold();
+            $formatot->set_border(1);
+            $formatot->set_merge();
+
+            // ==================== >>>
+            // write the 1st header ...
+            // ==================== >>>
+            $indexbaris = 0;
+            $worksheet1->write($indexbaris,1,"WAN DETAIL INFORMATION (商品详细信息) … WAN DETAIL INFORMATION (商品详细信息) … WAN DETAIL INFORMATION (商品详细信息) … WAN DETAIL INFORMATION (商品详细信息)",$formatot);
+            for($col=2 ; $col <= 11 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            $worksheet1->write($indexbaris,13,"ITEM DESCRIPTION / SPECIFICATIONS … (项目描述/规格) … (项目描述/规格)",$formatot);
+            for($col=14 ; $col <= 18 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            $worksheet1->write($indexbaris,22,"VENDOR & SUPPLIER DETAIL (供应商和供应商的详细信息) … VENDOR & SUPPLIER DETAIL (供应商和供应商的详细信息) … VENDOR & SUPPLIER DETAIL (供应商和供应商的详细信息)",$formatot);
+            for($col=23 ; $col <= 36 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            $worksheet1->write($indexbaris,38,"SOLD & RETURN REPORT TO VD (出售及向供应商退回报告)",$formatot);
+            for($col=39 ; $col <= 42 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            $worksheet1->write($indexbaris,47,"EVERYTHING ABOUT WAN TRANSACTIONS (卖出交易的完整信息) … EVERYTHING ABOUT WAN TRANSACTIONS (卖出交易的完整信息) … EVERYTHING ABOUT WAN TRANSACTIONS (卖出交易的完整信息)",$formatot);
+            for($col=48 ; $col <= 66 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            $worksheet1->write($indexbaris,68,"HISTORY OF TRANSACTIONS (交易历史)",$formatot);
+            for($col=69 ; $col <= 70 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            // ==================== >>>
+            // write the 2nd header ...
+            // ==================== >>>
+            $indexbaris++;
+            $worksheet1->write($indexbaris,1,"MERCHANDISE INFO (商品信息) … MERCHANDISE INFO (商品信息) … MERCHANDISE INFO (商品信息)",$formatot);
+            for($col=2 ; $col <= 8 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            $worksheet1->write($indexbaris,9,"FEE (费) … FEE (费) … FEE (费)",$formatot);
+            for($col=10 ; $col <= 11 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            $worksheet1->write($indexbaris,13,"DIAMOND DESCRIPTION / SPEC (钻石总重)",$formatot);
+            for($col=14 ; $col <= 16 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            $worksheet1->write($indexbaris,17,"GOLD (金重)",$formatot);
+            $worksheet1->write_blank($indexbaris,18,$formatot);
+            
+            $worksheet1->write($indexbaris,22,"VENDOR INVOICE DETAIL … (供应商发票的详细信息)",$formatot);
+            for($col=23 ; $col <= 27 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            $worksheet1->write($indexbaris,28,"VENDOR PRICE (CAPITAL) (资本价格)",$formatot);
+            for($col=29 ; $col <= 32 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            $worksheet1->write($indexbaris,33,"PAYMENT TO VENDOR (向供应商付款)",$formatot);
+            for($col=34 ; $col <= 36 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            $worksheet1->write($indexbaris,38,"SOLD REPORT (销售报告)",$formatot);
+            for($col=39 ; $col <= 40 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            $worksheet1->write($indexbaris,41,"RETURN REPORT (将报表)",$formatot);
+            $worksheet1->write_blank($indexbaris,42,$formatot);
+            
+            $worksheet1->write($indexbaris,43,"SALES REPORT (销售报告)",$formatot);
+            for($col=44 ; $col <= 45 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            $worksheet1->write($indexbaris,47,"CLIENT TRANSACTION DETAIL (客户信息) … CLIENT TRANSACTION DETAIL (客户信息)",$formatot);
+            for($col=48 ; $col <= 52 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            $worksheet1->write($indexbaris,53,"SOLD INV 出售发票",$formatot);
+            $worksheet1->write_blank($indexbaris,54,$formatot);
+            
+            $worksheet1->write($indexbaris,55,"SELLING PRICE (售价) … SELLING PRICE (售价) … SELLING PRICE (售价)",$formatot);
+            for($col=56 ; $col <= 59 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            $worksheet1->write($indexbaris,60,"TYPE OF PAYMENT (描述支付) … TYPE OF PAYMENT (描述支付) … TYPE OF PAYMENT (描述支付)",$formatot);
+            for($col=61 ; $col <= 66 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            $worksheet1->write($indexbaris,68,"PREVIOUS SOLD INFO",$formatot);
+            for($col=69 ; $col <= 70 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+            
+            // ==================== >>>
+            // write the 3rd header ...
+            // ==================== >>>
+            $indexbaris++;
+            $worksheet1->set_row($indexbaris, 100);
+            
+            // Format for the 3rd headings
+            $format_third =& $workbook->add_format();
+            $format_third->set_size(12);
+            $format_third->set_bold();
+            $format_third->set_border(1);
+            $format_third->set_text_wrap();
+            $format_third->set_align('center');
+            $format_third->set_align('vcenter');
+            
+            foreach(array(
+                NULL, "WAN # 项目编号", "TYPE 类型", "BARCODE 价格标签", "SELL BRCD (价格标签)", "STATUS IN WAN (状态)", "ADDITIONAL NOTE 附加说明", "WH", "√", "FEE (费)", "DATE (日期)", "PAID (高薪)",
+                NULL, "CARAT (总克拉)", "CARAT (总克拉)", "CARAT (总克拉)", "CARAT (总克拉)", "%", "GRAM (总克)",
+                NULL, "ITEM REFERENCE CODE 项目参考代码", "ITEM REFERENCE CODE 项目参考代码 (X2)", "VENDOR 供应商", "VENDOR ITEM # 供应商伴奏编号", "VENDOR INV # 供应商发票号", "VD DATE 发票日期", "STATUS WITH VENDOR", "NOTE 附加信息", "USD HKD", "BARCODE (价格)", "X", "USD (美元)", "HKD (港元)", "PAID FACTORY", "PAID DATE", "PAID 2ND VENDOR", "PAID DATE",
+                NULL, "SR DATE (报告日期)", "SR  RR", "TEMP/R (临时报告)", "DATE (返程日期)", "RETURN DETAIL (返回的信息)", "SALES NAME", "COMMISION (回扣)", "OMZET",
+                NULL, "CLIENT NAME (客户名称) WHOLESALE (批发)", "SELL X", "CD 守则", "CLIENT NAME (客户名称) RETAIL", "SELL X", "INPUT DATA", "SOLD DT 销售日期", "S INV # 发票号码", "TOTAL (合計)", "USD (美元)", "RUPIAH (卢比)", "RATE", "CLIENT OUTSTANDING (未偿还余额)", "CREDIT CARD (信用卡)", "CICILAN 债务 (HSBC PERMATA CITI)   3-6-12 MONTHS", "CASH (现金) TRANSFER (银行汇款) DEBIT CARD (借记卡)", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式",
+                NULL, "PREV SOLD PRICE (成交价历史)", "PREV BARCODE", "PREVIOUS SOLD NOTE (注：关于交易历史)",
+            ) as $key => $value)
+            {
+                if(!empty($value))
+                {
+                    $worksheet1->write($indexbaris, $key ,$value,$format_third);
+                }
+            }
+            
+//            $format1 =& $workbook->add_format();
+//            $format1->set_size(10);
+//            $format1->set_border(1);
+//            $format1->set_text_wrap();			
+//            $format1->set_align('top');
+            
+            // query all articles first !!
+//            $articles = array_map('breakEntryMetas', $this->Entry->findAllByEntryType('articles') );
+//            $dbkey_haystack = array_column( array_column($articles, 'Entry') , 'slug');
+//
+//            $index = 1;
+//            foreach ($query as $key => $value) 
+//            {
+//                foreach($value['ChildEntry'] as $childkey => $childvalue)
+//                {
+//                    $dbkey = array_search($childvalue['title'], $dbkey_haystack);
+//                    if($dbkey !== FALSE)
+//                    {
+//                        $worksheet1->write($index,0,$index,$format1);
+//                        
+//                        $worksheet1->write_string($index,1,$value['Entry']['title'],$format1);
+//                        
+//                        $worksheet1->write_string($index,2,$value['EntryMeta']['name'],$format1);
+//                        
+//                        $worksheet1->write_string($index,3, $articles[$dbkey]['EntryMeta']['video_id'] ,$format1);
+//                        
+//                        $worksheet1->write_string($index,4, $articles[$dbkey]['Entry']['title'] ,$format1);
+//                        
+//                        $worksheet1->write_number($index, 5, $childvalue['description'], $format1);
+//                        
+//                        $index++;
+//                    }
+//                }
+//            }
+
+            $workbook->close();
+            // convert Excel version 5.0 to Excel 2007...
+            convertExcelVersion($excel1995 , $excel2007);
+            // HTTP headers for new Excel 2007 output buffer ...
+            promptDownloadFile($excel2007);
+            // delete temp files ...
+            unlink($excel1995);
+            unlink($excel2007);
+            exit;
+		}
+        else
+        {
+            throw new NotFoundException('Error 404 - Not Found');
+        }
     }
     
     public function download_jewelry()

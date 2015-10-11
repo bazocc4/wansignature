@@ -50,7 +50,25 @@
                     // modify element header view !!
                     $('div.inner-header > div:last > div:last').after("<div class='btn-group'><form accept='application/vnd.ms-excel' accept-charset='utf-8' method='post' enctype='multipart/form-data' action='#' style='margin:0 0 10px 0;' class='form-upload-excel'><input REQUIRED type='file' style='width:200px;' accept='.xls,.xlsx' name='data[fileurl]' onchange='checkfile(this);'><button class='btn' type='submit'>Upload</button></form></div>"); // upload Excel ...
                     
-                    $('div.inner-header > div:last > div:last').before("<a data-toggle='tooltip' href='"+site+"entries/download_diamond' style='margin-bottom:10px;' title='Download Diamond List' class='btn btn-inverse right-btn fr hide'><i class='icon-download-alt icon-white'></i> Download</a>"); // download Excel ...
+                    $('div.inner-header > div:last > div:last').before("<form class='hide' id='download-excel' action='"+site+"entries/download_diamond' method='POST'><input type='hidden' name='data[record]'><button style='margin-bottom:10px;' class='btn btn-inverse right-btn fr' type='submit'><i class='icon-download-alt icon-white'></i> Download Excel</button></form>"); // download Excel ...
+
+                    $('form#download-excel').submit(function(){
+                        var records = [];
+                        $('input.check-record:checked').each(function(i,el){
+                            records.push($(el).val());
+                        });
+
+                        if(records.length > 0)
+                        {
+                            $(this).find('input[name="data[record]"]').val( records.join(',') );
+                        }
+                        else
+                        {
+                            alert('Please select one or more DIAMOND to be downloaded into excel format.');
+                            $('input.check-record:first').focus();
+                            return false;
+                        }
+                    });
                 });
             </script>
             <?php

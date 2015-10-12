@@ -41,13 +41,16 @@ class EntriesController extends AppController {
             $formatot =& $workbook->add_format();
             $formatot->set_size(12);
             $formatot->set_bold();
-            $formatot->set_border(1);
+            $formatot->set_border(2);
             $formatot->set_merge();
+            $formatot->set_align('vcenter');
 
             // ==================== >>>
             // write the 1st header ...
             // ==================== >>>
             $indexbaris = 0;
+            $worksheet1->set_row($indexbaris, 18);
+            
             $worksheet1->write($indexbaris,1,"WAN DETAIL INFORMATION (商品详细信息) … WAN DETAIL INFORMATION (商品详细信息) … WAN DETAIL INFORMATION (商品详细信息) … WAN DETAIL INFORMATION (商品详细信息)",$formatot);
             for($col=2 ; $col <= 11 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
             
@@ -70,6 +73,8 @@ class EntriesController extends AppController {
             // write the 2nd header ...
             // ==================== >>>
             $indexbaris++;
+            $worksheet1->set_row($indexbaris, 18);
+            
             $worksheet1->write($indexbaris,1,"MERCHANDISE INFO (商品信息) … MERCHANDISE INFO (商品信息) … MERCHANDISE INFO (商品信息)",$formatot);
             for($col=2 ; $col <= 8 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
             
@@ -121,15 +126,15 @@ class EntriesController extends AppController {
             $indexbaris++;
             $worksheet1->set_row($indexbaris, 100);
             
-            // Format for the 3rd headings
-            $format_third =& $workbook->add_format();
-            $format_third->set_size(12);
-            $format_third->set_bold();
-            $format_third->set_border(1);
-            $format_third->set_text_wrap();
-            $format_third->set_align('center');
-            $format_third->set_align('vcenter');
+            // set certain index as custom color for header table background ...
+            $workbook->set_custom_color(24, 175, 171, 171);            
+            $workbook->set_custom_color(25, 219, 219, 219);
+            $workbook->set_custom_color(26, 251, 228, 213);
+            $workbook->set_custom_color(27, 255, 255, 255);
+            $workbook->set_custom_color(28, 222, 235, 246);
+            $workbook->set_custom_color(29, 255, 231, 153);
             
+            $counterColor = 23;
             foreach(array(
                 NULL, "WAN # 项目编号", "TYPE 类型", "BARCODE 价格标签", "SELL BRCD (价格标签)", "STATUS IN WAN (状态)", "ADDITIONAL NOTE 附加说明", "WH", "√", "FEE (费)", "DATE (日期)", "PAID (高薪)",
                 NULL, "CARAT (总克拉)", "CARAT (总克拉)", "CARAT (总克拉)", "CARAT (总克拉)", "%", "GRAM (总克)",
@@ -141,7 +146,22 @@ class EntriesController extends AppController {
             {
                 if(!empty($value))
                 {
-                    $worksheet1->write($indexbaris, $key ,$value,$format_third);
+                    $worksheet1->write($indexbaris, $key ,$value, $workbook->add_format(array(
+                        array('key' => 'size',      'value' => 12 ),
+                        array('key' => 'bold',      'value' => 1 ),
+                        array('key' => 'border',    'value' => 2 ),
+                        array('key' => 'text_wrap', 'value' => 1 ),
+                        array('key' => 'align',     'value' => 'center' ),                        
+                        array('key' => 'align',     'value' => 'vcenter' ),
+                        
+                        // set background custom color of the cell method !!
+                        array('key' => 'pattern',   'value' => 1 ),
+                        array('key' => 'fg_color',  'value' => $counterColor ),
+                    )) );
+                }
+                else
+                {
+                    $counterColor++;
                 }
             }
             

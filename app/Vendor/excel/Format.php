@@ -95,6 +95,12 @@ class Format
         // Set properties passed to Workbook::add_format()
         foreach($properties as $property => $value)
         {
+            if(is_array($value))
+            {
+                $property = $value['key'];
+                $value = $value['value'];
+            }
+            
             if(method_exists($this,"set_$property"))
             {
                 $aux = 'set_'.$property;

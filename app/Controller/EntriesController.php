@@ -16,10 +16,10 @@ class EntriesController extends AppController {
     {
         if(!empty($this->request->data))
 		{
+            set_time_limit(0); // unlimited time limit execution.
 			App::import('Vendor', 'excel/worksheet');
             App::import('Vendor', 'excel/workbook');
             
-            $query = array_map('breakEntryMetas', $this->Entry->findAllById(explode(',', $this->request->data['record'])) );
             $filename = 'WAN_DIAMOND_'.date('dmy_Hi');
             $excel1995 = getTempFolderPath().$filename.'.xls';
             $excel2007 = getTempFolderPath().$filename.'.xlsx';
@@ -41,7 +41,7 @@ class EntriesController extends AppController {
             $formatot =& $workbook->add_format();
             $formatot->set_size(12);
             $formatot->set_bold();
-            $formatot->set_border(2);
+            $formatot->set_border(1);
             $formatot->set_merge();
             $formatot->set_align('vcenter');
 
@@ -149,7 +149,7 @@ class EntriesController extends AppController {
                     $worksheet1->write($indexbaris, $key ,$value, $workbook->add_format(array(
                         array('key' => 'size',      'value' => 12 ),
                         array('key' => 'bold',      'value' => 1 ),
-                        array('key' => 'border',    'value' => 2 ),
+                        array('key' => 'border',    'value' => 1 ),
                         array('key' => 'text_wrap', 'value' => 1 ),
                         array('key' => 'align',     'value' => 'center' ),                        
                         array('key' => 'align',     'value' => 'vcenter' ),
@@ -165,40 +165,173 @@ class EntriesController extends AppController {
                 }
             }
             
-//            $format1 =& $workbook->add_format();
-//            $format1->set_size(10);
-//            $format1->set_border(1);
-//            $format1->set_text_wrap();			
-//            $format1->set_align('top');
+            // ===================== >>
+            // BEGIN CONTENT PROCESS !!
+            // ===================== >>
+            $format1 =& $workbook->add_format();
+            $format1->set_size(10);
+            $format1->set_border(1);
+            $format1->set_text_wrap();
+            $format1->set_align('center');
+            $format1->set_align('vcenter');
             
-            // query all articles first !!
-//            $articles = array_map('breakEntryMetas', $this->Entry->findAllByEntryType('articles') );
-//            $dbkey_haystack = array_column( array_column($articles, 'Entry') , 'slug');
-//
-//            $index = 1;
-//            foreach ($query as $key => $value) 
-//            {
-//                foreach($value['ChildEntry'] as $childkey => $childvalue)
-//                {
-//                    $dbkey = array_search($childvalue['title'], $dbkey_haystack);
-//                    if($dbkey !== FALSE)
-//                    {
-//                        $worksheet1->write($index,0,$index,$format1);
-//                        
-//                        $worksheet1->write_string($index,1,$value['Entry']['title'],$format1);
-//                        
-//                        $worksheet1->write_string($index,2,$value['EntryMeta']['name'],$format1);
-//                        
-//                        $worksheet1->write_string($index,3, $articles[$dbkey]['EntryMeta']['video_id'] ,$format1);
-//                        
-//                        $worksheet1->write_string($index,4, $articles[$dbkey]['Entry']['title'] ,$format1);
-//                        
-//                        $worksheet1->write_number($index, 5, $childvalue['description'], $format1);
-//                        
-//                        $index++;
-//                    }
-//                }
-//            }
+            $formatdate =& $workbook->add_format();
+            $formatdate->set_size(10);
+            $formatdate->set_border(1);
+            $formatdate->set_text_wrap();			
+            $formatdate->set_align('center');
+            $formatdate->set_align('vcenter');
+            $formatdate->set_num_format('d-mmm-yy'); // 7-AUG-15
+            
+            $formatRP =& $workbook->add_format();
+            $formatRP->set_size(10);
+            $formatRP->set_border(1);
+            $formatRP->set_text_wrap();			
+            $formatRP->set_align('center');
+            $formatRP->set_align('vcenter');
+            $formatRP->set_num_format('_("Rp"* #,##0_);_("Rp"* (#,##0);_("Rp"* "-"_);_(@_)');
+            
+            // prepare modules ...
+            $product_type = $this->EntryMeta->find('all', array(
+                'conditions' => array(
+                    'Entry.entry_type' => 'product-type',
+                    'EntryMeta.key' => 'form-category',
+                    'EntryMeta.value' => 'Diamond',
+                ),
+            ));
+            $product_type = array_column( array_column($product_type, 'Entry'), 'title', 'slug' );
+            $warehouse = array_column( array_column( $this->Entry->findAllByEntryType('warehouse') , 'Entry'), 'title', 'slug' );
+            $vendor = array_column( array_column( $this->Entry->findAllByEntryType('vendor') , 'Entry'), 'title', 'slug' );
+            $vendor_invoice = array_column( array_column( $this->Entry->findAllByEntryType('dmd-vendor-invoice') , 'Entry'), 'title', 'slug' );
+            
+            $client = array_map('breakEntryMetas', $this->Entry->findAllByEntryType('client') );
+            $client = array_combine(
+                array_column( array_column( $client , 'Entry'), 'slug' ), // keys
+                $client // values
+            );
+            $client_invoice = array_column( array_column( $this->Entry->findAllByEntryType('dmd-client-invoice') , 'Entry'), 'title', 'slug' );
+            
+            // query diamond ...
+            $query = array_map('breakEntryMetas', $this->Entry->findAllById(explode(',', $this->request->data['record'])) );
+            foreach($query as $key => $value)
+            {
+                $indexbaris++;
+                $carat = array_map('trim', explode(chr(10), $value['EntryMeta']['carat'] ) );
+                $irc = array_map('trim', explode(chr(10), $value['EntryMeta']['item_ref_code'] ) );
+                $payment_checks = array_filter(array_map('trim', explode(chr(10), $value['EntryMeta']['payment_checks'] ) ));
+                
+                $wholesaler_name = '';
+                $wholesaler_x = '';                
+                $wholesaler_code = '';                
+                $retailer_name = '';
+                $retailer_x = '';
+                if( !empty( $client[ $value['EntryMeta']['client'] ] ) )
+                {
+                    if( $client[ $value['EntryMeta']['client'] ]['EntryMeta']['kategori'] == 'Wholesaler' )
+                    {
+                        $wholesaler_name = $client[ $value['EntryMeta']['client'] ]['Entry']['title'];
+                        $wholesaler_x = $value['EntryMeta']['client_x'];                        
+                        $wholesaler_code = $client[ $value['EntryMeta']['client'] ]['EntryMeta']['kode_pelanggan'];
+                    }
+                    else
+                    {
+                        $retailer_name = $client[ $value['EntryMeta']['client'] ]['Entry']['title'];
+                        $retailer_x = $value['EntryMeta']['client_x'];
+                        
+                        if( !empty($client[ $value['EntryMeta']['wholesaler'] ]) )
+                        {
+                            $wholesaler_name = $client[ $value['EntryMeta']['wholesaler'] ]['Entry']['title'];
+                            $wholesaler_x = ( empty($client[ $value['EntryMeta']['wholesaler'] ]['EntryMeta']['diamond_sell_x']) ?$retailer_x: $client[ $value['EntryMeta']['wholesaler'] ]['EntryMeta']['diamond_sell_x'] );
+                            $wholesaler_code = $client[ $value['EntryMeta']['wholesaler'] ]['EntryMeta']['kode_pelanggan'];
+                        }
+                    }
+                }
+                
+                foreach(array(
+                    /* WAN DETAIL INFORMATION */
+                    ($key+1),
+                    $value['Entry']['title'],
+                    $product_type[ $value['EntryMeta']['product_type'] ],
+                    ( $value['EntryMeta']['barcode'] > 1 ?$value['EntryMeta']['barcode']:''),
+                    $value['EntryMeta']['sell_barcode'],
+                    $value['EntryMeta']['product_status'],
+                    NULL,
+                    $warehouse[ $value['EntryMeta']['warehouse'] ],
+                    NULL,NULL,NULL,NULL,NULL,
+                    
+                    /* ITEM DESCRIPTION / SPECIFICATIONS */
+                    $carat[0], $carat[1], $carat[2], implode(chr(10), array_slice($carat, 3) ),
+                    $value['EntryMeta']['gold_carat'],
+                    (empty($value['EntryMeta']['gold_weight'])?'':$value['EntryMeta']['gold_weight'].' GR'),
+                    NULL,
+                    $irc[0], implode(chr(10), array_slice($irc, 1) ),
+                    
+                    /* VENDOR & SUPPLIER DETAIL */
+                    $vendor[ $value['EntryMeta']['vendor'] ],
+                    $value['EntryMeta']['vendor_item_code'],
+                    $vendor_invoice[ $value['EntryMeta']['vendor_invoice_code'] ],
+                    (empty($value['EntryMeta']['vendor_invoice_date'])?'':parseExcelDate( $value['EntryMeta']['vendor_invoice_date'] )),
+                    $value['EntryMeta']['vendor_note'],
+                    NULL,
+                    $value['EntryMeta']['vendor_currency'],
+                    ( $value['EntryMeta']['vendor_barcode'] > 1 ?$value['EntryMeta']['vendor_barcode']:''),
+                    $value['EntryMeta']['vendor_x'],
+                    $value['EntryMeta']['vendor_usd'],
+                    $value['EntryMeta']['vendor_hkd'],
+                    NULL,NULL,NULL,NULL,NULL,
+                    
+                    /* SOLD & RETURN REPORT TO VD */
+                    ( empty($value['EntryMeta']['report_date']) ?'': parseExcelDate( $value['EntryMeta']['report_date'] ) ),
+                    $value['EntryMeta']['report_type'],
+                    $value['EntryMeta']['temp_report'],
+                    ( empty($value['EntryMeta']['return_date']) ?'': parseExcelDate( $value['EntryMeta']['return_date'] ) ),
+                    $value['EntryMeta']['return_detail'],
+                    NULL,NULL,
+                    $value['EntryMeta']['omzet'],
+                    NULL,
+                    
+                    /* EVERYTHING ABOUT WAN TRANSACTIONS */
+                    $wholesaler_name,
+                    $wholesaler_x,
+                    $wholesaler_code,
+                    $retailer_name,
+                    $retailer_x,
+                    parseExcelDate( $value['Entry']['created'] ),
+                    ( empty($value['EntryMeta']['client_invoice_date'])?'':parseExcelDate($value['EntryMeta']['client_invoice_date']) ),
+                    $client_invoice[ $value['EntryMeta']['client_invoice_code'] ],
+                    (empty($value['EntryMeta']['total_sold_price'])?'':'USD '.$value['EntryMeta']['total_sold_price']),
+                    (empty($value['EntryMeta']['sold_price_usd'])?'':'USD '.$value['EntryMeta']['sold_price_usd']),
+                    $value['EntryMeta']['sold_price_rp'],
+                    $value['EntryMeta']['rp_rate'],
+                    $value['Entry']['description'],
+                    
+                    /* TYPE OF PAYMENT */
+                    $value['EntryMeta']['payment_credit_card'],
+                    $value['EntryMeta']['payment_cicilan'],
+                    $value['EntryMeta']['payment_cash'],
+                    $payment_checks[0], $payment_checks[1], $payment_checks[2], implode(chr(10), array_slice($payment_checks, 3) ),
+                    NULL,
+                    
+                    /* HISTORY OF TRANSACTIONS */
+                    $value['EntryMeta']['prev_sold_price'],
+                    $value['EntryMeta']['prev_barcode'],
+                    $value['EntryMeta']['prev_sold_note'],
+                ) as $subkey => $subvalue)
+                {
+                    if($subkey == 25 || $subkey == 38 || $subkey == 41 || $subkey == 52 || $subkey == 53) // fixed key for date type ...
+                    {
+                        $worksheet1->write( $indexbaris , $subkey , $subvalue ,$formatdate);
+                    }
+                    else if($subkey == 57 || $subkey == 58)
+                    {
+                        $worksheet1->write( $indexbaris , $subkey , $subvalue ,$formatRP);
+                    }
+                    else
+                    {
+                        $worksheet1->write( $indexbaris , $subkey , $subvalue ,$format1);
+                    }
+                }
+            }
 
             $workbook->close();
             // convert Excel version 5.0 to Excel 2007...

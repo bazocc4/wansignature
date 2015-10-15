@@ -59,3 +59,8 @@ table.bordered tr td{ min-width: 50px;}
 
 /* Extra small devices (phones, less than 768px) */
 @media all and (max-width: 768px) {  .container-fluid { width:940px !important;} }
+
+/* Custom CSS untuk scroll pop-up browse */
+#cboxLoadedContent .inner-content.layout-content-popup .autoscroll {
+	height: 500px;
+}

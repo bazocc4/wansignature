@@ -414,7 +414,7 @@ function promptDownloadFile($file , $filename = NULL)
     if(file_exists($file))	header('Content-Length: ' . getSizeFile($file));
     ob_clean();
     flush();
-    if(file_exists($file))	readfile($file);
+    if(file_exists($file))	echo file_get_contents($file);
 }
 
 /*

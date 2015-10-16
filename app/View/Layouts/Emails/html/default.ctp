@@ -32,7 +32,7 @@ $imagePath = $this->Get->host_name();
 		<br/>
 		<br/>
 		<p>
-			best regards,<br/>
+			best regards,<br/><br/>
 			<strong><a style="text-decoration: none;" href="<?php echo $imagePath; ?>"><?php echo $mySetting['title']; ?></a></strong><br/>
 			<span style="font-style: italic;"><?php echo $mySetting['description']; ?></span>
 		</p>

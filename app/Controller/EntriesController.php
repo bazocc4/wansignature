@@ -12,346 +12,514 @@ class EntriesController extends AppController {
 		$this->Auth->allow('index');
     }
     
-    public function download_diamond()
+    public function download_jewelry()
     {
-        if(!empty($this->request->data))
-		{
-            set_time_limit(0); // unlimited time limit execution.
-			App::import('Vendor', 'excel/worksheet');
-            App::import('Vendor', 'excel/workbook');
-            
-            $filename = 'WAN_DIAMOND_'.date('dmy_Hi');
-            $excel1995 = getTempFolderPath().$filename.'.xls';
-            $excel2007 = getTempFolderPath().$filename.'.xlsx';
-
-            // Creating a workbook
-            $workbook = new Workbook($excel1995);
-            // Creating the worksheet
-            $worksheet1 =& $workbook->add_worksheet();
-
-            // $worksheet1->hide_gridlines();
-            $worksheet1->set_landscape();
-            $worksheet1->fit_to_pages(0,0);
-            $worksheet1->repeat_rows(0,2);
-
-            $worksheet1->set_column(0, 0, 8);
-            $worksheet1->set_column(1, 70, 15);
-
-            // Format for the headings
-            $formatot =& $workbook->add_format();
-            $formatot->set_size(12);
-            $formatot->set_bold();
-            $formatot->set_border(1);
-            $formatot->set_merge();
-            $formatot->set_align('vcenter');
-
-            // ==================== >>>
-            // write the 1st header ...
-            // ==================== >>>
-            $indexbaris = 0;
-            $worksheet1->set_row($indexbaris, 18);
-            
-            $worksheet1->write($indexbaris,1,"WAN DETAIL INFORMATION (商品详细信息) … WAN DETAIL INFORMATION (商品详细信息) … WAN DETAIL INFORMATION (商品详细信息) … WAN DETAIL INFORMATION (商品详细信息)",$formatot);
-            for($col=2 ; $col <= 11 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            $worksheet1->write($indexbaris,13,"ITEM DESCRIPTION / SPECIFICATIONS … (项目描述/规格) … (项目描述/规格)",$formatot);
-            for($col=14 ; $col <= 18 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            $worksheet1->write($indexbaris,22,"VENDOR & SUPPLIER DETAIL (供应商和供应商的详细信息) … VENDOR & SUPPLIER DETAIL (供应商和供应商的详细信息) … VENDOR & SUPPLIER DETAIL (供应商和供应商的详细信息)",$formatot);
-            for($col=23 ; $col <= 36 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            $worksheet1->write($indexbaris,38,"SOLD & RETURN REPORT TO VD (出售及向供应商退回报告)",$formatot);
-            for($col=39 ; $col <= 42 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            $worksheet1->write($indexbaris,47,"EVERYTHING ABOUT WAN TRANSACTIONS (卖出交易的完整信息) … EVERYTHING ABOUT WAN TRANSACTIONS (卖出交易的完整信息) … EVERYTHING ABOUT WAN TRANSACTIONS (卖出交易的完整信息)",$formatot);
-            for($col=48 ; $col <= 66 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            $worksheet1->write($indexbaris,68,"HISTORY OF TRANSACTIONS (交易历史)",$formatot);
-            for($col=69 ; $col <= 70 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            // ==================== >>>
-            // write the 2nd header ...
-            // ==================== >>>
-            $indexbaris++;
-            $worksheet1->set_row($indexbaris, 18);
-            
-            $worksheet1->write($indexbaris,1,"MERCHANDISE INFO (商品信息) … MERCHANDISE INFO (商品信息) … MERCHANDISE INFO (商品信息)",$formatot);
-            for($col=2 ; $col <= 8 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            $worksheet1->write($indexbaris,9,"FEE (费) … FEE (费) … FEE (费)",$formatot);
-            for($col=10 ; $col <= 11 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            $worksheet1->write($indexbaris,13,"DIAMOND DESCRIPTION / SPEC (钻石总重)",$formatot);
-            for($col=14 ; $col <= 16 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            $worksheet1->write($indexbaris,17,"GOLD (金重)",$formatot);
-            $worksheet1->write_blank($indexbaris,18,$formatot);
-            
-            $worksheet1->write($indexbaris,22,"VENDOR INVOICE DETAIL … (供应商发票的详细信息)",$formatot);
-            for($col=23 ; $col <= 27 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            $worksheet1->write($indexbaris,28,"VENDOR PRICE (CAPITAL) (资本价格)",$formatot);
-            for($col=29 ; $col <= 32 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            $worksheet1->write($indexbaris,33,"PAYMENT TO VENDOR (向供应商付款)",$formatot);
-            for($col=34 ; $col <= 36 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            $worksheet1->write($indexbaris,38,"SOLD REPORT (销售报告)",$formatot);
-            for($col=39 ; $col <= 40 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            $worksheet1->write($indexbaris,41,"RETURN REPORT (将报表)",$formatot);
-            $worksheet1->write_blank($indexbaris,42,$formatot);
-            
-            $worksheet1->write($indexbaris,43,"SALES REPORT (销售报告)",$formatot);
-            for($col=44 ; $col <= 45 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            $worksheet1->write($indexbaris,47,"CLIENT TRANSACTION DETAIL (客户信息) … CLIENT TRANSACTION DETAIL (客户信息)",$formatot);
-            for($col=48 ; $col <= 52 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            $worksheet1->write($indexbaris,53,"SOLD INV 出售发票",$formatot);
-            $worksheet1->write_blank($indexbaris,54,$formatot);
-            
-            $worksheet1->write($indexbaris,55,"SELLING PRICE (售价) … SELLING PRICE (售价) … SELLING PRICE (售价)",$formatot);
-            for($col=56 ; $col <= 59 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            $worksheet1->write($indexbaris,60,"TYPE OF PAYMENT (描述支付) … TYPE OF PAYMENT (描述支付) … TYPE OF PAYMENT (描述支付)",$formatot);
-            for($col=61 ; $col <= 66 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            $worksheet1->write($indexbaris,68,"PREVIOUS SOLD INFO",$formatot);
-            for($col=69 ; $col <= 70 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-            
-            // ==================== >>>
-            // write the 3rd header ...
-            // ==================== >>>
-            $indexbaris++;
-            $worksheet1->set_row($indexbaris, 100);
-            
-            // set certain index as custom color for header table background ...
-            $workbook->set_custom_color(24, 175, 171, 171);            
-            $workbook->set_custom_color(25, 219, 219, 219);
-            $workbook->set_custom_color(26, 251, 228, 213);
-            $workbook->set_custom_color(27, 255, 255, 255);
-            $workbook->set_custom_color(28, 222, 235, 246);
-            $workbook->set_custom_color(29, 255, 231, 153);
-            
-            $counterColor = 23;
-            foreach(array(
-                NULL, "WAN # 项目编号", "TYPE 类型", "BARCODE 价格标签", "SELL BRCD (价格标签)", "STATUS IN WAN (状态)", "ADDITIONAL NOTE 附加说明", "WH", "√", "FEE (费)", "DATE (日期)", "PAID (高薪)",
-                NULL, "CARAT (总克拉)", "CARAT (总克拉)", "CARAT (总克拉)", "CARAT (总克拉)", "%", "GRAM (总克)",
-                NULL, "ITEM REFERENCE CODE 项目参考代码", "ITEM REFERENCE CODE 项目参考代码 (X2)", "VENDOR 供应商", "VENDOR ITEM # 供应商伴奏编号", "VENDOR INV # 供应商发票号", "VD DATE 发票日期", "STATUS WITH VENDOR", "NOTE 附加信息", "USD HKD", "BARCODE (价格)", "X", "USD (美元)", "HKD (港元)", "PAID FACTORY", "PAID DATE", "PAID 2ND VENDOR", "PAID DATE",
-                NULL, "SR DATE (报告日期)", "SR  RR", "TEMP/R (临时报告)", "DATE (返程日期)", "RETURN DETAIL (返回的信息)", "SALES NAME", "COMMISION (回扣)", "OMZET",
-                NULL, "CLIENT NAME (客户名称) WHOLESALE (批发)", "SELL X", "CD 守则", "CLIENT NAME (客户名称) RETAIL", "SELL X", "INPUT DATA", "SOLD DT 销售日期", "S INV # 发票号码", "TOTAL (合計)", "USD (美元)", "RUPIAH (卢比)", "RATE", "CLIENT OUTSTANDING (未偿还余额)", "CREDIT CARD (信用卡)", "CICILAN 债务 (HSBC PERMATA CITI)   3-6-12 MONTHS", "CASH (现金) TRANSFER (银行汇款) DEBIT CARD (借记卡)", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式",
-                NULL, "PREV SOLD PRICE (成交价历史)", "PREV BARCODE", "PREVIOUS SOLD NOTE (注：关于交易历史)",
-            ) as $key => $value)
-            {
-                if(!empty($value))
-                {
-                    $worksheet1->write($indexbaris, $key ,$value, $workbook->add_format(array(
-                        array('key' => 'size',      'value' => 12 ),
-                        array('key' => 'bold',      'value' => 1 ),
-                        array('key' => 'border',    'value' => 1 ),
-                        array('key' => 'text_wrap', 'value' => 1 ),
-                        array('key' => 'align',     'value' => 'center' ),                        
-                        array('key' => 'align',     'value' => 'vcenter' ),
-                        
-                        // set background custom color of the cell method !!
-                        array('key' => 'pattern',   'value' => 1 ),
-                        array('key' => 'fg_color',  'value' => $counterColor ),
-                    )) );
-                }
-                else
-                {
-                    $counterColor++;
-                }
-            }
-            
-            // ===================== >>
-            // BEGIN CONTENT PROCESS !!
-            // ===================== >>
-            $format1 =& $workbook->add_format();
-            $format1->set_size(10);
-            $format1->set_border(1);
-            $format1->set_text_wrap();
-            $format1->set_align('center');
-            $format1->set_align('vcenter');
-            
-            $formatdate =& $workbook->add_format();
-            $formatdate->set_size(10);
-            $formatdate->set_border(1);
-            $formatdate->set_text_wrap();			
-            $formatdate->set_align('center');
-            $formatdate->set_align('vcenter');
-            $formatdate->set_num_format('d-mmm-yy'); // 7-AUG-15
-            
-            $formatRP =& $workbook->add_format();
-            $formatRP->set_size(10);
-            $formatRP->set_border(1);
-            $formatRP->set_text_wrap();			
-            $formatRP->set_align('center');
-            $formatRP->set_align('vcenter');
-            $formatRP->set_num_format('_("Rp"* #,##0_);_("Rp"* (#,##0);_("Rp"* "-"_);_(@_)');
-            
-            // prepare modules ...
-            $product_type = $this->EntryMeta->find('all', array(
-                'conditions' => array(
-                    'Entry.entry_type' => 'product-type',
-                    'EntryMeta.key' => 'form-category',
-                    'EntryMeta.value' => 'Diamond',
-                ),
-            ));
-            $product_type = array_column( array_column($product_type, 'Entry'), 'title', 'slug' );
-            $warehouse = array_column( array_column( $this->Entry->findAllByEntryType('warehouse') , 'Entry'), 'title', 'slug' );
-            $vendor = array_column( array_column( $this->Entry->findAllByEntryType('vendor') , 'Entry'), 'title', 'slug' );
-            $vendor_invoice = array_column( array_column( $this->Entry->findAllByEntryType('dmd-vendor-invoice') , 'Entry'), 'title', 'slug' );
-            
-            $client = array_map('breakEntryMetas', $this->Entry->findAllByEntryType('client') );
-            $client = array_combine(
-                array_column( array_column( $client , 'Entry'), 'slug' ), // keys
-                $client // values
-            );
-            $client_invoice = array_column( array_column( $this->Entry->findAllByEntryType('dmd-client-invoice') , 'Entry'), 'title', 'slug' );
-            
-            // query diamond ...
-            $query = array_map('breakEntryMetas', $this->Entry->findAllById(explode(',', $this->request->data['record'])) );
-            foreach($query as $key => $value)
-            {
-                $indexbaris++;
-                $carat = array_map('trim', explode(chr(10), $value['EntryMeta']['carat'] ) );
-                $irc = array_map('trim', explode(chr(10), $value['EntryMeta']['item_ref_code'] ) );
-                $payment_checks = array_filter(array_map('trim', explode(chr(10), $value['EntryMeta']['payment_checks'] ) ));
-                
-                $wholesaler_name = '';
-                $wholesaler_x = '';                
-                $wholesaler_code = '';                
-                $retailer_name = '';
-                $retailer_x = '';
-                if( !empty( $client[ $value['EntryMeta']['client'] ] ) )
-                {
-                    if( $client[ $value['EntryMeta']['client'] ]['EntryMeta']['kategori'] == 'Wholesaler' )
-                    {
-                        $wholesaler_name = $client[ $value['EntryMeta']['client'] ]['Entry']['title'];
-                        $wholesaler_x = $value['EntryMeta']['client_x'];                        
-                        $wholesaler_code = $client[ $value['EntryMeta']['client'] ]['EntryMeta']['kode_pelanggan'];
-                    }
-                    else
-                    {
-                        $retailer_name = $client[ $value['EntryMeta']['client'] ]['Entry']['title'];
-                        $retailer_x = $value['EntryMeta']['client_x'];
-                        
-                        if( !empty($client[ $value['EntryMeta']['wholesaler'] ]) )
-                        {
-                            $wholesaler_name = $client[ $value['EntryMeta']['wholesaler'] ]['Entry']['title'];
-                            $wholesaler_x = ( empty($client[ $value['EntryMeta']['wholesaler'] ]['EntryMeta']['diamond_sell_x']) ?$retailer_x: $client[ $value['EntryMeta']['wholesaler'] ]['EntryMeta']['diamond_sell_x'] );
-                            $wholesaler_code = $client[ $value['EntryMeta']['wholesaler'] ]['EntryMeta']['kode_pelanggan'];
-                        }
-                    }
-                }
-                
-                foreach(array(
-                    /* WAN DETAIL INFORMATION */
-                    ($key+1),
-                    $value['Entry']['title'],
-                    $product_type[ $value['EntryMeta']['product_type'] ],
-                    ( $value['EntryMeta']['barcode'] > 1 ?$value['EntryMeta']['barcode']:''),
-                    $value['EntryMeta']['sell_barcode'],
-                    $value['EntryMeta']['product_status'],
-                    NULL,
-                    $warehouse[ $value['EntryMeta']['warehouse'] ],
-                    NULL,NULL,NULL,NULL,NULL,
-                    
-                    /* ITEM DESCRIPTION / SPECIFICATIONS */
-                    $carat[0], $carat[1], $carat[2], implode(chr(10), array_slice($carat, 3) ),
-                    $value['EntryMeta']['gold_carat'],
-                    (empty($value['EntryMeta']['gold_weight'])?'':$value['EntryMeta']['gold_weight'].' GR'),
-                    NULL,
-                    $irc[0], implode(chr(10), array_slice($irc, 1) ),
-                    
-                    /* VENDOR & SUPPLIER DETAIL */
-                    $vendor[ $value['EntryMeta']['vendor'] ],
-                    $value['EntryMeta']['vendor_item_code'],
-                    $vendor_invoice[ $value['EntryMeta']['vendor_invoice_code'] ],
-                    (empty($value['EntryMeta']['vendor_invoice_date'])?'':parseExcelDate( $value['EntryMeta']['vendor_invoice_date'] )),
-                    $value['EntryMeta']['vendor_note'],
-                    NULL,
-                    $value['EntryMeta']['vendor_currency'],
-                    ( $value['EntryMeta']['vendor_barcode'] > 1 ?$value['EntryMeta']['vendor_barcode']:''),
-                    $value['EntryMeta']['vendor_x'],
-                    $value['EntryMeta']['vendor_usd'],
-                    $value['EntryMeta']['vendor_hkd'],
-                    NULL,NULL,NULL,NULL,NULL,
-                    
-                    /* SOLD & RETURN REPORT TO VD */
-                    ( empty($value['EntryMeta']['report_date']) ?'': parseExcelDate( $value['EntryMeta']['report_date'] ) ),
-                    $value['EntryMeta']['report_type'],
-                    $value['EntryMeta']['temp_report'],
-                    ( empty($value['EntryMeta']['return_date']) ?'': parseExcelDate( $value['EntryMeta']['return_date'] ) ),
-                    $value['EntryMeta']['return_detail'],
-                    NULL,NULL,
-                    $value['EntryMeta']['omzet'],
-                    NULL,
-                    
-                    /* EVERYTHING ABOUT WAN TRANSACTIONS */
-                    $wholesaler_name,
-                    $wholesaler_x,
-                    $wholesaler_code,
-                    $retailer_name,
-                    $retailer_x,
-                    parseExcelDate( $value['Entry']['created'] ),
-                    ( empty($value['EntryMeta']['client_invoice_date'])?'':parseExcelDate($value['EntryMeta']['client_invoice_date']) ),
-                    $client_invoice[ $value['EntryMeta']['client_invoice_code'] ],
-                    (empty($value['EntryMeta']['total_sold_price'])?'':'USD '.$value['EntryMeta']['total_sold_price']),
-                    (empty($value['EntryMeta']['sold_price_usd'])?'':'USD '.$value['EntryMeta']['sold_price_usd']),
-                    $value['EntryMeta']['sold_price_rp'],
-                    $value['EntryMeta']['rp_rate'],
-                    $value['Entry']['description'],
-                    
-                    /* TYPE OF PAYMENT */
-                    $value['EntryMeta']['payment_credit_card'],
-                    $value['EntryMeta']['payment_cicilan'],
-                    $value['EntryMeta']['payment_cash'],
-                    $payment_checks[0], $payment_checks[1], $payment_checks[2], implode(chr(10), array_slice($payment_checks, 3) ),
-                    NULL,
-                    
-                    /* HISTORY OF TRANSACTIONS */
-                    $value['EntryMeta']['prev_sold_price'],
-                    $value['EntryMeta']['prev_barcode'],
-                    $value['EntryMeta']['prev_sold_note'],
-                ) as $subkey => $subvalue)
-                {
-                    if($subkey == 25 || $subkey == 38 || $subkey == 41 || $subkey == 52 || $subkey == 53) // fixed key for date type ...
-                    {
-                        $worksheet1->write( $indexbaris , $subkey , $subvalue ,$formatdate);
-                    }
-                    else if($subkey == 57 || $subkey == 58)
-                    {
-                        $worksheet1->write( $indexbaris , $subkey , $subvalue ,$formatRP);
-                    }
-                    else
-                    {
-                        $worksheet1->write( $indexbaris , $subkey , $subvalue ,$format1);
-                    }
-                }
-            }
-
-            $workbook->close();
-            // convert Excel version 5.0 to Excel 2007...
-            convertExcelVersion($excel1995 , $excel2007);
-            // HTTP headers for new Excel 2007 output buffer ...
-            promptDownloadFile($excel2007);
-            // delete temp files ...
-            unlink($excel1995);
-            unlink($excel2007);
-            exit;
-		}
-        else
+        if(empty($this->request->data))
         {
             throw new NotFoundException('Error 404 - Not Found');
         }
+        
+        set_time_limit(0); // unlimited time limit execution.
+        App::import('Vendor', 'excel/worksheet');
+        App::import('Vendor', 'excel/workbook');
+
+        $filename = 'WAN_JEWELRY_'.date('dmy_Hi');
+        $excel1995 = getTempFolderPath().$filename.'.xls';
+        $excel2007 = getTempFolderPath().$filename.'.xlsx';
+
+        // Creating a workbook
+        $workbook = new Workbook($excel1995);
+        // Creating the worksheet
+        $worksheet1 =& $workbook->add_worksheet();
+
+        // $worksheet1->hide_gridlines();
+        $worksheet1->set_landscape();
+        $worksheet1->fit_to_pages(0,0);
+        $worksheet1->repeat_rows(0,2);
+
+        $worksheet1->set_column(0, 1, 8);
+        $worksheet1->set_column(2, 46, 15);
+        $worksheet1->set_column(47, 47, 55);
+
+        // Format for the headings
+        $formatot =& $workbook->add_format();
+        $formatot->set_size(12);
+        $formatot->set_bold();
+        $formatot->set_border(1);
+        $formatot->set_merge();
+        $formatot->set_align('vcenter');
+        
+        // ==================== >>>
+        // write the 1st header ...
+        // ==================== >>>
+        // set certain index as custom color for header table background ...
+        $workbook->set_custom_color(24, 112 , 48 , 160 );
+        $workbook->set_custom_color(25, 0 , 176 , 240 );
+        $workbook->set_custom_color(26, 255 , 0 , 0 );
+        $workbook->set_custom_color(27, 0 , 0 , 0 );
+        $workbook->set_custom_color(28, 0 , 176 , 80 );
+        $workbook->set_custom_color(29, 128 , 96 , 0 );
+        $workbook->set_custom_color(30, 123 , 123 , 123 );
+        $colorDict = array();
+        $counterColor = 24;
+        
+        $indexbaris = 1;
+        $worksheet1->set_row($indexbaris, 17);
+
+        $worksheet1->write($indexbaris,1,"MERCHANDISE INFO … MERCHANDISE INFO … MERCHANDISE INFO … MERCHANDISE INFO",$formatot);
+        for($col=2 ; $col <= 8 ; ++$col)    $worksheet1->write_blank($indexbaris,$col,$formatot);
+        
+        $colorDict[9] = $counterColor++;
+        $worksheet1->write($indexbaris,9,"VENDOR INFO … VENDOR INFO … VENDOR INFO … VENDOR INFO",$formatot);
+        for($col=10 ; $col <= 14 ; ++$col)
+        {
+            $colorDict[$col] = $colorDict[9];
+            $worksheet1->write_blank($indexbaris,$col,$formatot);
+        }
+        
+        $colorDict[15] = $counterColor++;
+        $worksheet1->write($indexbaris,15,"STATUS BARANG … STATUS BARANG",$formatot);
+        for($col=16 ; $col <= 17 ; ++$col)
+        {
+            $colorDict[$col] = $colorDict[15];
+            $worksheet1->write_blank($indexbaris,$col,$formatot);
+        }
+        
+        $colorDict[18] = $counterColor++;
+        $worksheet1->write($indexbaris,18,"CLIENT INFO … CLIENT INFO",$formatot);
+        for($col=19 ; $col <= 20 ; ++$col)
+        {
+            $colorDict[$col] = $colorDict[18];
+            $worksheet1->write_blank($indexbaris,$col,$formatot);
+        }
+        
+        $colorDict[21] = $counterColor++;
+        $worksheet1->write($indexbaris,21,"SR TO WAN",$formatot);
+        $colorDict[22] = $colorDict[21];
+        $worksheet1->write_blank($indexbaris,22,$formatot);
+        
+        $colorDict[23] = $counterColor++;
+        $worksheet1->write($indexbaris,23,"SOLD INVOICE TO CLIENT … SOLD INVOICE TO CLIENT … SOLD INVOICE TO CLIENT … SOLD INVOICE TO CLIENT … SOLD INVOICE TO CLIENT … SOLD INVOICE TO CLIENT … SOLD INVOICE TO CLIENT",$formatot);
+        for($col=24 ; $col <= 37 ; ++$col)
+        {
+            $colorDict[$col] = $colorDict[23];
+            $worksheet1->write_blank($indexbaris,$col,$formatot);
+        }
+        
+        $colorDict[38] = $counterColor++;
+        $worksheet1->write($indexbaris,38,"TYPE OF PAYMENT … TYPE OF PAYMENT … TYPE OF PAYMENT … TYPE OF PAYMENT",$formatot);
+        for($col=39 ; $col <= 44 ; ++$col)
+        {
+            $colorDict[$col] = $colorDict[38];
+            $worksheet1->write_blank($indexbaris,$col,$formatot);
+        }
+        
+        $colorDict[45] = $counterColor++;
+        $worksheet1->write($indexbaris,45,"DESCRIPTION INFO … DESCRIPTION INFO … DESCRIPTION INFO",$formatot);
+        for($col=46 ; $col <= 47 ; ++$col)
+        {
+            $colorDict[$col] = $colorDict[45];
+            $worksheet1->write_blank($indexbaris,$col,$formatot);
+        }
+        
+        // ==================== >>>
+        // write the 2nd header ...
+        // ==================== >>>
+        $indexbaris++;
+        $worksheet1->set_row($indexbaris, 50);
+        
+        foreach(array(
+            NULL, "NO.", "ITEM CODE #", "TYPE OF GOODS", "BRAND OF GOODS", "COLOR OF GOODS", "ITEM WEIGHT", "GR", "ITEM SIZE",
+            "VD", "X", "KET", "VD INV #", "PCS", "GR",
+            "WH", "TGL BRG MASUK", "STATUS",
+            "CLIENT NAME", "2ND LEVEL CLIENT NAME", "CODE",
+            "SR", "DATE",
+            "SELL INV DATE", "SELL INV #", "∑ PCS SOLD", "SOLD 125 (GR)", "X 125", "SOLD 100 (GR)", "X 100", "SOLD 110 (GR)", "X 110", "SOLD 115 (GR)", "X 115", "DISC/RETURN", "∑ SOLD 24K", "INV BALANCE", "GOLD PRICE",
+            "PAYMENT : CT (BAHAN LOKAL) & LD", "PAYMENT : ROSOK", "PAYMENT : CHEQUES", "PAYMENT : CASH OR TRANSFER", "PAYMENT : DEBIT OR CREDIT CARD", "PAYMENT : RETURN GOODS", "TOTAL PAYMENT 24K (GR)",
+            "CLIENT TOTAL BALANCE", "TRANSACTION HISTORY", "KETERANGAN / DETAIL BARANG",
+        ) as $key => $value)
+        {
+            if(!empty($value))
+            {
+                $tempformat = array(
+                    array('key' => 'size',      'value' => 12 ),
+                    array('key' => 'bold',      'value' => 1 ),
+                    array('key' => 'border',    'value' => 1 ),
+                    array('key' => 'text_wrap', 'value' => 1 ),
+                    array('key' => 'align',     'value' => 'center' ),                        
+                    array('key' => 'align',     'value' => 'vcenter' ),
+                );
+                
+                if(!empty($colorDict[$key]))
+                {
+                    // set background custom color of the cell method w/ white text !!
+                    array_push($tempformat,
+                        array('key' => 'pattern',   'value' => 1 ),
+                        array('key' => 'fg_color',  'value' => $colorDict[$key] ),
+                        array('key' => 'color',     'value' => 'white' ),
+                        array('key' => 'border_color',     'value' => 'white' )
+                    );
+                }
+                
+                $worksheet1->write($indexbaris, $key ,$value, $workbook->add_format($tempformat) );
+            }
+        }
+        
+        // ===================== >>
+        // BEGIN CONTENT PROCESS !!
+        // ===================== >>
+        
+        
+        
+        
+        
+        
+        
+        
+        $workbook->close();
+        // convert Excel version 5.0 to Excel 2007...
+        convertExcelVersion($excel1995 , $excel2007);
+        // HTTP headers for new Excel 2007 output buffer ...
+        promptDownloadFile($excel2007);
+        // delete temp files ...
+        unlink($excel1995);
+        unlink($excel2007);
+        exit;
     }
     
-    public function download_jewelry()
+    public function download_diamond()
     {
-        // download cor jewelry command here ...
+        if(empty($this->request->data))
+		{
+            throw new NotFoundException('Error 404 - Not Found');
+		}
+        
+        set_time_limit(0); // unlimited time limit execution.
+        App::import('Vendor', 'excel/worksheet');
+        App::import('Vendor', 'excel/workbook');
+
+        $filename = 'WAN_DIAMOND_'.date('dmy_Hi');
+        $excel1995 = getTempFolderPath().$filename.'.xls';
+        $excel2007 = getTempFolderPath().$filename.'.xlsx';
+
+        // Creating a workbook
+        $workbook = new Workbook($excel1995);
+        // Creating the worksheet
+        $worksheet1 =& $workbook->add_worksheet();
+
+        // $worksheet1->hide_gridlines();
+        $worksheet1->set_landscape();
+        $worksheet1->fit_to_pages(0,0);
+        $worksheet1->repeat_rows(0,2);
+
+        $worksheet1->set_column(0, 0, 8);
+        $worksheet1->set_column(1, 70, 15);
+
+        // Format for the headings
+        $formatot =& $workbook->add_format();
+        $formatot->set_size(12);
+        $formatot->set_bold();
+        $formatot->set_border(1);
+        $formatot->set_merge();
+        $formatot->set_align('vcenter');
+
+        // ==================== >>>
+        // write the 1st header ...
+        // ==================== >>>
+        $indexbaris = 0;
+        $worksheet1->set_row($indexbaris, 18);
+
+        $worksheet1->write($indexbaris,1,"WAN DETAIL INFORMATION (商品详细信息) … WAN DETAIL INFORMATION (商品详细信息) … WAN DETAIL INFORMATION (商品详细信息) … WAN DETAIL INFORMATION (商品详细信息)",$formatot);
+        for($col=2 ; $col <= 11 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        $worksheet1->write($indexbaris,13,"ITEM DESCRIPTION / SPECIFICATIONS … (项目描述/规格) … (项目描述/规格)",$formatot);
+        for($col=14 ; $col <= 18 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        $worksheet1->write($indexbaris,22,"VENDOR & SUPPLIER DETAIL (供应商和供应商的详细信息) … VENDOR & SUPPLIER DETAIL (供应商和供应商的详细信息) … VENDOR & SUPPLIER DETAIL (供应商和供应商的详细信息)",$formatot);
+        for($col=23 ; $col <= 36 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        $worksheet1->write($indexbaris,38,"SOLD & RETURN REPORT TO VD (出售及向供应商退回报告)",$formatot);
+        for($col=39 ; $col <= 42 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        $worksheet1->write($indexbaris,47,"EVERYTHING ABOUT WAN TRANSACTIONS (卖出交易的完整信息) … EVERYTHING ABOUT WAN TRANSACTIONS (卖出交易的完整信息) … EVERYTHING ABOUT WAN TRANSACTIONS (卖出交易的完整信息)",$formatot);
+        for($col=48 ; $col <= 66 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        $worksheet1->write($indexbaris,68,"HISTORY OF TRANSACTIONS (交易历史)",$formatot);
+        for($col=69 ; $col <= 70 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        // ==================== >>>
+        // write the 2nd header ...
+        // ==================== >>>
+        $indexbaris++;
+        $worksheet1->set_row($indexbaris, 18);
+
+        $worksheet1->write($indexbaris,1,"MERCHANDISE INFO (商品信息) … MERCHANDISE INFO (商品信息) … MERCHANDISE INFO (商品信息)",$formatot);
+        for($col=2 ; $col <= 8 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        $worksheet1->write($indexbaris,9,"FEE (费) … FEE (费) … FEE (费)",$formatot);
+        for($col=10 ; $col <= 11 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        $worksheet1->write($indexbaris,13,"DIAMOND DESCRIPTION / SPEC (钻石总重)",$formatot);
+        for($col=14 ; $col <= 16 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        $worksheet1->write($indexbaris,17,"GOLD (金重)",$formatot);
+        $worksheet1->write_blank($indexbaris,18,$formatot);
+
+        $worksheet1->write($indexbaris,22,"VENDOR INVOICE DETAIL … (供应商发票的详细信息)",$formatot);
+        for($col=23 ; $col <= 27 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        $worksheet1->write($indexbaris,28,"VENDOR PRICE (CAPITAL) (资本价格)",$formatot);
+        for($col=29 ; $col <= 32 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        $worksheet1->write($indexbaris,33,"PAYMENT TO VENDOR (向供应商付款)",$formatot);
+        for($col=34 ; $col <= 36 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        $worksheet1->write($indexbaris,38,"SOLD REPORT (销售报告)",$formatot);
+        for($col=39 ; $col <= 40 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        $worksheet1->write($indexbaris,41,"RETURN REPORT (将报表)",$formatot);
+        $worksheet1->write_blank($indexbaris,42,$formatot);
+
+        $worksheet1->write($indexbaris,43,"SALES REPORT (销售报告)",$formatot);
+        for($col=44 ; $col <= 45 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        $worksheet1->write($indexbaris,47,"CLIENT TRANSACTION DETAIL (客户信息) … CLIENT TRANSACTION DETAIL (客户信息)",$formatot);
+        for($col=48 ; $col <= 52 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        $worksheet1->write($indexbaris,53,"SOLD INV 出售发票",$formatot);
+        $worksheet1->write_blank($indexbaris,54,$formatot);
+
+        $worksheet1->write($indexbaris,55,"SELLING PRICE (售价) … SELLING PRICE (售价) … SELLING PRICE (售价)",$formatot);
+        for($col=56 ; $col <= 59 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        $worksheet1->write($indexbaris,60,"TYPE OF PAYMENT (描述支付) … TYPE OF PAYMENT (描述支付) … TYPE OF PAYMENT (描述支付)",$formatot);
+        for($col=61 ; $col <= 66 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        $worksheet1->write($indexbaris,68,"PREVIOUS SOLD INFO",$formatot);
+        for($col=69 ; $col <= 70 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
+
+        // ==================== >>>
+        // write the 3rd header ...
+        // ==================== >>>
+        $indexbaris++;
+        $worksheet1->set_row($indexbaris, 100);
+
+        // set certain index as custom color for header table background ...
+        $workbook->set_custom_color(24, 175, 171, 171);            
+        $workbook->set_custom_color(25, 219, 219, 219);
+        $workbook->set_custom_color(26, 251, 228, 213);
+        $workbook->set_custom_color(27, 255, 255, 255);
+        $workbook->set_custom_color(28, 222, 235, 246);
+        $workbook->set_custom_color(29, 255, 231, 153);
+
+        $counterColor = 23;
+        foreach(array(
+            NULL, "WAN # 项目编号", "TYPE 类型", "BARCODE 价格标签", "SELL BRCD (价格标签)", "STATUS IN WAN (状态)", "ADDITIONAL NOTE 附加说明", "WH", "√", "FEE (费)", "DATE (日期)", "PAID (高薪)",
+            NULL, "CARAT (总克拉)", "CARAT (总克拉)", "CARAT (总克拉)", "CARAT (总克拉)", "%", "GRAM (总克)",
+            NULL, "ITEM REFERENCE CODE 项目参考代码", "ITEM REFERENCE CODE 项目参考代码 (X2)", "VENDOR 供应商", "VENDOR ITEM # 供应商伴奏编号", "VENDOR INV # 供应商发票号", "VD DATE 发票日期", "STATUS WITH VENDOR", "NOTE 附加信息", "USD HKD", "BARCODE (价格)", "X", "USD (美元)", "HKD (港元)", "PAID FACTORY", "PAID DATE", "PAID 2ND VENDOR", "PAID DATE",
+            NULL, "SR DATE (报告日期)", "SR  RR", "TEMP/R (临时报告)", "DATE (返程日期)", "RETURN DETAIL (返回的信息)", "SALES NAME", "COMMISION (回扣)", "OMZET",
+            NULL, "CLIENT NAME (客户名称) WHOLESALE (批发)", "SELL X", "CD 守则", "CLIENT NAME (客户名称) RETAIL", "SELL X", "INPUT DATA", "SOLD DT 销售日期", "S INV # 发票号码", "TOTAL (合計)", "USD (美元)", "RUPIAH (卢比)", "RATE", "CLIENT OUTSTANDING (未偿还余额)", "CREDIT CARD (信用卡)", "CICILAN 债务 (HSBC PERMATA CITI)   3-6-12 MONTHS", "CASH (现金) TRANSFER (银行汇款) DEBIT CARD (借记卡)", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式",
+            NULL, "PREV SOLD PRICE (成交价历史)", "PREV BARCODE", "PREVIOUS SOLD NOTE (注：关于交易历史)",
+        ) as $key => $value)
+        {
+            if(!empty($value))
+            {
+                $worksheet1->write($indexbaris, $key ,$value, $workbook->add_format(array(
+                    array('key' => 'size',      'value' => 12 ),
+                    array('key' => 'bold',      'value' => 1 ),
+                    array('key' => 'border',    'value' => 1 ),
+                    array('key' => 'text_wrap', 'value' => 1 ),
+                    array('key' => 'align',     'value' => 'center' ),                        
+                    array('key' => 'align',     'value' => 'vcenter' ),
+
+                    // set background custom color of the cell method !!
+                    array('key' => 'pattern',   'value' => 1 ),
+                    array('key' => 'fg_color',  'value' => $counterColor ),
+                )) );
+            }
+            else
+            {
+                $counterColor++;
+            }
+        }
+
+        // ===================== >>
+        // BEGIN CONTENT PROCESS !!
+        // ===================== >>
+        $format1 =& $workbook->add_format();
+        $format1->set_size(10);
+        $format1->set_border(1);
+        $format1->set_text_wrap();
+        $format1->set_align('center');
+        $format1->set_align('vcenter');
+
+        $formatdate =& $workbook->add_format();
+        $formatdate->set_size(10);
+        $formatdate->set_border(1);
+        $formatdate->set_text_wrap();			
+        $formatdate->set_align('center');
+        $formatdate->set_align('vcenter');
+        $formatdate->set_num_format('d-mmm-yy'); // 7-AUG-15
+
+        $formatRP =& $workbook->add_format();
+        $formatRP->set_size(10);
+        $formatRP->set_border(1);
+        $formatRP->set_text_wrap();			
+        $formatRP->set_align('center');
+        $formatRP->set_align('vcenter');
+        $formatRP->set_num_format('_("Rp"* #,##0_);_("Rp"* (#,##0);_("Rp"* "-"_);_(@_)');
+
+        // prepare modules ...
+        $product_type = $this->EntryMeta->find('all', array(
+            'conditions' => array(
+                'Entry.entry_type' => 'product-type',
+                'EntryMeta.key' => 'form-category',
+                'EntryMeta.value' => 'Diamond',
+            ),
+        ));
+        $product_type = array_column( array_column($product_type, 'Entry'), 'title', 'slug' );
+        $warehouse = array_column( array_column( $this->Entry->findAllByEntryType('warehouse') , 'Entry'), 'title', 'slug' );
+        $vendor = array_column( array_column( $this->Entry->findAllByEntryType('vendor') , 'Entry'), 'title', 'slug' );
+        $vendor_invoice = array_column( array_column( $this->Entry->findAllByEntryType('dmd-vendor-invoice') , 'Entry'), 'title', 'slug' );
+
+        $client = array_map('breakEntryMetas', $this->Entry->findAllByEntryType('client') );
+        $client = array_combine(
+            array_column( array_column( $client , 'Entry'), 'slug' ), // keys
+            $client // values
+        );
+        $client_invoice = array_column( array_column( $this->Entry->findAllByEntryType('dmd-client-invoice') , 'Entry'), 'title', 'slug' );
+
+        // query diamond ...
+        $query = array_map('breakEntryMetas', $this->Entry->findAllById(explode(',', $this->request->data['record'])) );
+        foreach($query as $key => $value)
+        {
+            $indexbaris++;
+            $carat = array_map('trim', explode(chr(10), $value['EntryMeta']['carat'] ) );
+            $irc = array_map('trim', explode(chr(10), $value['EntryMeta']['item_ref_code'] ) );
+            $payment_checks = array_filter(array_map('trim', explode(chr(10), $value['EntryMeta']['payment_checks'] ) ));
+
+            $wholesaler_name = '';
+            $wholesaler_x = '';                
+            $wholesaler_code = '';                
+            $retailer_name = '';
+            $retailer_x = '';
+            if( !empty( $client[ $value['EntryMeta']['client'] ] ) )
+            {
+                if( $client[ $value['EntryMeta']['client'] ]['EntryMeta']['kategori'] == 'Wholesaler' )
+                {
+                    $wholesaler_name = $client[ $value['EntryMeta']['client'] ]['Entry']['title'];
+                    $wholesaler_x = $value['EntryMeta']['client_x'];                        
+                    $wholesaler_code = $client[ $value['EntryMeta']['client'] ]['EntryMeta']['kode_pelanggan'];
+                }
+                else
+                {
+                    $retailer_name = $client[ $value['EntryMeta']['client'] ]['Entry']['title'];
+                    $retailer_x = $value['EntryMeta']['client_x'];
+
+                    if( !empty($client[ $value['EntryMeta']['wholesaler'] ]) )
+                    {
+                        $wholesaler_name = $client[ $value['EntryMeta']['wholesaler'] ]['Entry']['title'];
+                        $wholesaler_x = ( empty($client[ $value['EntryMeta']['wholesaler'] ]['EntryMeta']['diamond_sell_x']) ?$retailer_x: $client[ $value['EntryMeta']['wholesaler'] ]['EntryMeta']['diamond_sell_x'] );
+                        $wholesaler_code = $client[ $value['EntryMeta']['wholesaler'] ]['EntryMeta']['kode_pelanggan'];
+                    }
+                }
+            }
+
+            foreach(array(
+                /* WAN DETAIL INFORMATION */
+                ($key+1),
+                $value['Entry']['title'],
+                $product_type[ $value['EntryMeta']['product_type'] ],
+                ( $value['EntryMeta']['barcode'] > 1 ?$value['EntryMeta']['barcode']:''),
+                $value['EntryMeta']['sell_barcode'],
+                $value['EntryMeta']['product_status'],
+                NULL,
+                $warehouse[ $value['EntryMeta']['warehouse'] ],
+                NULL,NULL,NULL,NULL,NULL,
+
+                /* ITEM DESCRIPTION / SPECIFICATIONS */
+                $carat[0], $carat[1], $carat[2], implode(chr(10), array_slice($carat, 3) ),
+                $value['EntryMeta']['gold_carat'],
+                (empty($value['EntryMeta']['gold_weight'])?'':$value['EntryMeta']['gold_weight'].' GR'),
+                NULL,
+                $irc[0], implode(chr(10), array_slice($irc, 1) ),
+
+                /* VENDOR & SUPPLIER DETAIL */
+                $vendor[ $value['EntryMeta']['vendor'] ],
+                $value['EntryMeta']['vendor_item_code'],
+                $vendor_invoice[ $value['EntryMeta']['vendor_invoice_code'] ],
+                (empty($value['EntryMeta']['vendor_invoice_date'])?'':parseExcelDate( $value['EntryMeta']['vendor_invoice_date'] )),
+                $value['EntryMeta']['vendor_note'],
+                NULL,
+                $value['EntryMeta']['vendor_currency'],
+                ( $value['EntryMeta']['vendor_barcode'] > 1 ?$value['EntryMeta']['vendor_barcode']:''),
+                $value['EntryMeta']['vendor_x'],
+                $value['EntryMeta']['vendor_usd'],
+                $value['EntryMeta']['vendor_hkd'],
+                NULL,NULL,NULL,NULL,NULL,
+
+                /* SOLD & RETURN REPORT TO VD */
+                ( empty($value['EntryMeta']['report_date']) ?'': parseExcelDate( $value['EntryMeta']['report_date'] ) ),
+                $value['EntryMeta']['report_type'],
+                $value['EntryMeta']['temp_report'],
+                ( empty($value['EntryMeta']['return_date']) ?'': parseExcelDate( $value['EntryMeta']['return_date'] ) ),
+                $value['EntryMeta']['return_detail'],
+                NULL,NULL,
+                $value['EntryMeta']['omzet'],
+                NULL,
+
+                /* EVERYTHING ABOUT WAN TRANSACTIONS */
+                $wholesaler_name,
+                $wholesaler_x,
+                $wholesaler_code,
+                $retailer_name,
+                $retailer_x,
+                parseExcelDate( $value['Entry']['created'] ),
+                ( empty($value['EntryMeta']['client_invoice_date'])?'':parseExcelDate($value['EntryMeta']['client_invoice_date']) ),
+                $client_invoice[ $value['EntryMeta']['client_invoice_code'] ],
+                (empty($value['EntryMeta']['total_sold_price'])?'':'USD '.$value['EntryMeta']['total_sold_price']),
+                (empty($value['EntryMeta']['sold_price_usd'])?'':'USD '.$value['EntryMeta']['sold_price_usd']),
+                $value['EntryMeta']['sold_price_rp'],
+                $value['EntryMeta']['rp_rate'],
+                $value['Entry']['description'],
+
+                /* TYPE OF PAYMENT */
+                $value['EntryMeta']['payment_credit_card'],
+                $value['EntryMeta']['payment_cicilan'],
+                $value['EntryMeta']['payment_cash'],
+                $payment_checks[0], $payment_checks[1], $payment_checks[2], implode(chr(10), array_slice($payment_checks, 3) ),
+                NULL,
+
+                /* HISTORY OF TRANSACTIONS */
+                $value['EntryMeta']['prev_sold_price'],
+                $value['EntryMeta']['prev_barcode'],
+                $value['EntryMeta']['prev_sold_note'],
+            ) as $subkey => $subvalue)
+            {
+                if($subkey == 25 || $subkey == 38 || $subkey == 41 || $subkey == 52 || $subkey == 53) // fixed key for date type ...
+                {
+                    $worksheet1->write( $indexbaris , $subkey , $subvalue ,$formatdate);
+                }
+                else if($subkey == 57 || $subkey == 58)
+                {
+                    $worksheet1->write( $indexbaris , $subkey , $subvalue ,$formatRP);
+                }
+                else
+                {
+                    $worksheet1->write( $indexbaris , $subkey , $subvalue ,$format1);
+                }
+            }
+        }
+
+        $workbook->close();
+        // convert Excel version 5.0 to Excel 2007...
+        convertExcelVersion($excel1995 , $excel2007);
+        // HTTP headers for new Excel 2007 output buffer ...
+        promptDownloadFile($excel2007);
+        // delete temp files ...
+        unlink($excel1995);
+        unlink($excel2007);
+        exit;
     }
     
     function index() // front End view !!
@@ -603,7 +771,7 @@ class EntriesController extends AppController {
                 
         /**  Define how many rows we want for each "chunk" and other helper variable  **/
         $chunkSize = $counterRow = 50;
-        $maxCols = ( $myTypeSlug == 'diamond' ? 71 : 44 );
+        $maxCols = ( $myTypeSlug == 'diamond' ? 71 : 48 );
         $printSpace = array('', '&nbsp;','&nbsp;&nbsp;', '&nbsp;&nbsp;&nbsp;', '&nbsp;&nbsp;&nbsp;&nbsp;');
         $intervalSpace = count($printSpace) - 1;
         

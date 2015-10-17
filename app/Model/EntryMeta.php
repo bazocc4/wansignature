@@ -846,7 +846,7 @@ class EntryMeta extends AppModel {
                         
                         // Sold X
                         foreach(array(
-                            'form-sold_110', 'form-x_110', 'form-sold_115', 'form-x_115', 'form-disc_adjustment'
+                            'form-sold_125', 'form-x_125', 'form-sold_100', 'form-x_100', 'form-sold_110', 'form-x_110', 'form-sold_115', 'form-x_115', 'form-disc_adjustment'
                         ) as $sold_key => $sold_value)
                         {
                             if(!empty($obj[$sold_value]))
@@ -1005,26 +1005,32 @@ class EntryMeta extends AppModel {
             'client_invoice_date'   => ( excelDateToDate($value[1+22], $rawDate) ? date('m/d/Y', $rawDate ) : '' ),
             'client_invoice_code'   => strtoupper($value[1+23]),
             'client_invoice_pcs'    => intval($value[1+24]),
-            'form-sold_110'         => round(floatval($value[1+25]), 2),
-            'form-x_110'            => round(floatval($value[1+26]), 2),            
-            'form-sold_115'         => round(floatval($value[1+27]), 2),
-            'form-x_115'            => round(floatval($value[1+28]), 2),
-            'form-disc_adjustment'  => round(floatval($value[1+29]), 2),
-            'client_invoice_sold_24k' => round(floatval($value[1+30]), 2),
-            'gold_price'            => intval(str_replace(array(',', '.'), '' , trim($value[1+32], 'IDR'))),
+            
+            'form-sold_125'         => round(floatval($value[1+25]), 2), // NEW FIELD !!!
+            'form-x_125'            => round(floatval($value[1+26]), 2), // NEW FIELD !!!            
+            'form-sold_100'         => round(floatval($value[1+27]), 2), // NEW FIELD !!!
+            'form-x_100'            => round(floatval($value[1+28]), 2), // NEW FIELD !!!
+            
+            'form-sold_110'         => round(floatval($value[5+25]), 2),
+            'form-x_110'            => round(floatval($value[5+26]), 2),            
+            'form-sold_115'         => round(floatval($value[5+27]), 2),
+            'form-x_115'            => round(floatval($value[5+28]), 2),
+            'form-disc_adjustment'  => round(floatval($value[5+29]), 2),
+            'client_invoice_sold_24k' => round(floatval($value[5+30]), 2),
+            'gold_price'            => intval(str_replace(array(',', '.'), '' , trim($value[5+32], 'IDR'))),
             
             /* TYPE OF PAYMENT */
-            'payment_ct_ld'         => $value[1+33],
-            'payment_rosok'         => $value[1+34],
-            'payment_checks'        => $value[1+35],
-            'payment_cash'          => $value[1+36],
-            'payment_credit_card'   => $value[1+37],
-            'payment_return_goods'  => $value[1+38],
-            'payment_balance'       => round(floatval($value[1+ (empty(floatval($value[1+39])) ? 31 : 39) ]), 2),
+            'payment_ct_ld'         => $value[5+33],
+            'payment_rosok'         => $value[5+34],
+            'payment_checks'        => $value[5+35],
+            'payment_cash'          => $value[5+36],
+            'payment_credit_card'   => $value[5+37],
+            'payment_return_goods'  => $value[5+38],
+            'payment_balance'       => round(floatval($value[5+ (empty(floatval($value[5+39])) ? 31 : 39) ]), 2),
             
             /* HISTORY OF TRANSACTIONS */
-            'transaction_history'   => $value[1+41],
-            'form-description'      => $value[1+42], // keterangan / detail barang ...
+            'transaction_history'   => $value[5+41],
+            'form-description'      => $value[5+42], // keterangan / detail barang ...
         );
         
         // calculate client_x ...

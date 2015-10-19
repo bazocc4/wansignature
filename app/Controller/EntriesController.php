@@ -182,6 +182,14 @@ class EntriesController extends AppController {
         $formatdate->set_align('center');
         $formatdate->set_align('vcenter');
         $formatdate->set_num_format('d-mmm-yy'); // 7-AUG-15
+        
+        $formatIDR =& $workbook->add_format();
+        $formatIDR->set_size(10);
+        $formatIDR->set_border(1);
+        $formatIDR->set_text_wrap();			
+        $formatIDR->set_align('center');
+        $formatIDR->set_align('vcenter');
+        $formatIDR->set_num_format('[$IDR] #,##0');
 
         // prepare modules ...
         $product_type = $this->EntryMeta->find('all', array(
@@ -242,7 +250,11 @@ class EntriesController extends AppController {
                     }
                 }
             }
-
+            
+            // transaction ...
+            $sold_before_disc = $client_invoice[ $value['EntryMeta']['client_invoice_code'] ]['EntryMeta']['total_weight'] + $client_invoice[ $value['EntryMeta']['client_invoice_code'] ]['EntryMeta']['disc_adjustment'];
+            $total_balance = $client_invoice[ $value['EntryMeta']['client_invoice_code'] ]['EntryMeta']['total_weight'] - $value['EntryMeta']['payment_balance'];
+            
             foreach(array(
                 /* COR DETAIL INFORMATION */
                 NULL,
@@ -273,21 +285,52 @@ class EntriesController extends AppController {
                 $retailer_name,
                 NULL,
                 
+                /* SR TO WAN */
+                NULL,
+                NULL,
+                
                 /* SOLD INVOICE TO CLIENT */
                 ( empty($value['EntryMeta']['client_invoice_date'])?'':parseExcelDate($value['EntryMeta']['client_invoice_date']) ),                
                 $client_invoice[ $value['EntryMeta']['client_invoice_code'] ]['Entry']['title'],
                 (empty($value['EntryMeta']['client_invoice_pcs'])?'': $value['EntryMeta']['client_invoice_pcs'].' PCS' ),
+                $client_invoice[ $value['EntryMeta']['client_invoice_code'] ]['EntryMeta']['sold_125'],
+                $client_invoice[ $value['EntryMeta']['client_invoice_code'] ]['EntryMeta']['x_125'],
+                $client_invoice[ $value['EntryMeta']['client_invoice_code'] ]['EntryMeta']['sold_100'],
+                $client_invoice[ $value['EntryMeta']['client_invoice_code'] ]['EntryMeta']['x_100'],                
+                $client_invoice[ $value['EntryMeta']['client_invoice_code'] ]['EntryMeta']['sold_110'],
+                $client_invoice[ $value['EntryMeta']['client_invoice_code'] ]['EntryMeta']['x_110'],                
+                $client_invoice[ $value['EntryMeta']['client_invoice_code'] ]['EntryMeta']['sold_115'],
+                $client_invoice[ $value['EntryMeta']['client_invoice_code'] ]['EntryMeta']['x_115'],
+                $client_invoice[ $value['EntryMeta']['client_invoice_code'] ]['EntryMeta']['disc_adjustment'],
+                ($sold_before_disc > 0?$sold_before_disc:''),
+                $client_invoice[ $value['EntryMeta']['client_invoice_code'] ]['EntryMeta']['total_weight'],
+                $value['EntryMeta']['gold_price'],
                 
+                /* TYPE OF PAYMENT */
+                $value['EntryMeta']['payment_ct_ld'],
+                $value['EntryMeta']['payment_rosok'],
+                $value['EntryMeta']['payment_checks'],
+                $value['EntryMeta']['payment_cash'],
+                $value['EntryMeta']['payment_credit_card'],
+                $value['EntryMeta']['payment_return_goods'],
+                (empty($value['EntryMeta']['payment_balance'])?'':$value['EntryMeta']['payment_balance'].' GR'),
                 
-                
+                /* HISTORY OF TRANSACTIONS */
+                ($total_balance > 0?$total_balance:''),
+                $value['EntryMeta']['transaction_history'],
+                $value['Entry']['description'],
             ) as $subkey => $subvalue)
             {
                 // ignore first col ...
                 if($subkey >= 1)
                 {
-                    if($subkey == 16) // fixed key for date type ...
+                    if($subkey == 16 || $subkey == 23) // fixed key for date type ...
                     {
                         $worksheet1->write( $indexbaris , $subkey , $subvalue ,$formatdate);
+                    }
+                    else if($subkey == 37)
+                    {
+                        $worksheet1->write( $indexbaris , $subkey , $subvalue ,$formatIDR);
                     }
                     else
                     {

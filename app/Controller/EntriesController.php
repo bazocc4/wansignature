@@ -168,13 +168,134 @@ class EntriesController extends AppController {
         // ===================== >>
         // BEGIN CONTENT PROCESS !!
         // ===================== >>
+        $format1 =& $workbook->add_format();
+        $format1->set_size(10);
+        $format1->set_border(1);
+        $format1->set_text_wrap();
+        $format1->set_align('center');
+        $format1->set_align('vcenter');
+
+        $formatdate =& $workbook->add_format();
+        $formatdate->set_size(10);
+        $formatdate->set_border(1);
+        $formatdate->set_text_wrap();			
+        $formatdate->set_align('center');
+        $formatdate->set_align('vcenter');
+        $formatdate->set_num_format('d-mmm-yy'); // 7-AUG-15
+
+        // prepare modules ...
+        $product_type = $this->EntryMeta->find('all', array(
+            'conditions' => array(
+                'Entry.entry_type' => 'product-type',
+                'EntryMeta.key' => 'form-category',
+                'EntryMeta.value NOT LIKE' => 'Diamond',
+            ),
+        ));
+        $product_type = array_combine(
+            array_column( array_column( $product_type , 'Entry'), 'slug' ), // keys
+            $product_type // values
+        );
         
+        $product_brand = array_column( array_column( $this->Entry->findAllByEntryType('product-brand') , 'Entry'), 'title', 'slug' );
+        $product_color = array_column( array_column( $this->Entry->findAllByEntryType('product-color') , 'Entry'), 'title', 'slug' );
         
+        $vendor = array_column( array_column( $this->Entry->findAllByEntryType('vendor') , 'Entry'), 'title', 'slug' );
+        $vendor_invoice = array_map('breakEntryMetas', $this->Entry->findAllByEntryType('cor-vendor-invoice') );
+        $vendor_invoice = array_combine(
+            array_column( array_column( $vendor_invoice , 'Entry'), 'slug' ), // keys
+            $vendor_invoice // values
+        );
         
+        $warehouse = array_column( array_column( $this->Entry->findAllByEntryType('warehouse') , 'Entry'), 'title', 'slug' );
+
+        $client = array_map('breakEntryMetas', $this->Entry->findAllByEntryType('client') );
+        $client = array_combine(
+            array_column( array_column( $client , 'Entry'), 'slug' ), // keys
+            $client // values
+        );
         
+        $client_invoice = array_map('breakEntryMetas', $this->Entry->findAllByEntryType('cor-client-invoice') );
+        $client_invoice = array_combine(
+            array_column( array_column( $client_invoice , 'Entry'), 'slug' ), // keys
+            $client_invoice // values
+        );
         
-        
-        
+        // query cor-jewelry ...
+        $query = array_map('breakEntryMetas', $this->Entry->findAllById(explode(',', $this->request->data['record'])) );
+        foreach($query as $key => $value)
+        {
+            $indexbaris++;
+            $wholesaler_name = '';                
+            $retailer_name = '';
+            if( !empty( $client[ $value['EntryMeta']['client'] ] ) )
+            {
+                if( $client[ $value['EntryMeta']['client'] ]['EntryMeta']['kategori'] == 'Wholesaler' )
+                {
+                    $wholesaler_name = $client[ $value['EntryMeta']['client'] ]['Entry']['title'];
+                }
+                else
+                {
+                    $retailer_name = $client[ $value['EntryMeta']['client'] ]['Entry']['title'];
+                    if( !empty($client[ $value['EntryMeta']['wholesaler'] ]) )
+                    {
+                        $wholesaler_name = $client[ $value['EntryMeta']['wholesaler'] ]['Entry']['title'];
+                    }
+                }
+            }
+
+            foreach(array(
+                /* COR DETAIL INFORMATION */
+                NULL,
+                ($key+1),
+                $value['Entry']['title'],
+                $product_type[ $value['EntryMeta']['product_type'] ]['Entry']['title'],
+                $product_brand[ $value['EntryMeta']['product_brand'] ],
+                $product_color[ $value['EntryMeta']['product_color'] ],
+                ( $value['EntryMeta']['item_weight'] > 1 ?$value['EntryMeta']['item_weight']:''),
+                'GR',
+                $value['EntryMeta']['item_size'],
+                
+                /* VENDOR INFO */
+                $vendor[ $value['EntryMeta']['vendor'] ],
+                substr($product_type[ $value['EntryMeta']['product_type'] ]['EntryMeta']['value'], -5, 3),
+                'HK',
+                $vendor_invoice[ $value['EntryMeta']['vendor_invoice_code'] ]['Entry']['title'],
+                $vendor_invoice[ $value['EntryMeta']['vendor_invoice_code'] ]['EntryMeta']['total_pcs'],
+                (empty($vendor_invoice[ $value['EntryMeta']['vendor_invoice_code'] ])?'':$vendor_invoice[ $value['EntryMeta']['vendor_invoice_code'] ]['EntryMeta']['total_weight'].' GR'),
+                
+                /* STATUS BARANG */
+                $warehouse[ $value['EntryMeta']['warehouse'] ],
+                ( empty($value['EntryMeta']['stock_date'])?'':parseExcelDate($value['EntryMeta']['stock_date']) ),
+                $value['EntryMeta']['product_status'],
+                
+                /* CLIENT INFO */
+                $wholesaler_name,
+                $retailer_name,
+                NULL,
+                
+                /* SOLD INVOICE TO CLIENT */
+                ( empty($value['EntryMeta']['client_invoice_date'])?'':parseExcelDate($value['EntryMeta']['client_invoice_date']) ),                
+                $client_invoice[ $value['EntryMeta']['client_invoice_code'] ]['Entry']['title'],
+                (empty($value['EntryMeta']['client_invoice_pcs'])?'': $value['EntryMeta']['client_invoice_pcs'].' PCS' ),
+                
+                
+                
+            ) as $subkey => $subvalue)
+            {
+                // ignore first col ...
+                if($subkey >= 1)
+                {
+                    if($subkey == 16) // fixed key for date type ...
+                    {
+                        $worksheet1->write( $indexbaris , $subkey , $subvalue ,$formatdate);
+                    }
+                    else
+                    {
+                        $worksheet1->write( $indexbaris , $subkey , $subvalue ,$format1);
+                    }
+                }
+            }
+        }
         
         $workbook->close();
         // convert Excel version 5.0 to Excel 2007...

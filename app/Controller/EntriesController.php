@@ -190,6 +190,14 @@ class EntriesController extends AppController {
         $formatIDR->set_align('center');
         $formatIDR->set_align('vcenter');
         $formatIDR->set_num_format('[$IDR] #,##0');
+        
+        $formatKurung =& $workbook->add_format();
+        $formatKurung->set_size(10);
+        $formatKurung->set_border(1);
+        $formatKurung->set_text_wrap();			
+        $formatKurung->set_align('center');
+        $formatKurung->set_align('vcenter');
+        $formatKurung->set_num_format('_(* #,##0.00_);_(* (#,##0.00);_(* "-"??_);_(@_)');
 
         // prepare modules ...
         $product_type = $this->EntryMeta->find('all', array(
@@ -263,7 +271,7 @@ class EntriesController extends AppController {
                 $product_type[ $value['EntryMeta']['product_type'] ]['Entry']['title'],
                 $product_brand[ $value['EntryMeta']['product_brand'] ],
                 $product_color[ $value['EntryMeta']['product_color'] ],
-                ( $value['EntryMeta']['item_weight'] > 1 ?$value['EntryMeta']['item_weight']:''),
+                $value['EntryMeta']['item_weight'],
                 'GR',
                 $value['EntryMeta']['item_size'],
                 
@@ -331,6 +339,10 @@ class EntriesController extends AppController {
                     else if($subkey == 37)
                     {
                         $worksheet1->write( $indexbaris , $subkey , $subvalue ,$formatIDR);
+                    }
+                    else if($subkey == 6)
+                    {
+                        $worksheet1->write( $indexbaris , $subkey , $subvalue ,$formatKurung);
                     }
                     else
                     {

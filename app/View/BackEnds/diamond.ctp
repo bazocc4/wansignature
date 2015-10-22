@@ -53,19 +53,16 @@
                     $('div.inner-header > div:last > div:last').before("<form id='download-excel' action='"+site+"entries/download_diamond' method='POST'><input type='hidden' name='data[record]'><button style='margin-bottom:10px;' class='btn btn-inverse right-btn fr' type='submit'><i class='icon-download-alt icon-white'></i> Download Excel</button></form>"); // download Excel ...
 
                     $('form#download-excel').submit(function(){
-                        var records = [];
-                        $('input.check-record:checked').each(function(i,el){
-                            records.push($(el).val());
-                        });
-
-                        if(records.length > 0)
+                        var checked_data = $('#checked-data').val();
+                        var total_checked = checked_data.split(',').length - 2;
+                        if(total_checked > 0)
                         {
-                            $(this).find('input[name="data[record]"]').val( records.join(',') );
+                            $(this).find('input[name="data[record]"]').val( checked_data.substr(1, checked_data.length - 2 ) );
                         }
                         else
                         {
                             alert('Please select one or more DIAMOND to be downloaded into excel format.');
-                            $('input.check-record:first').focus();
+                            $('input#check-all').focus();
                             return false;
                         }
                     });

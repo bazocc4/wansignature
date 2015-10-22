@@ -34,14 +34,45 @@ $(document).ready(function(){
 	});
 	
 	// change record background color in table when checkbox on checked !!
-    $(document).on("change", "input[type=checkbox].check-record", function(){
+    $(document).on("change", "input[type=checkbox].check-record", function(e, ignoreAttachButton ){
+        var $mytr = $(this).closest('tr');        
+        var entry_id = $mytr.attr('alt');
+        var checked_data = $('#checked-data').val();
+        
         if($(this).is(':checked'))
         {
-            $(this).closest('tr').addClass('on-checked');
+            $mytr.addClass('on-checked');
+            if(checked_data.indexOf(','+entry_id+',') < 0)
+            {
+                $('#checked-data').val(checked_data+entry_id+',');
+                
+                // fetch tr element too ...
+                if($('div#checked-row').length)
+                {
+                    $mytr.clone(true).appendTo( $('div#checked-row') );
+                }
+            }
         }
         else
         {
-            $(this).closest('tr').removeClass('on-checked');
+            $mytr.removeClass('on-checked');
+            $('#checked-data').val( checked_data.replace(','+entry_id+',' , ',' ) );
+            
+            // remove tr element too ...
+            if($('div#checked-row > tr[alt='+entry_id+']').length)
+            {
+                $('div#checked-row > tr[alt='+entry_id+']').remove();
+            }
+        }
+        
+        // update #count-check-all ...
+        var total_checked = $('#checked-data').val().split(',').length - 2;
+        total_checked = (total_checked > 0?'('+total_checked+')':'');
+        $('span#count-check-all').html(total_checked);
+        
+        if(ignoreAttachButton == null)
+        {
+            $.fn.updateAttachButton();
         }
     });
     

@@ -49,8 +49,12 @@
 		$('#attach-checked-data').click(function(e){
 			if(!$(this).hasClass('disabled'))
 			{
-				var targetID = $('input#query-alias').val();
-				$('input.check-record:checked').each(function(i,el){
+                var targetID = $('input#query-alias').val();
+                
+                // hide all tr first before appendTo tbody ...
+                $('div#checked-row tr').addClass('hide').appendTo('table#myTableList tbody');
+                
+				$('input.check-record:not(:visible)').each(function(i,el){
                     // add new browse ...
                     if($('input#'+targetID+ $('input#query-stream').val() ).length == 0)
                     {
@@ -60,11 +64,11 @@
                     }
                     
                     // trigger TR row click ...
-                    $('table#myTableList tr[alt='+$(el).val()+']').click();
+                    $(this).closest('tr').trigger('click');
                     
                     // preparing for next #query-stream ...
                     var $next_detail = $("input#"+targetID+ $('input#query-stream').val() ).closest('div.'+targetID+'-detail').next();
-                    $('input#query-stream').val( $next_detail.length > 0 ? $.fn.urlParam('stream', $next_detail.find('a.get-from-table').attr('href') ) : '' );
+                    $('input#query-stream').val( $next_detail.length ? $.fn.urlParam('stream', $next_detail.find('a.get-from-table').attr('href') ) : '' );
 				});
 				$.colorbox.close();
 			}
@@ -76,6 +80,9 @@
 		});
 	});
 </script>
+
+<!-- save id of entries that had already checked -->
+<input type="hidden" id="checked-data" value=",">
 
 <div class="inner-header <?php echo (empty($popup)?'':'layout-header-popup'); ?> row-fluid">
 	<div class="span5">
@@ -171,6 +178,9 @@
         <div style="margin:0 !important" class="clear"></div>
 		<button id="attach-checked-data" class="btn btn-primary right-btn fr disabled">Attach checked data</button>
 		<input type="hidden" id="query-stream" value="<?php echo $stream; ?>">
+                   
+        <!-- save "tr" element of entries that had already checked -->
+        <div class="hide" id="checked-row"></div>           
                     <?php
                 }
                 

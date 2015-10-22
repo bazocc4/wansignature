@@ -135,19 +135,15 @@ function openRequestedSinglePopup(strUrl , targetName)
     }
     
     /* ENABLE / DISABLE ATTACH BUTTON ON POPUP */
-    $.fn.updateAttachButton = function(){        
-        var attach_status = false;
-        var check_all = true;        
-        $('input.check-record').each(function(i,el){
-            if($(this).attr('checked'))     attach_status = true;
-            else                            check_all = false;
-        });
-        
-        $('input#check-all').attr('checked' , check_all );        
+    $.fn.updateAttachButton = function(){
+        $('input#check-all').attr('checked', ($('input.check-record:not(:checked)').length?false:true) );
 		if($('#attach-checked-data').length > 0)
 		{
-			if(attach_status)    $('#attach-checked-data').removeClass('disabled');
-			else                 $('#attach-checked-data').addClass('disabled');	
+            var checked_data = $('#checked-data').val();
+            var total_checked = checked_data.split(',').length - 2;
+            
+			if(total_checked > 0)    $('#attach-checked-data').removeClass('disabled');
+			else                     $('#attach-checked-data').addClass('disabled');	
 		}
 	}
 	
@@ -433,13 +429,8 @@ function openRequestedSinglePopup(strUrl , targetName)
 			}
 
 			// if ajax on colorbox, then resize it too ...
-			if($('#colorbox').length>0&&$('#colorbox').is(':visible'))
+			if($('#colorbox').length && $('#colorbox').is(':visible'))
 			{
-				if($('#attach-checked-data').length > 0)
-				{
-					$('#attach-checked-data').addClass('disabled');	
-				}
-
 				$.colorbox.resize();
 			}
 		});

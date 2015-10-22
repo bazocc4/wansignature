@@ -381,7 +381,7 @@ function parseExcelDate($inputDate){
     // number of seconds in a day
     $seconds_in_a_day = 86400;
     // Unix timestamp to Excel date difference in seconds
-    $ut_to_ed_diff = $seconds_in_a_day * 25570;
+    $ut_to_ed_diff = ($seconds_in_a_day * 25570) - 61200;
     
     $result = ( strtotime($inputDate) + $ut_to_ed_diff) / $seconds_in_a_day;
     return $result;

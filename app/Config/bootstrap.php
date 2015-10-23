@@ -368,8 +368,8 @@ function convertExcelVersion($inputPath,$outputPath)
     * @public
 	**/
 function excelDateToDate($readDate, &$result = NULL){
-    $phpexcepDate = floor($readDate)-25569; //to offset to Unix epoch
-    $result = strtotime("+$phpexcepDate days", mktime(0,0,0,1,1,1970));
+    $phpExcelDate = floor($readDate)-25569; //to offset to Unix epoch
+    $result = ($phpExcelDate > 0? strtotime("+$phpExcelDate days", mktime(0,0,0,1,1,1970)) : false );
     return $result;
 }
 

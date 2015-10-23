@@ -650,9 +650,9 @@ class GetHelper extends AppHelper
         
         // Second Filter !!
         $echothis = $result;
-        if($shortkey == 'name')
+        if($shortkey == 'name' || strpos($shortkey, 'kode') !== false )
         {
-            $echothis = '<strong>'.$result.'</strong>';
+            $echothis = '<h5>'.$result.'</h5>';
         }
         else if($shortkey == 'total_price' || $shortkey == 'barcode' || $shortkey == 'sell_barcode' || $shortkey == 'total_sold_price' || $shortkey == 'sold_price_usd' || $shortkey == 'vendor_usd')
         {

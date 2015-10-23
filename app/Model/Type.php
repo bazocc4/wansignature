@@ -154,7 +154,7 @@ class Type extends AppModel {
 	 * @return boolean
 	 * @public
 	 **/
-	function beforeSave()
+	function beforeSave($options = array())
 	{		
 		if(!empty($this->data['Type']['slug']))
 		{

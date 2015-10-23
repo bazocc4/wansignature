@@ -1493,7 +1493,6 @@ class EntriesController extends AppController {
             $options['conditions']['OR'] = array(
                 array('Entry.title LIKE' => '%'.$_SESSION['searchMe'].'%'), 
                 array('Entry.description LIKE' => '%'.$_SESSION['searchMe'].'%'),
-                array('ParentEntry.title LIKE' => '%'.$_SESSION['searchMe'].'%')
             );
             
 			if($this->mySetting['table_view']=='complex')

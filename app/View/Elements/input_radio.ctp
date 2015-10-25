@@ -19,6 +19,7 @@
                 'Credit' => 'btn btn-mini btn-danger text-uppercase',
                 'Debit' => 'btn btn-mini btn-primary text-uppercase',
                 
+                'Vendor' => 'btn btn-mini btn-success text-uppercase',
                 'Warehouse' => 'btn btn-mini btn-primary text-uppercase',
                 'Exhibition' => 'btn btn-mini btn-inverse text-uppercase',
                 

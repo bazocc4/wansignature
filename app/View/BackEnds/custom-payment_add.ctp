@@ -6,7 +6,7 @@
     $DMD = (strpos($myType['Type']['slug'], 'dmd-')!==FALSE?true:false);
 
     // is it Vendor or Client payment ?
-    $VENDOR = (strpos($myType['Type']['slug'], '-vendor-')!==FALSE?true:false);
+    $VENDOR = (strpos($myType['Type']['slug'], '-vendor-')!==FALSE || strpos($myType['Type']['slug'], 'sr-')!==FALSE ?true:false);
 
 	if($isAjax == 0)
 	{
@@ -75,7 +75,7 @@
                 
                 // update empty payment rate ...
                 var amount_key_rate = '';
-                if($('input.rp_rate').length > 0)
+                if($('input.rp_rate').length)
                 {
                     amount_key_rate = 'rp_rate';
                     if($('input.rp_rate').val() == '')
@@ -83,7 +83,7 @@
                         $('input.rp_rate').val('<?php echo $myParentEntry['EntryMeta']['rp_rate']; ?>');
                     }
                 }
-                else if($('input.gold_price').length > 0)
+                else if($('input.gold_price').length)
                 {
                     amount_key_rate = 'gold_price';
                     if($('input.gold_price').val() == '')
@@ -91,17 +91,24 @@
                         $('input.gold_price').val('<?php echo $myParentEntry['EntryMeta']['gold_price']; ?>');
                     }
                 }
-                else if($('input.hkd_rate').length > 0)
+                else if($('input.hkd_rate').length)
                 {
                     amount_key_rate = 'hkd_rate';
                     if($('input.hkd_rate').val() == '')
                     {
-                        $('input.hkd_rate').val('<?php echo $myParentEntry['EntryMeta']['hkd_rate']; ?>');
+                        <?php
+                            // initialize empty rate at very first stage ...
+                            if(empty($myEntry) && empty($_POST) && $VENDOR && $DMD )
+                            {
+                                $hkdrate = $this->Get->meta_details(NULL , 'usd-rate' , NULL , NULL , NULL , NULL , 'hkd');
+                                echo "$('input.hkd_rate').val('".$hkdrate['EntryMeta']['rate_value']."');";
+                            }
+                        ?>
                     }
                 }
                 
                 // onkeyup Amount ...
-                if(amount_key_rate.length > 0)
+                if(amount_key_rate.length)
                 {
                     $('input.amount').keyup(function(){
                         var amount_rate = $('input.'+amount_key_rate).val();
@@ -134,10 +141,10 @@
                 $('input.additional_charge').keyup(function(e,init){
                     
                     var source = 0;
-                    if($('span.total_diamond').length > 0)  source += parseFloat($('span.total_diamond input[type=hidden]').val());
-                    if($('span.total_cor_jewelry').length > 0)  source += parseFloat($('span.total_cor_jewelry input[type=hidden]').val());
-                    if($('span.total_gold_loss').length > 0)    source += parseFloat($('span.total_gold_loss input[type=hidden]').val());
-                    if($('span.additional_cost_gram').length > 0)   source += parseFloat( $('span.additional_cost_gram').text() );
+                    if($('span.total_diamond').length)  source += parseFloat($('span.total_diamond input[type=hidden]').val());
+                    if($('span.total_cor_jewelry').length)  source += parseFloat($('span.total_cor_jewelry input[type=hidden]').val());
+                    if($('span.total_gold_loss').length)    source += parseFloat($('span.total_gold_loss input[type=hidden]').val());
+                    if($('span.additional_cost_gram').length)   source += parseFloat( $('span.additional_cost_gram').text() );
                     
                     var result = ( $.isNumeric( $(this).val() ) ? source * parseFloat($(this).val()) / 100 : 0 );
                     $('span.total_additional_charge').html(number_format(result,2));
@@ -212,6 +219,37 @@
                     }
                 });
                 
+                // CUSTOMIZED SCRIPT !!
+                if($('input[type=radio].receiver').length)
+                {
+                    $('input[type=radio].receiver').change(function(){
+                        if($(this).is(':checked'))
+                        {
+                            if($(this).val() == 'Vendor')
+                            {
+                                $('input#vendor').closest('.control-group').show();
+
+                                $('input#warehouse').closest('.control-group').hide();
+                                $('input#warehouse').val('').nextAll('input[type=hidden].warehouse').val('');
+                            }
+                            else
+                            {
+                                <?php
+                                    if(empty($myEntry) && empty($_POST) && strpos($myType['Type']['slug'], 'sr-') !== FALSE )
+                                    {
+                                        $TP = $this->Get->meta_details(NULL , 'warehouse' , NULL , NULL , NULL , NULL , 'TP');
+                                        echo "$('input#warehouse').val('".$TP['Entry']['title']."').nextAll('input[type=hidden].warehouse').val('".$TP['Entry']['slug']."');";
+                                    }
+                                ?>
+                                $('input#warehouse').closest('.control-group').show();
+
+                                $('input#vendor').closest('.control-group').hide();
+                                $('input#vendor').val('').nextAll('input[type=hidden].vendor').val('');
+                            }
+                        }
+                    }).trigger('change');
+                }
+                
 			});
 		</script>
 		<script src="<?php echo $imagePath; ?>js/gold_loss.js"></script>
@@ -233,13 +271,16 @@
 			}
 			
 			$value = array();
-			$value['key'] = 'form-'.Inflector::slug(strtolower($titlekey));
+			$value['key'] = 'form-'.Inflector::slug($titlekey);
 			$value['validation'] = 'not_empty';
 			$value['model'] = 'Entry';
 			$value['counter'] = 0;
 			$value['input_type'] = 'text';
-            $value['inputsize'] = 'large'; // special case for payment ...
-            $value['p'] = "Keterangan singkat mengenai transaksi ini (spt bank, jumlah pembayaran, tanggal, dll).";
+            if( ! $VENDOR)
+            {
+                $value['inputsize'] = 'large'; // special case for payment ...
+                $value['p'] = "Keterangan singkat mengenai transaksi ini (spt bank, jumlah pembayaran, tanggal, dll).";
+            }
 			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['title']);
 
             // SPECIAL ADD CASE FROM EMAIL LINK !!
@@ -252,7 +293,15 @@
 
             // Our CKEditor Description Field !!
 			$value = array();
-			$value['key'] = 'form-'.($VENDOR?'vendor':'client').'_outstanding';
+            if($VENDOR)
+            {
+                $value['key'] = 'form-keterangan';
+                $value['p'] = "Detail mengenai transaksi ini (spt bank, jumlah pembayaran, tanggal, dll).";
+            }
+            else
+            {
+                $value['key'] = 'form-client_outstanding';
+            }
 			$value['validation'] = '';
 			$value['model'] = 'Entry';
 			$value['counter'] = 1;
@@ -313,7 +362,7 @@
 					}
                     
                     // on-the-fly validation ...
-                    if($value['key'] == 'form-checks_date' || $value['key'] == 'form-loan_period' || strpos($value['key'], 'form-payment_') !== FALSE)
+                    if($value['key'] == 'form-checks_date' || $value['key'] == 'form-loan_period' || strpos($value['key'], 'form-payment_') !== FALSE || $value['key'] == 'form-vendor' || $value['key'] == 'form-warehouse' )
                     {
                         $value['validation'] .= 'not_empty|';
                     }
@@ -332,10 +381,25 @@
                     {
                         if($value['key'] == 'form-diamond' || $value['key'] == 'form-cor_jewelry')
                         {
-                            $value['request_query'] = array(
-                                'key' => ($VENDOR? 'vendor_invoice_code' : 'client_invoice_code' ),
-                                'value' => $myParentEntry['Entry']['slug']
-                            );
+                            if($VENDOR)
+                            {
+                                $value['request_query'] = array(
+                                    
+//                                    'key' => 'product_status|report_type',
+//                                    'value' => 'SOLD|Consignment',
+
+                                    'key' => 'product_status',
+                                    'value' => 'SOLD',
+                                    
+                                );
+                            }
+                            else // client payment
+                            {
+                                $value['request_query'] = array(
+                                    'key' => 'client_invoice_code',
+                                    'value' => $myParentEntry['Entry']['slug'],
+                                );
+                            }
                         }
                         
                         // SPECIAL ADD CASE FROM EMAIL LINK !!
@@ -472,18 +536,8 @@
 		<input type="hidden" value="<?php echo (empty($myChildType)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>" id="myTypeSlug"/>
 		
 		<?php
-            // get client / vendor X ...
-            if($VENDOR)
-            {
-                if($DMD)
-                {
-                    $vendor_x = $this->Get->meta_details($myParentEntry['EntryMeta']['vendor'] , 'vendor');
-                    ?>
-        <input type="hidden" id="vendor_x" value="<?php echo $vendor_x['EntryMeta']['capital_x']; ?>">            
-                    <?php
-                }
-            }
-            else // client ...
+            // get client X ...
+            if( ! $VENDOR)
             {
                 if($DMD)
                 {

@@ -9,7 +9,7 @@
     {
         $browse_slug = 'client';
     }
-    else if($shortkey == 'warehouse_origin' || $shortkey == 'warehouse_destination')
+    else if($shortkey == 'warehouse_origin' || $shortkey == 'warehouse_destination' || $shortkey == 'warehouse_payer')
     {
         $browse_slug = 'warehouse';
     }

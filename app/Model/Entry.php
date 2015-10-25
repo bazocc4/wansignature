@@ -1198,32 +1198,36 @@ class Entry extends AppModel {
         {
             if(empty($return_status))
             {
+                $subArray = array(
+                    'form-report_type' => 'SR',
+                    'form-report_date' => $data['EntryMeta']['date'],
+                );
                 // for diamond and cor-jewelry !!
                 foreach(array('diamond', 'cor_jewelry') as $typekey => $typevalue)
                 {
                     if(!empty($data['EntryMeta'][$typevalue]))
                     {
-                        $subkey = 'form-report_type';
-                        $subvalue = 'SR';
-
                         $query = $this->Entry->findAllByEntryTypeAndSlug(get_slug($typevalue), $data['EntryMeta'][$typevalue] );
                         foreach($query as $key => $value)
                         {
                             $dbkey_haystack = array_column($value['EntryMeta'], 'key');
-                            $dbkey = array_search($subkey, $dbkey_haystack);
-                            if($dbkey === FALSE)
+                            foreach($subArray as $subkey => $subvalue )
                             {
-                                $this->EntryMeta->create();
-                                $this->EntryMeta->save(array('EntryMeta' => array(
-                                    'entry_id'  => $value['Entry']['id'],
-                                    'key'       => $subkey,
-                                    'value'     => $subvalue
-                                )));
-                            }
-                            else if($value['EntryMeta'][$dbkey]['value'] != $subvalue)
-                            {
-                                $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
-                                $this->EntryMeta->saveField('value', $subvalue );
+                                $dbkey = array_search($subkey, $dbkey_haystack);
+                                if($dbkey === FALSE)
+                                {
+                                    $this->EntryMeta->create();
+                                    $this->EntryMeta->save(array('EntryMeta' => array(
+                                        'entry_id'  => $value['Entry']['id'],
+                                        'key'       => $subkey,
+                                        'value'     => $subvalue
+                                    )));
+                                }
+                                else if($value['EntryMeta'][$dbkey]['value'] != $subvalue)
+                                {
+                                    $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
+                                    $this->EntryMeta->saveField('value', $subvalue );
+                                }
                             }
                         }
                     }

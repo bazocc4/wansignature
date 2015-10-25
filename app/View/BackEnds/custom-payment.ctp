@@ -6,7 +6,7 @@
     $DMD = (strpos($myType['Type']['slug'], 'dmd-')!==FALSE?true:false);
 
     // is it Vendor or Client payment ?
-    $VENDOR = (strpos($myType['Type']['slug'], '-vendor-')!==FALSE?true:false);
+    $VENDOR = (strpos($myType['Type']['slug'], '-vendor-')!==FALSE || strpos($myType['Type']['slug'], 'sr-')!==FALSE ?true:false);
 
     // initialize $extensionPaging for URL Query ...
     $extensionPaging = $this->request->query;
@@ -27,7 +27,7 @@
 
 	if($isAjax == 0)
 	{
-        if($myEntry['EntryMeta']['payment_balance'] >= $myEntry['EntryMeta'][$DMD?'total_price':'total_weight'])
+        if(!empty($myEntry) && $myEntry['EntryMeta']['payment_balance'] >= $myEntry['EntryMeta'][$DMD?'total_price':'total_weight'] )
 		{
             ?>
 			<div class="alert alert-info full fl">
@@ -444,6 +444,10 @@
                             if($shortkey == 'cost_currency')
                             {
                                 $entrytype = 'usd-rate';
+                            }
+                            else if($shortkey == 'warehouse_payer')
+                            {
+                                $entrytype = 'warehouse';
                             }
                             else
                             {

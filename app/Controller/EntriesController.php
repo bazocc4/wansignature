@@ -912,6 +912,10 @@ class EntriesController extends AppController {
             {
                 $myTemplate = 'custom-invoice';
             }
+            else if(strpos($myTypeSlug , '-payment') !== FALSE) // SR / RR
+            {
+                $myTemplate = 'custom-payment';
+            }
             else
             {
                 $myTemplate = $myTypeSlug;

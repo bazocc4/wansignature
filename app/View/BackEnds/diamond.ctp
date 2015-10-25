@@ -170,7 +170,7 @@
                     var richvalue = $(this).find("h5.title-code").text() + ' ' + $(this).find('td.form-product_type h5').text();
                     
                     var usd_result = 0;
-                    if($('#myTypeSlug').val() == 'dv-payment')
+                    if($('#myTypeSlug').val() == 'sr-dmd-payment')
                     {
                         var barcode = $(this).find('td.form-vendor_barcode').text();
                         usd_result = parseFloat($(this).find('td.form-vendor_barcode input[type=hidden]').val());
@@ -180,7 +180,7 @@
                         var vendor_x = $(this).find('td.form-vendor_x').text();
                         if(vendor_x == '-')
                         {
-                            vendor_x = ( $('#vendor_x').val()=='' ? 1 : $('#vendor_x').val() );
+                            vendor_x = 1;
                         }
                         usd_result *= parseFloat(vendor_x);
                         

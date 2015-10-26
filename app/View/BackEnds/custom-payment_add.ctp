@@ -379,7 +379,7 @@
                     {
                         $value['view_mode'] = true;
                         
-                        if($value['key'] == 'form-cost_currency')
+                        if($value['key'] == 'form-cost_currency' || $value['key'] == 'form-receiver')
                         {
                             $value['display'] = 'none';
                         }

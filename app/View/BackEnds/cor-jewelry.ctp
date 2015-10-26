@@ -318,7 +318,7 @@
                         }
                         
                         $datefield = '';
-                        if($shortkey == 'product_type' || $shortkey == 'product_status')
+                        if($shortkey == 'product_type' || $shortkey == 'product_status' || $shortkey == 'temp_report')
                         {
                             $datefield = 'date-field';
                         }

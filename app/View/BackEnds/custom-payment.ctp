@@ -236,7 +236,12 @@
         });
         
         $('a.withdraw_checks').click(function(e){
-            if(!confirm('Are you sure to withdraw this checks today?\nNB: This action will automatically update invoice balance too.'))
+            if(!confirm('Are you sure to withdraw this checks today?<?php
+                if( ! $VENDOR )
+                {
+                    echo '\nNB: This action will automatically update invoice balance too.';
+                }
+            ?>'))
             {
                 e.preventDefault();
             }
@@ -373,15 +378,13 @@
 			?>
 			<input class="slug-code" type="hidden" value="<?php echo $value['Entry']['slug']; ?>" />
 			<h5 class="title-code"><?php echo (empty($popup)?$this->Html->link($value['Entry']['title'],$editUrl):$value['Entry']['title']); ?></h5>
-			
-				<?php
-					if(!empty($value['Entry']['description']))
-					{
-						$description = nl2br($value['Entry']['description']);
-						echo '<p>'.(strlen($description) > 30? '<a href="#" data-placement="right" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description).'</p>';
-					}
-				?>
-			
+            <?php
+                if(!empty($value['Entry']['description']))
+                {
+                    $description = nl2br($value['Entry']['description']);
+                    echo '<p>'.(strlen($description) > 30? '<a href="#" data-placement="right" data-toggle="tooltip" title="'.$description.'">'.substr($description,0,30).'...</a>' : $description).'</p>';
+                }
+            ?>
 		</td>
 		<?php
 			if(empty($myEntry) && empty($popup)) // if this is a parent Entry !!
@@ -636,7 +639,10 @@
 	if($isAjax == 0 || $isAjax == 1 && $search == "yes")
 	{
 		echo '</div>';
-		// echo $this->element('admin_footer', array('extensionPaging' => $extensionPaging));
+        if($paging > 0)
+        {
+            echo $this->element('admin_footer', array('extensionPaging' => $extensionPaging));
+        }
 		echo '<div class="clear"></div>';
 		echo ($isAjax==0?"</div>":"");
 	}

@@ -257,7 +257,13 @@ class EntryMetasController extends AppController {
             'rp_rate'      => $query['EntryMeta']['rp_rate'],
             'gold_price'   => $query['EntryMeta']['gold_price'],
             'amount'       => $new_charge,
-            'bank'         => $query['EntryMeta']['bank']
+            'bank'         => $query['EntryMeta']['bank'],
+            
+            // SR RR payment ...
+            'warehouse_payer'   => $query['EntryMeta']['warehouse_payer'],
+            'receiver'          => $query['EntryMeta']['receiver'],
+            'vendor'            => $query['EntryMeta']['vendor'],
+            'warehouse'         => $query['EntryMeta']['warehouse'],
         );
         $input['EntryMeta']['entry_id'] = $this->Entry->id;
         foreach($pushdata as $key => $value)

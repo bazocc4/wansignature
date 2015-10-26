@@ -355,7 +355,7 @@
                         }
                         
                         $datefield = '';
-                        if($shortkey == 'carat' || $shortkey == 'item_ref_code' || $shortkey == 'product_status')
+                        if($shortkey == 'carat' || $shortkey == 'item_ref_code' || $shortkey == 'product_status' || $shortkey == 'temp_report')
                         {
                             $datefield = 'date-field';
                         }

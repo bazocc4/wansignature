@@ -138,7 +138,7 @@
 					$("input#"+targetID).change();
 
 					// update other attribute ...
-                    if($('input.loan_interest_rate').length > 0)
+                    if($('input.loan_interest_rate').length && $('input.loan_interest_rate').is(':visible') )
                     {
                         var loanrate = parseFloat($(this).find('td.form-loan_interest_rate').text());
                         if($.isNumeric(loanrate))

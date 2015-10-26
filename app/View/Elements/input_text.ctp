@@ -201,7 +201,9 @@
 <?php
     if($shortkey == 'amount')
     {
-        ?>
+        if(!empty($myParentEntry))
+        {
+            ?>
 <div class="control-group">
     <label class="control-label">Balance</label>
     <div class="controls">
@@ -214,30 +216,38 @@
             Pembayaran invoice menjadi <span class="label label-success">LUNAS</span> <strong>APABILA</strong> balance mencapai nilai <?php echo '<span class="label label-success">'.toMoney($myParentEntry['EntryMeta'][$max_balance] , true , true).' '.$unit_amount.'</span> (Invoice '.string_unslug($max_balance).').'; ?>
         </p>
     </div>
-</div>
-<script>
-    $('input.amount').keyup(function(){
-        var result = parseFloat($('#neutral_balance').val());
-        if( $(this).is(':visible') && $.isNumeric($(this).val()) )
-        {
-            if($('input.statement:first').is(':checked'))
-            {
-                result += parseFloat($(this).val());
-            }
-            else
-            {
-                result -= parseFloat($(this).val());
-            }
-            
-            result = result.toFixed(2);
+</div>            
+            <?php
         }
         
-        // give red color if live balance exceeds max balance !!
-        var max_balance = parseFloat($('#max_balance').val());
-        $('#display_balance').text( number_format(result,2) ).closest('div.view-mode').css('color', (result > max_balance?'red':'black') );
-    });
-    
+        ?>
+<script>
     $(document).ready(function(){
+        
+        if($('#display_balance').length)
+        {
+            $('input.amount').keyup(function(){
+                var result = parseFloat($('#neutral_balance').val());
+                if( $(this).is(':visible') && $.isNumeric($(this).val()) )
+                {
+                    if($('input.statement:first').is(':checked'))
+                    {
+                        result += parseFloat($(this).val());
+                    }
+                    else
+                    {
+                        result -= parseFloat($(this).val());
+                    }
+
+                    result = result.toFixed(2);
+                }
+
+                // give red color if live balance exceeds max balance !!
+                var max_balance = parseFloat($('#max_balance').val());
+                $('#display_balance').text( number_format(result,2) ).closest('div.view-mode').css('color', (result > max_balance?'red':'black') );
+            });
+        }
+        
 		$('form').submit(function(){
             var amount = parseFloat($('input.amount').val());
             if(amount < 0)

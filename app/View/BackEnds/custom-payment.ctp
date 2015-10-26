@@ -165,8 +165,18 @@
 		<?php endif; ?>
 		// ---------------------------------------------------------------------- >>>
 		// FOR AJAX REASON !!
-		// ---------------------------------------------------------------------- >>>
-        
+		// ---------------------------------------------------------------------- >>>        
+        <?php
+            if($VENDOR)
+            {
+                ?>
+        // UPDATE SEARCH LINK !!
+		$('a.searchMeLink').attr('href',site+'admin/entries/<?php echo $myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']); ?>/index/1<?php echo get_more_extension($extensionPaging); ?>');
+                <?php
+            }
+            else
+            {
+                ?>
         // CHANGE INNER HEADER SPAN SIZE !!
         $('div.inner-header > div:first').removeClass('span5').addClass('span9');
         $('div.inner-header > div:last').removeClass('span7').addClass('span3');
@@ -175,7 +185,10 @@
 		$('a.searchMeLink').closest('div.input-prepend').hide();
         
         // HIDE SORT UTILITY !!
-        $('a.order_by:first').closest('div.btn-group').hide();
+        $('a.order_by:first').closest('div.btn-group').hide();            
+                <?php
+            }
+        ?>
 		
 		// UPDATE ADD NEW DATABASE LINK !!
 		$('a.get-started').attr('href',site+'admin/entries/<?php echo $myType['Type']['slug'].'/'.(empty($myEntry)?'':$myEntry['Entry']['slug'].'/').'add'.(!empty($extensionPaging['type'])?'?type='.$extensionPaging['type']:''); ?>');
@@ -189,13 +202,20 @@
         
         $('table#myTableList thead a[alt^="form-statement"]').closest('th').before( $('table#myTableList thead a[alt^="form-amount"]').closest('th') );
         
+        <?php
+            if( ! $VENDOR )
+            {
+                ?>
         // replace thead a element => with its html only ...
         $('table#myTableList thead th').each(function(i,el){
             if($(el).find('a').length > 0)
             {
                 $(el).html( $(el).find('a').html() );
             }
-        });
+        });            
+                <?php
+            }
+        ?>
         
         // change tbody column order ...
         $('table#myTableList tbody tr').each(function(i,el){
@@ -203,9 +223,15 @@
             $(el).find('td.form-statement').before( $(el).find('td.form-amount') );
             
             // append additional_cost currency ...
-            if($(el).find('td.form-additional_cost').length > 0)
+            if($(el).find('td.form-additional_cost').length)
             {
                 $(el).find('td.form-additional_cost strong').append(' ' + $(el).find('td.form-cost_currency a').text() );
+            }
+            
+            // set receiver payment ...
+            if($(el).find('td.form-receiver').length)
+            {
+                $(el).find('td.form-receiver').html( $(el).find('td.form-vendor').text() == '-' ? $(el).find('td.form-warehouse').html() : $(el).find('td.form-vendor').html() );
             }
         });
         
@@ -269,7 +295,7 @@
 						$entityTitle = $value['key'];
                         $hideKeyQuery = '';
                         $shortkey = substr($entityTitle, 5);
-                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!' || $shortkey == 'hkd_rate' || $shortkey == 'rp_rate' || $shortkey == 'gold_price' || $shortkey == 'cost_currency' || $shortkey == 'gold_bar_rate')
+                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!' || $shortkey == 'hkd_rate' || $shortkey == 'rp_rate' || $shortkey == 'gold_price' || $shortkey == 'cost_currency' || $shortkey == 'gold_bar_rate' || $shortkey == 'vendor' || $shortkey == 'warehouse')
                         {
                             $hideKeyQuery = 'hide';
                         }
@@ -293,7 +319,10 @@
                         
                         if($shortkey == 'statement')
                         {
-                            echo '<th>accumulated balance</th>';
+                            if( ! $VENDOR)
+                            {
+                                echo '<th>accumulated balance</th>';
+                            }
                             echo '<th>status</th>';
                         }
 					}
@@ -382,7 +411,7 @@
 						$shortkey = substr($value10['key'], 5);
                         $displayValue = $value['EntryMeta'][$shortkey];
                         $hideKeyQuery = '';
-                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!' || $shortkey == 'hkd_rate' || $shortkey == 'rp_rate' || $shortkey == 'gold_price' || $shortkey == 'cost_currency' || $shortkey == 'gold_bar_rate')
+                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!' || $shortkey == 'hkd_rate' || $shortkey == 'rp_rate' || $shortkey == 'gold_price' || $shortkey == 'cost_currency' || $shortkey == 'gold_bar_rate' || $shortkey == 'vendor' || $shortkey == 'warehouse')
                         {
                             $hideKeyQuery = 'hide';
                         }
@@ -532,20 +561,22 @@
                         
                         if($shortkey == 'statement')
                         {
-                            echo "<td class='form-balance'>";
-                            
                             $allowed_balance = true;
                             if( !empty($value['EntryMeta']['checks_date']) && strtotime($value['EntryMeta']['checks_date']) > strtotime(date('m/d/Y')) || !empty($value['EntryMeta']['loan_period']) )
                             {
                                 $allowed_balance = false;
                             }
                             
-                            if($value['Entry']['status'] == 1 && $allowed_balance)
+                            if( ! $VENDOR )
                             {
-                                $walking_balance += ($value['EntryMeta']['statement']=='Debit'?1:-1) * $value['EntryMeta']['amount'] * ($VENDOR?1:-1);
+                                echo "<td class='form-balance'>";
+                                if($value['Entry']['status'] == 1 && $allowed_balance)
+                                {
+                                    $walking_balance += ($value['EntryMeta']['statement']=='Debit'?1:-1) * $value['EntryMeta']['amount'] * ($VENDOR?1:-1);
+                                }
+                                echo '<strong>'.toMoney( $walking_balance , true , true).' '.($DMD?'USD':'gr').'</strong>';
+                                echo "</td>";
                             }
-				            echo '<strong>'.toMoney( $walking_balance , true , true).' '.($DMD?'USD':'gr').'</strong>';
-                            echo "</td>";
                             
                             // echo payment status too ...
                             echo "<td>";

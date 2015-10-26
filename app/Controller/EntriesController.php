@@ -1106,7 +1106,7 @@ class EntriesController extends AppController {
 		}
 
 		// this general action is one for all...
-        if(strpos($myChildTypeSlug , '-payment') !== FALSE)
+        if(strpos($myChildTypeSlug , '-payment') !== false)
 		{
 			$this->request->params['page'] = 0; // must be one full page !!
             
@@ -1115,7 +1115,7 @@ class EntriesController extends AppController {
 		}
         
         // query diamond product_type ...
-        if($myType['Type']['slug'] == 'surat-jalan' || $myChildTypeSlug == 'dv-payment' || $myChildTypeSlug == 'dc-payment')
+        if($myType['Type']['slug'] == 'surat-jalan' || $myType['Type']['slug'] == 'sr-dmd-payment' || $myChildTypeSlug == 'dc-payment')
         {
             $this->set('diamondType', $this->EntryMeta->get_diamond_type() );
         }
@@ -1919,6 +1919,14 @@ class EntriesController extends AppController {
                 {
                     $this->Entry->update_invoice_payment($myParentEntry, $this->request->data);
                 }
+            }
+        }
+        else if(strpos($myTypeSlug, '-payment') !== FALSE) // SR / RR
+        {
+            // JUST ONCE WHEN PAYMENT STATUS IS COMPLETED !!
+            if($myEntry['Entry']['status'] != 1 && $this->request->data['Entry'][3]['value'] == 1)
+            {
+                $this->Entry->update_invoice_payment(NULL, $this->request->data);
             }
         }
 	}

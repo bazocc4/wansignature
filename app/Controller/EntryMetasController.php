@@ -281,7 +281,11 @@ class EntryMetasController extends AppController {
         // renew amount ...
         $data['EntryMeta']['amount'] -= $query['EntryMeta']['amount'];
         
-        $myParentEntry = $this->Entry->meta_details(NULL , NULL , NULL , $query['ParentEntry']['id']);
+        $myParentEntry = NULL;
+        if($query['ParentEntry']['id'] > 0)
+        {
+            $myParentEntry = $this->Entry->meta_details(NULL , NULL , NULL , $query['ParentEntry']['id']);
+        }
         $this->Entry->update_invoice_payment($myParentEntry, $data );
         
         // redirect to init url ...

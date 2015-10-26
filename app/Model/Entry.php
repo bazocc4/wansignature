@@ -1018,13 +1018,13 @@ class Entry extends AppModel {
     function update_invoice_payment($myParentEntry = array(), $data = array())
     {
         $allowed_balance = true;
-        if( !empty($data['EntryMeta']['checks_date']) && strtotime($data['EntryMeta']['checks_date']) > strtotime(date('m/d/Y')) || !empty($data['EntryMeta']['loan_period']) )
+        if( !empty($data['EntryMeta']['checks_date']) && strtotime($data['EntryMeta']['checks_date']) > strtotime(date('m/d/Y')) || !empty($data['EntryMeta']['loan_period']) || empty($myParentEntry) )
         {
             $allowed_balance = false;
         }
         
         // update invoice payment balance ...
-        $updated_balance = ($data['EntryMeta']['statement']=='Debit'?1:-1) * $data['EntryMeta']['amount'] * ( strpos($myParentEntry['Entry']['entry_type'], '-vendor-') !== FALSE ?1:-1);
+        $updated_balance = ($data['EntryMeta']['statement']=='Debit'?1:-1) * $data['EntryMeta']['amount'] * ( strpos($myParentEntry['Entry']['entry_type'], '-client-') === FALSE ?1:-1);
         
         $return_status = 0;
         if($updated_balance < 0)
@@ -1064,7 +1064,7 @@ class Entry extends AppModel {
         $subkey = '';
         $payment_alias = '';
         $type_alias = '';
-        if(strpos($myParentEntry['Entry']['entry_type'], 'dmd-') !== FALSE)
+        if(strpos( (!empty($myParentEntry)?$myParentEntry['Entry']['entry_type']:$data['Entry']['entry_type']) , 'dmd-') !== FALSE)
         {
             $subkey = 'form-prev_sold_note';
             $payment_alias = 'payment_diamond';
@@ -1079,7 +1079,7 @@ class Entry extends AppModel {
         
         if(!empty($data['EntryMeta'][$payment_alias]))
         {
-            $subvalue = 'RETURN '.(strpos($myParentEntry['Entry']['entry_type'], '-client-') !== FALSE?'FROM CLIENT':'TO VENDOR').' AS PAYMENT FOR INV# '.$myParentEntry['Entry']['title'];
+            $subvalue = 'RETURN '.(strpos($myParentEntry['Entry']['entry_type'], '-client-') !== FALSE?'FROM CLIENT':'TO VENDOR').' AS PAYMENT FOR '.(!empty($myParentEntry)?'INV# '.$myParentEntry['Entry']['title']: 'SR# '.$data['Entry']['title'] );
             
             $query = $this->Entry->findAllByEntryTypeAndSlug($type_alias, $data['EntryMeta'][$payment_alias] );
             foreach($query as $key => $value)
@@ -1194,40 +1194,46 @@ class Entry extends AppModel {
                 }
             }
         }
-        else if(strpos($myParentEntry['Entry']['entry_type'], '-vendor-') !== FALSE)
+        else // Vendor payment ...
         {
-            if(empty($return_status))
+            $subArray = array('form-temp_report' => $data['Entry']['title']);
+            if(empty($return_status) && !empty($data['EntryMeta']['vendor']) )
             {
-                $subArray = array(
-                    'form-report_type' => 'SR',
-                    'form-report_date' => $data['EntryMeta']['date'],
-                );
-                // for diamond and cor-jewelry !!
-                foreach(array('diamond', 'cor_jewelry') as $typekey => $typevalue)
+                $subArray['form-report_type'] = 'SR';
+                $subArray['form-report_date'] = $data['EntryMeta']['date'];
+            }
+
+            // for diamond and cor-jewelry !!
+            foreach(array('diamond', 'cor_jewelry') as $typekey => $typevalue)
+            {
+                if(!empty($data['EntryMeta'][$typevalue]))
                 {
-                    if(!empty($data['EntryMeta'][$typevalue]))
+                    $query = $this->Entry->findAllByEntryTypeAndSlug(get_slug($typevalue), $data['EntryMeta'][$typevalue] );
+                    foreach($query as $key => $value)
                     {
-                        $query = $this->Entry->findAllByEntryTypeAndSlug(get_slug($typevalue), $data['EntryMeta'][$typevalue] );
-                        foreach($query as $key => $value)
+                        $dbkey_haystack = array_column($value['EntryMeta'], 'key');
+                        foreach($subArray as $subkey => $subvalue )
                         {
-                            $dbkey_haystack = array_column($value['EntryMeta'], 'key');
-                            foreach($subArray as $subkey => $subvalue )
+                            $dbkey = array_search($subkey, $dbkey_haystack);
+                            if($dbkey === FALSE)
                             {
-                                $dbkey = array_search($subkey, $dbkey_haystack);
-                                if($dbkey === FALSE)
+                                $this->EntryMeta->create();
+                                $this->EntryMeta->save(array('EntryMeta' => array(
+                                    'entry_id'  => $value['Entry']['id'],
+                                    'key'       => $subkey,
+                                    'value'     => $subvalue
+                                )));
+                            }
+                            else if($value['EntryMeta'][$dbkey]['value'] != $subvalue)
+                            {
+                                $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
+
+                                if($subkey == 'form-temp_report')
                                 {
-                                    $this->EntryMeta->create();
-                                    $this->EntryMeta->save(array('EntryMeta' => array(
-                                        'entry_id'  => $value['Entry']['id'],
-                                        'key'       => $subkey,
-                                        'value'     => $subvalue
-                                    )));
+                                    $subvalue = $value['EntryMeta'][$dbkey]['value'].' ; '.$subvalue;
                                 }
-                                else if($value['EntryMeta'][$dbkey]['value'] != $subvalue)
-                                {
-                                    $this->EntryMeta->id = $value['EntryMeta'][$dbkey]['id'];
-                                    $this->EntryMeta->saveField('value', $subvalue );
-                                }
+
+                                $this->EntryMeta->saveField('value', $subvalue );
                             }
                         }
                     }
@@ -1299,6 +1305,32 @@ class Entry extends AppModel {
             }
 
             return $result;
+        }
+        else if(strpos($myTypeSlug, '-payment') !== false) // SR / RR
+        {
+            $EntryMeta = array_column($EntryMeta, 'value', 'key');
+            
+            // warehouse payer ...
+            $whpayer = $this->meta_details($EntryMeta['form-warehouse_payer'] , 'warehouse');
+            $whpayer = strtoupper(!empty($whpayer['EntryMeta']['kode_warehouse'])?$whpayer['EntryMeta']['kode_warehouse']:$whpayer['Entry']['title']);
+            
+            // vendor / warehouse receiver ...
+            $receiver = '';
+            if(!empty($EntryMeta['form-vendor']))
+            {
+                $receiver = $this->meta_details($EntryMeta['form-vendor'] , 'vendor');
+                $receiver = strtoupper($receiver['Entry']['title']);
+            }
+            else
+            {
+                $receiver = $this->meta_details($EntryMeta['form-warehouse'] , 'warehouse');
+                $receiver = strtoupper(!empty($receiver['EntryMeta']['kode_warehouse'])?$receiver['EntryMeta']['kode_warehouse']:$receiver['Entry']['title']);
+            }
+            
+            // generate new title ...
+            $newTitle = ($EntryMeta['form-statement'] == 'Debit'?'SR':'RR').'-'.$whpayer.'-'.$receiver.'-'.$EntryMeta['form-date'].'-'.$title;
+            
+            return $newTitle;
         }
         else
         {

@@ -276,7 +276,14 @@
 			$value['model'] = 'Entry';
 			$value['counter'] = 0;
 			$value['input_type'] = 'text';
-            if( ! $VENDOR)
+            if($VENDOR)
+            {
+                if(!empty($myEntry))
+                {
+                    $value['view_mode'] = true;
+                }
+            }
+            else // client payment ...
             {
                 $value['inputsize'] = 'large'; // special case for payment ...
                 $value['p'] = "Keterangan singkat mengenai transaksi ini (spt bank, jumlah pembayaran, tanggal, dll).";
@@ -384,13 +391,8 @@
                             if($VENDOR)
                             {
                                 $value['request_query'] = array(
-                                    
-//                                    'key' => 'product_status|report_type',
-//                                    'value' => 'SOLD|Consignment',
-
-                                    'key' => 'product_status',
-                                    'value' => 'SOLD',
-                                    
+                                    'key' => 'product_status|report_type',
+                                    'value' => 'SOLD|Consignment',
                                 );
                             }
                             else // client payment

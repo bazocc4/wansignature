@@ -206,6 +206,14 @@ $('input#warehouse-destination').val($warehouse.find('h5').text()).nextAll('inpu
 		// disable language selector ONLY IF one language available !!		
 		var myLangSelector = ($('#colorbox').length > 0 && $('#colorbox').is(':visible')? $('#colorbox').find('div.lang-selector:first') : $('div.lang-selector')  );
 		if(myLangSelector.find('ul.dropdown-menu li').length <= 1)	myLangSelector.hide();
+        
+        // replace sale_venue content with WH / EX if any ...
+        if( $('table#myTableList td.form-sale_venue').length )
+        {
+            $('table#myTableList tbody tr').each(function(i,el){
+                $(el).find('td.form-sale_venue').html( $(el).find('td.form-exhibition').text() == '-' ? $(el).find('td.form-warehouse').html() : $(el).find('td.form-exhibition').html() );
+            });
+        }
 	});
 </script>
 <?php if($totalList <= 0){ ?>
@@ -242,7 +250,7 @@ $('input#warehouse-destination').val($warehouse.find('h5').text()).nextAll('inpu
 		
 		<?php
 			// if this is a parent Entry !!
-			if(empty($myEntry) && empty($popup)) 
+			if(empty($myEntry) && empty($popup) && !$VENDOR ) 
 			{
 				foreach ($myType['ChildType'] as $key10 => $value10)
 				{
@@ -260,13 +268,13 @@ $('input#warehouse-destination').val($warehouse.find('h5').text()).nextAll('inpu
 						$entityTitle = $value['key'];
                         $hideKeyQuery = '';
                         $shortkey = substr($entityTitle, 5);
-                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!')
+                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!' || ( ! $VENDOR && ($shortkey == 'warehouse' || $shortkey == 'exhibition') ) || ($VENDOR && $shortkey == 'payment_balance') )
                         {
                             $hideKeyQuery = 'hide';
                         }
                         
                         $datefield = '';
-                        if($shortkey == 'warehouse' || $shortkey == 'exhibition')
+                        if($shortkey == 'warehouse' || $shortkey == 'exhibition' || $shortkey == 'sale_venue')
                         {
                             $datefield = 'product-field';
                         }
@@ -292,7 +300,10 @@ $('input#warehouse-destination').val($warehouse.find('h5').text()).nextAll('inpu
                         
                         if($shortkey == 'date')
                         {
-                            echo '<th>payment status</th>';
+                            if( ! $VENDOR)
+                            {
+                                echo '<th>payment status</th>';
+                            }
                             echo '<th>delivery status</th>';
                         }
 					}
@@ -383,7 +394,8 @@ $('input#warehouse-destination').val($warehouse.find('h5').text()).nextAll('inpu
 			
 		</td>
 		<?php
-			if(empty($myEntry) && empty($popup)) // if this is a parent Entry !!
+            // if this is a parent Entry !!
+            if(empty($myEntry) && empty($popup) && !$VENDOR )
 			{
 				foreach ($myType['ChildType'] as $key10 => $value10)
 				{
@@ -410,7 +422,7 @@ $('input#warehouse-destination').val($warehouse.find('h5').text()).nextAll('inpu
 						$shortkey = substr($value10['key'], 5);
                         $displayValue = $value['EntryMeta'][$shortkey];
                         $hideKeyQuery = '';
-                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!')
+                        if(!empty($popup) && $this->request->query['key'] == $shortkey && substr($this->request->query['value'] , 0 , 1) != '!' || ( ! $VENDOR && ($shortkey == 'warehouse' || $shortkey == 'exhibition') ) || ($VENDOR && $shortkey == 'payment_balance') )
                         {
                             $hideKeyQuery = 'hide';
                         }
@@ -543,11 +555,7 @@ $('input#warehouse-destination').val($warehouse.find('h5').text()).nextAll('inpu
                         else
                         {
                             // SUPER CUSTOMIZED OUTPUT STYLE ...
-                            if($shortkey == 'sale_venue')
-                            {
-                                echo '<span class="label '.($displayValue=='Warehouse'?'label-info':'label-inverse').'">'.$displayValue.'</span>';
-                            }
-                            else if($shortkey == 'disc_adjustment' || $shortkey == 'payment_balance')
+                            if($shortkey == 'disc_adjustment' || $shortkey == 'payment_balance')
                             {
                                 if($DMD)
                                 {
@@ -568,16 +576,19 @@ $('input#warehouse-destination').val($warehouse.find('h5').text()).nextAll('inpu
                         
                         if($shortkey == 'date')
                         {
-                            echo "<td class='form-payment_status'>";
-                            if($value['EntryMeta']['payment_balance'] >= $value['EntryMeta'][$DMD?'total_price':'total_weight'])
+                            if( ! $VENDOR )
                             {
-                                echo '<span class="label label-success">Complete</span>';
+                                echo "<td class='form-payment_status'>";
+                                if($value['EntryMeta']['payment_balance'] >= $value['EntryMeta'][$DMD?'total_price':'total_weight'])
+                                {
+                                    echo '<span class="label label-success">Complete</span>';
+                                }
+                                else
+                                {
+                                    echo '<span class="label label-important">Pending</span>';
+                                }
+                                echo "</td>";
                             }
-                            else
-                            {
-                                echo '<span class="label label-important">Pending</span>';
-                            }
-                            echo "</td>";
                             
                             echo "<td class='form-delivery_status'>";
                             if($value['EntryMeta']['total_item_sent'] >= $value['EntryMeta']['total_pcs'])

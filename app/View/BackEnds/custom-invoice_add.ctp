@@ -296,7 +296,7 @@
                     {
                         $value['view_mode'] = true;
                         
-                        if($value['key'] == 'form-sale_venue')
+                        if($value['key'] == 'form-sale_venue' || ($VENDOR && $value['key'] == 'form-payment_balance') )
                         {
                             $value['display'] = 'none';
                         }

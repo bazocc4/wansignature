@@ -244,13 +244,26 @@
         
         // UPDATE TITLE HEADER !!
         <?php
-            if($isAjax == 0 && strpos($this->request->query['key'], '_invoice_code') !== FALSE && !empty($this->request->query['value']) )
+            if($isAjax == 0 )
             {
-                $query = $this->Get->meta_details($this->request->query['value']);
-                if(!empty($query))
+                if(strpos($this->request->query['key'], '_invoice_code') !== FALSE && !empty($this->request->query['value']))
+                {
+                    $query = $this->Get->meta_details($this->request->query['value']);
+                    if(!empty($query))
+                    {
+                        ?>
+            $('div.title:last > h2').append(' <span style="color:red;">INV# <?php echo $query['Entry']['title']; ?></span>');
+                        <?php
+                    }
+                }
+                else if($this->request->query['key'] == 'report_type' && $this->request->query['value'] == '!R')
                 {
                     ?>
-        $('div.title:last > h2').append(' <span style="color:red;">INV# <?php echo $query['Entry']['title']; ?></span>');
+            // CHANGE INNER HEADER SPAN SIZE - COR ONLY !!
+            $('div.inner-header:last > div:first').removeClass('span5').addClass('span6');
+            $('div.inner-header:last > div:last').removeClass('span7').addClass('span6');
+        
+            $('div.title:last > h2').append(' <span style="color:red;">(Consignment)</span>');
                     <?php
                 }
             }

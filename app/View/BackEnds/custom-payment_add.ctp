@@ -280,7 +280,7 @@
             {
                 if(!empty($myEntry))
                 {
-                    $value['view_mode'] = true;
+                    $value['display'] = 'none';
                 }
             }
             else // client payment ...
@@ -391,8 +391,8 @@
                             if($VENDOR)
                             {
                                 $value['request_query'] = array(
-                                    'key' => 'product_status|report_type',
-                                    'value' => 'SOLD|Consignment',
+                                    'key' => 'report_type',
+                                    'value' => '!R', // not SR or RR ...
                                 );
                             }
                             else // client payment

@@ -174,19 +174,22 @@
 		$('a.searchMeLink').attr('href',site+'admin/entries/<?php echo $myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']); ?>/index/1<?php echo get_more_extension($extensionPaging); ?>');
                 <?php
             }
-            else
+            else // client payment ...
             {
-                ?>
+                if($isAjax == 0)
+                {
+                    ?>
         // CHANGE INNER HEADER SPAN SIZE !!
-        $('div.inner-header > div:first').removeClass('span5').addClass('span9');
-        $('div.inner-header > div:last').removeClass('span7').addClass('span3');
+        $('div.inner-header:last > div:first').removeClass('span5').addClass('span9');
+        $('div.inner-header:last > div:last').removeClass('span7').addClass('span3');
         
 		// DELETE SEARCH LINK !!
 		$('a.searchMeLink').closest('div.input-prepend').hide();
         
         // HIDE SORT UTILITY !!
         $('a.order_by:first').closest('div.btn-group').hide();            
-                <?php
+                    <?php
+                }
             }
         ?>
 		

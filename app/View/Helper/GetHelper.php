@@ -701,6 +701,17 @@ class GetHelper extends AppHelper
             $echothis = 'Rp <strong>'.toMoney($result  , true , true).'</strong> / $1 USD';
             $echothis .= '<input type="hidden" value="'.$result.'">';
         }
+        else if($shortkey == 'report_type')
+        {
+            if($result == 'SR')
+            {
+                $echothis = '<h3 style="color:red;">'.$result.'</h3>';
+            }
+            else if($result == 'RR')
+            {
+                $echothis = '<h3 style="color:green;">'.$result.'</h3>';
+            }
+        }
         else
         {
             // last check based on numeric type or not ...

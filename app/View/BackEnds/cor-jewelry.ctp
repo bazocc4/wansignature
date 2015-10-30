@@ -48,7 +48,47 @@
 
                 $(document).ready(function(){
                     // modify element header view !!
-                    $('div.inner-header > div:last > div:last').after("<div class='btn-group /*hide*/'><form accept='application/vnd.ms-excel' accept-charset='utf-8' method='post' enctype='multipart/form-data' action='#' style='margin:0 0 10px 0;' class='form-upload-excel'><input REQUIRED type='file' style='width:200px;' accept='.xls,.xlsx' name='data[fileurl]' onchange='checkfile(this);'><button class='btn' type='submit'>Upload</button></form></div>"); // upload Excel ...
+                    <?php
+                        if(empty($this->request->query['type-alias']))
+                        {
+                            ?>
+                    $('div.inner-header > div:last > div:last').after("<div class='btn-group /*hide*/'><form accept='application/vnd.ms-excel' accept-charset='utf-8' method='post' enctype='multipart/form-data' action='#' style='margin:0 0 10px 0;' class='form-upload-excel'><input REQUIRED type='file' style='width:200px;' accept='.xls,.xlsx' name='data[fileurl]' onchange='checkfile(this);'><button class='btn' type='submit'>Upload</button></form></div>"); // upload Excel ... 
+                            <?php
+                        }
+                        else
+                        {
+                            ?>
+                    $('div.inner-header > div:last > div:last').after("<div class='btn-group'>\
+<select class='input-medium right-btn' id='select-cidm'>\
+<?php
+    for($i = 1 ; $i <= 12 ; ++$i)
+    {
+        echo "<option ".($this->request->query['cidm']==$i?'SELECTED':'')." value='".$i."'>".strtoupper(date("F", mktime(0, 0, 0, $i, 10)))."</option>";
+    }
+?>\
+</select>\
+<select class='input-small right-btn' id='select-cidy'>\
+<?php
+    $nowYear = date('Y');
+    for($i = 0 ; $i < 20 ; ++$i)
+    {
+        $tempYear = $nowYear - $i;
+        
+        echo "<option ".($this->request->query['cidy']==$tempYear?'SELECTED':'')." value='".$tempYear."'>".$tempYear."</option>";
+    }
+?>\
+</select>\
+<span><a id='search-this-month' class='btn btn-success right-btn' style='margin-top:-10px;' href='"+site+"admin/entries/<?php echo $myType['Type']['slug']; ?>?key=product_status&value=sold&type-alias=<?php echo $this->request->query['type-alias']; ?>'><i class='icon-white icon-search'></i> Search Monthly</a></span>\
+</div>"); // search by client invoice date (month & year)...
+                    
+                    $('a#search-this-month').click(function(){
+                        var cidm = $('#select-cidm').val();
+                        var cidy = $('#select-cidy').val();
+                        $(this).attr('href', $(this).attr('href')+'&cidm='+cidm+'&cidy='+cidy );
+                    });
+                            <?php
+                        }
+                    ?>
                     
                     $('div.inner-header > div:last > div:last').before("<form /*class='hide'*/ id='download-excel' action='"+site+"entries/download_jewelry' method='POST'><input type='hidden' name='data[record]'><button style='margin-bottom:10px;' class='btn btn-inverse right-btn fr' type='submit'><i class='icon-download-alt icon-white'></i> Download Excel</button></form>"); // download Excel ...
 
@@ -236,7 +276,36 @@
 		$('a.searchMeLink').attr('href',site+'admin/entries/<?php echo $myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']); ?>/index/1<?php echo get_more_extension($extensionPaging); ?>');
 		
 		// UPDATE ADD NEW DATABASE LINK !!
-		$('a.get-started').attr('href',site+'admin/entries/<?php echo $myType['Type']['slug'].'/'.(empty($myEntry)?'':$myEntry['Entry']['slug'].'/').'add'.(!empty($extensionPaging['type'])?'?type='.$extensionPaging['type']:''); ?>');
+        <?php
+            if(empty($this->request->query['type-alias']))
+            {
+                ?>
+        $('a.get-started').attr('href',site+'admin/entries/<?php echo $myType['Type']['slug'].'/'.(empty($myEntry)?'':$myEntry['Entry']['slug'].'/').'add'.(!empty($extensionPaging['type'])?'?type='.$extensionPaging['type']:''); ?>');            
+                <?php
+            }
+            else
+            {
+                if($isAjax == 0)
+                {
+                    ?>
+        $('a.get-started').html('Pay to Vendor').attr('href', site+'admin/entries/sr-cor-payment/add').click(function(e){
+            e.preventDefault();            
+            var checked_data = $('#checked-data').val();
+            var total_checked = checked_data.split(',').length - 2;
+            if(total_checked > 0)
+            {
+                post_submit( $(this).attr('href') , {srid: checked_data.substr(1, checked_data.length - 2 ) });
+            }
+            else
+            {
+                alert('Please select one or more SOLD COR JEWELRY to be paid to Vendor.');
+                $('input#check-all').focus();
+            }
+        });            
+                    <?php
+                }
+            }
+        ?>
 		
 		// disable language selector ONLY IF one language available !!		
 		var myLangSelector = ($('#colorbox').length > 0 && $('#colorbox').is(':visible')? $('#colorbox').find('div.lang-selector:first') : $('div.lang-selector')  );
@@ -266,6 +335,18 @@
             $('div.title:last > h2').append(' <span style="color:red;">(Consignment)</span>');
                     <?php
                 }
+                else if($this->request->query['key'] == 'product_status' && !empty($this->request->query['value']) )
+                {
+                    ?>
+            $('div.title:last > h2').append(' <span style="color:red;">(<?php echo $this->request->query['value']; ?>)</span>');
+                    <?php
+                    if($this->request->query['value'] == 'sold')
+                    {
+                        ?>
+            $('div.title:last > p.title-description:first').append(' <span style="color:red;">(Laporan Penjualan)</span>');
+                        <?php
+                    }
+                }
             }
         ?>
 	});
@@ -274,8 +355,25 @@
 	<div class="empty-state item">
 		<div class="wrapper-empty-state">
 			<div class="pic"></div>
-			<h2>No Items Found!</h2>
-			<?php echo (!($myType['Type']['slug'] == 'pages' && $user['role_id'] >= 2 || !empty($popup))?$this->Html->link('Get Started',array('action'=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'add','?'=> (!empty($myEntry)&&$myType['Type']['slug']!=$myChildType['Type']['slug']?array('type'=>$myChildType['Type']['slug']):'') ),array('class'=>'btn btn-primary')):''); ?>
+			<?php
+                if(empty($this->request->query['type-alias']))
+                {
+                    echo '<h2>No Items Found!</h2>';
+                    
+                    echo (!($myType['Type']['slug'] == 'pages' && $user['role_id'] >= 2 || !empty($popup))?$this->Html->link('Get Started',array('action'=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'add','?'=> (!empty($myEntry)&&$myType['Type']['slug']!=$myChildType['Type']['slug']?array('type'=>$myChildType['Type']['slug']):'') ),array('class'=>'btn btn-primary')):'');
+                }
+                else
+                {
+                    if(!empty($this->request->query['cidm']) && !empty($this->request->query['cidy']) )
+                    {
+                        echo '<h2>No Items Found on '.date("F", mktime(0, 0, 0, $this->request->query['cidm'] , 10)).' '.$this->request->query['cidy'].'!</h2>';
+                    }
+                    else
+                    {
+                        echo '<h2>No Items Found on selected month!</h2>';
+                    }
+                }
+            ?>
 		</div>
 	</div>
 <?php }else{ ?>
@@ -286,6 +384,19 @@
             $sortASC = '&#9650;';
             $sortDESC = '&#9660;';
 			$myAutomatic = (empty($myChildType)?$myType['TypeMeta']:$myChildType['TypeMeta']);
+    
+            // CUSTOM CASE - change order of column !!
+            if($this->request->query['type-alias'] == 'sr-cor-monthly')
+            {
+                $haystack = array_column($myAutomatic, 'key');
+                
+                // fetch most behind field first ...
+                $statusArray = array_splice( $myAutomatic, array_search('form-product_status', $haystack), 3 );
+                $reportArray = array_splice( $myAutomatic, array_search('form-report_date', $haystack), 3 );
+                
+                array_splice( $myAutomatic , array_search('form-item_weight', $haystack) , 0, array_merge($statusArray, $reportArray) );
+            }
+    
 			$titlekey = "Title";
 			foreach ($myAutomatic as $key => $value)
 			{
@@ -296,7 +407,7 @@
 				}
 			}
 		?>
-		<th>
+		<th class="date-field">
 		    <?php
                 echo $this->Html->link($titlekey.' ('.$totalList.')'.($_SESSION['order_by'] == 'title ASC'?' <span class="sort-symbol">'.$sortASC.'</span>':($_SESSION['order_by'] == 'title DESC'?' <span class="sort-symbol">'.$sortDESC.'</span>':'')),array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index',$paging,'?'=>$extensionPaging) , array("class"=>"ajax_mypage" , "escape" => false , "title" => "Click to Sort" , "alt"=>$_SESSION['order_by'] == 'title DESC'?"a_to_z":"z_to_a"));
             ?>
@@ -414,7 +525,7 @@
 		$orderlist .= $value['Entry']['sort_order'].",";
 	?>	
 	<tr class="orderlist" alt="<?php echo $value['Entry']['id']; ?>">
-		<td class="main-title">
+		<td>
 			<?php
 				if($imageUsed == 1)
 				{

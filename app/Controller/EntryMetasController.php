@@ -67,9 +67,16 @@ class EntryMetasController extends AppController {
             $mybody = $header;
             foreach($query as $key => $value)
             {
-                $myParentEntry = $this->Entry->findById($value['Entry']['parent_id']);
+                if($value['Entry']['parent_id'] > 0)
+                {
+                    $myParentEntry = $this->Entry->findById($value['Entry']['parent_id']);
                 
-                $mybody .= '('.sprintf("%02d", $key+1).') INV# <a href="'.$this->get_host_name().'admin/entries/'.$myParentEntry['Entry']['entry_type'].'/'.$myParentEntry['Entry']['slug'].'?type='.$value['Entry']['entry_type'].'">'.strtoupper($myParentEntry['Entry']['title']).' ('.$value['Entry']['title'].')</a>';
+                    $mybody .= '('.sprintf("%02d", $key+1).') INV# <a href="'.$this->get_host_name().'admin/entries/'.$myParentEntry['Entry']['entry_type'].'/'.$myParentEntry['Entry']['slug'].'?type='.$value['Entry']['entry_type'].'">'.strtoupper($myParentEntry['Entry']['title']).' ('.$value['Entry']['title'].')</a>';
+                }
+                else
+                {
+                    $mybody .= '('.sprintf("%02d", $key+1).') <a href="'.$this->get_host_name().'admin/entries/'.$value['Entry']['entry_type'].'">'.strtoupper($value['Entry']['title']).'</a>';
+                }
                 
                 if(empty($value['Entry']['status']))
                 {
@@ -106,11 +113,20 @@ class EntryMetasController extends AppController {
         $invoice = array();
         foreach($query as $key => $value)
         {
-            $myParentEntry = $this->Entry->meta_details(NULL , NULL , NULL , $value['Entry']['parent_id'] );
+            $myParentEntry = NULL;
             $data = $this->Entry->meta_details(NULL , NULL , NULL , $value['Entry']['id'] );
-            $this->Entry->update_invoice_payment($myParentEntry, $data);
             
-            array_push($invoice, '('.sprintf("%02d", $key+1).') INV# <a href="'.$this->get_host_name().'admin/entries/'.$myParentEntry['Entry']['entry_type'].'/'.$myParentEntry['Entry']['slug'].'?type='.$data['Entry']['entry_type'].'">'.strtoupper($myParentEntry['Entry']['title']).' ('.$data['Entry']['title'].')</a>');
+            if($value['Entry']['parent_id'] > 0)
+            {
+                $myParentEntry = $this->Entry->meta_details(NULL , NULL , NULL , $value['Entry']['parent_id'] );
+                array_push($invoice, '('.sprintf("%02d", $key+1).') INV# <a href="'.$this->get_host_name().'admin/entries/'.$myParentEntry['Entry']['entry_type'].'/'.$myParentEntry['Entry']['slug'].'?type='.$data['Entry']['entry_type'].'">'.strtoupper($myParentEntry['Entry']['title']).' ('.$data['Entry']['title'].')</a>');
+            }
+            else
+            {
+                array_push($invoice, '('.sprintf("%02d", $key+1).') <a href="'.$this->get_host_name().'admin/entries/'.$data['Entry']['entry_type'].'">'.strtoupper($data['Entry']['title']).'</a>');
+            }
+            
+            $this->Entry->update_invoice_payment($myParentEntry, $data);
         }
         
         if(!empty($invoice))
@@ -174,7 +190,14 @@ class EntryMetasController extends AppController {
                 $loandate = getdate(strtotime($value['EntryMeta']['date']));
                 $bulanke = ($nowDate['mon'] - $loandate['mon'] + 12) % 12;
                 
-                $mybody .= '('.sprintf("%02d", $key+1).') INV# <a href="'.$this->get_host_name().'admin/entries/'.$value['ParentEntry']['entry_type'].'/'.$value['ParentEntry']['slug'].'?type='.$value['Entry']['entry_type'].'">'.strtoupper($value['ParentEntry']['title']).' ('.$value['Entry']['title'].')</a>';
+                if( !empty($value['ParentEntry']) )
+                {
+                    $mybody .= '('.sprintf("%02d", $key+1).') INV# <a href="'.$this->get_host_name().'admin/entries/'.$value['ParentEntry']['entry_type'].'/'.$value['ParentEntry']['slug'].'?type='.$value['Entry']['entry_type'].'">'.strtoupper($value['ParentEntry']['title']).' ('.$value['Entry']['title'].')</a>';
+                }
+                else
+                {
+                    $mybody .= '('.sprintf("%02d", $key+1).') <a href="'.$this->get_host_name().'admin/entries/'.$value['Entry']['entry_type'].'">'.strtoupper($value['Entry']['title']).'</a>';
+                }
                 
                 $price = round($value['EntryMeta']['amount'] / $value['EntryMeta']['loan_period'], 2);
                 
@@ -187,7 +210,14 @@ class EntryMetasController extends AppController {
                     $mybody .= ' + charge ('.$value['EntryMeta']['loan_interest_rate'].'% / month) = $'.toMoney($price, true, true);
                 }
                 
-                $mybody .= ' <a href="'.$this->get_host_name().'admin/entries/'.$value['ParentEntry']['entry_type'].'/'.$value['ParentEntry']['slug'].'/add?type='.$value['Entry']['entry_type'].'&cicilan='.$value['Entry']['id'].'&amount='.$price.'&mo='.$bulanke.'">#Add this '.ordinalSuffix($bulanke).' monthly payment record.</a>'.($bulanke == $value['EntryMeta']['loan_period']?' (last installment)':'').'<br>';
+                if( !empty($value['ParentEntry']) )
+                {
+                    $mybody .= ' <a href="'.$this->get_host_name().'admin/entries/'.$value['ParentEntry']['entry_type'].'/'.$value['ParentEntry']['slug'].'/add?type='.$value['Entry']['entry_type'].'&cicilan='.$value['Entry']['id'].'&amount='.$price.'&mo='.$bulanke.'">#Add this '.ordinalSuffix($bulanke).' monthly payment record.</a>'.($bulanke == $value['EntryMeta']['loan_period']?' (last installment)':'').'<br>';
+                }
+                else
+                {
+                    $mybody .= ' <a href="'.$this->get_host_name().'admin/entries/'.$value['Entry']['entry_type'].'/add?cicilan='.$value['Entry']['id'].'&amount='.$price.'&mo='.$bulanke.'">#Add this '.ordinalSuffix($bulanke).' monthly payment record.</a>'.($bulanke == $value['EntryMeta']['loan_period']?' (last installment)':'').'<br>';
+                }
             }
             
             $mybody .= $footer;

@@ -176,7 +176,38 @@
                             {
                                 // later this place will be appended by jQuery below !!
                                 echo '<li class="separator"><a class="sidebar-menu" href="#">'.$value.'</a></li>';
-                                echo '<div style="display:none;"></div>';
+                                echo '<div style="display:none;">';
+                                
+                                if($value == 'sold / return report')
+                                {
+                                    // SR Diamond Monthly Report ...
+                                    echo "<li class='database-menu'>";
+									echo $this->Html->link('SR DMD MONTHLY',array(
+									    'controller'=>'entries',
+                                        'action'=>'diamond',
+                                        '?' => array(
+                                            'key' => 'product_status',
+                                            'value' => 'sold',
+                                            'type-alias' => 'sr-dmd-monthly',
+                                        ),
+									) ,array('id'=>'sr-dmd-monthly'));
+									echo "</li>";
+                                    
+                                    // SR Cor Jewelry Monthly Report ...
+                                    echo "<li class='database-menu'>";
+									echo $this->Html->link('SR COR MONTHLY',array(
+									    'controller'=>'entries',
+                                        'action'=>'cor-jewelry',
+                                        '?' => array(
+                                            'key' => 'product_status',
+                                            'value' => 'sold',
+                                            'type-alias' => 'sr-cor-monthly',
+                                        ),
+									) ,array('id'=>'sr-cor-monthly'));
+									echo "</li>";
+                                }
+                                
+                                echo '</div>';
                             }
 						?>
 						

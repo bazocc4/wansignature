@@ -22,7 +22,7 @@
 	}	
 ?>
 <script type="text/javascript">
-	$("a#<?php echo (empty($myType)?'pages':$myType['Type']['slug']); ?>").addClass("active");
+	$("a#<?php echo (!empty($this->request->query['type-alias'])?$this->request->query['type-alias']:(empty($myType)?'pages':$myType['Type']['slug'])); ?>").addClass("active");
     
     $(document).ready(function(){
         $('form').submit(function(){

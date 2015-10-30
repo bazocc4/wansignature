@@ -402,6 +402,13 @@
                                     'value' => $myParentEntry['Entry']['slug'],
                                 );
                             }
+                            
+                            // SRID injection value !!
+                            if(!empty($srid))
+                            {
+                                $value['value'] = $srid;
+                                $focusThisClass = get_slug(substr($value['key'], 5)).'-group';
+                            }
                         }
                         
                         // SPECIAL ADD CASE FROM EMAIL LINK !!
@@ -590,5 +597,16 @@
 	if($isAjax == 0)
 	{
 		echo '</div>';
+        
+        if(!empty($focusThisClass))
+        {
+            ?>
+<script>
+    $(document).ready(function(){
+        $('div.<?php echo $focusThisClass; ?> input[type=number]:first').focus().trigger('keyup');
+    });
+</script>                                    
+            <?php
+        }
 	}
 ?>

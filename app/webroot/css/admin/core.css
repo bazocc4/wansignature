@@ -215,6 +215,7 @@ table.list th{ color: black; font-weight: bold; font-size: 11px; text-align: lef
 table.list td, table.list th{ padding: 5px 5px; vertical-align: top;}
 table.list td{ color: black; font-size: 11px; font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;}
 table.list tr td > h5, table td > a{ color: black; font-size: 14px; font-weight: bold !important; margin: 0px !important; font-family: 'Helvetica' !important; }
+table.list tr td > h3{ margin: 0px !important; font-family: 'Helvetica' !important; line-height: 20px; }
 table.list td p{ color: black; font-size: 11px; margin-bottom: 0px; min-height: 20px;}
 
 table.list .thumbs{ float: left; width: 50px; height: 50px; overflow: hidden; margin-right: 10px; }
@@ -360,47 +361,6 @@ form .crop .jcrop-holder{ margin-bottom: 20px; margin-left: 100px; }
 .controls.inline{ float: left; margin-left: 15px !important; margin-top: 2px; }
 .controls.inline label{ display: inline-block; top: 3px; position: relative; left: 5px; margin-right: 5px; }
 .controls.inline input[type="checkbox"], .controls.inline input[type="radio"]{ margin-top: 0px !important; }
-
-/*coordinate*/
-.coordinate{ position: relative; }
-.coordinate .inner-content{ text-align: center; }
-
-.coordinate #add{ margin-right: 10px; }
-.coordinate .new-description{ display: none; margin-right: 10px; }
-.coordinate table{ margin-top: 20px; }
-.coordinate .map{ position: relative; left: 0px; top: 0px; margin: 0 auto; margin-bottom: 20px; text-align: center; display: inline-block; }
-.coordinate .map .point{ -webkit-border-radius: 10px; -moz-border-radius: 10px; border-radius: 10px; background: red; width: 10px; height: 10px; position: absolute; z-index: 100; display: none; left: 0px; right: 0px;}
-.coordinate .map .point:hover{ background: green; }
-
-/*coordinate popup*/
-#coordinate-popup{ display: none; width: 480px; position: absolute; z-index: 1000; }
-#coordinate-popup .arrow{ position: absolute; top: 7px; left: -13px; height: 25px; }
-
-.coordinate .coordinate-field{ float: left; background: #fff; position: absolute; z-index: 100; }
-.coordinate .coordinate-field .coordinate-header{ position: relative; cursor: move; }
-.coordinate .coordinate-field .coordinate-header .icon-remove{ cursor: pointer; position: absolute; top: 10px; right: 10px; }
-.coordinate .coordinate-field .coordinate-header h3{ text-align: left; margin-bottom: 0px; color: #464646; font-size: 18px; margin-bottom: 10px; text-transform: uppercase; padding: 10px; }
-.coordinate .coordinate-field .coordinate-form{ float: left; border-bottom: 1px solid #D7D7D7; margin: 10px; margin-bottom: 0px; }
-.coordinate .coordinate-field .coordinate-form .half{ width: 145px !important; margin-right: 10px; }
-.coordinate .coordinate-field .coordinate-form .half:nth-last-child(1){ margin-right: 0px; }
-
-.coordinate .coordinate-field .coordinate-form .content-field{ max-width: 120px; float: left; margin-right: 10px; }
-.coordinate .coordinate-field .coordinate-form .content-field2{ max-width: 320px !important; }
-
-.coordinate .coordinate-field .coordinate-form .content-field .edit-coord{ position: relative; top: 5px; }
-.coordinate .coordinate-field .coordinate-form .content-field .coord-area{ width: 50px; float: left; margin-right: 5px; }
-.coordinate .coordinate-field .coordinate-form .content-field label{ float: left; }
-.coordinate .coordinate-field .coordinate-form .content-field input, .coordinate .coordinate-field .coordinate-form .content-field textarea{ float: left; width: 100%; }
-.coordinate .coordinate-field .coordinate-form .content-field textarea{ height: 74px; }
-
-.coordinate .coordinate-field .coordinate-form .picture{ width: 120px; overflow: hidden; text-align: center; background: #fff; max-width: 150px; margin-bottom: 10px; float: left; }
-.coordinate .coordinate-field .coordinate-form .picture img{ max-width: 120px; }
-
-.coordinate .coordinate-field .coordinate-action{ padding: 10px; float: left; width: 460px; }
-.coordinate .coordinate-field .coordinate-action .btn{ margin-right: 10px; }
-.coordinate .coordinate-field .coordinate-action .btn:nth-last-child(1){ margin-right: 0px; }
-
-.coordinate .tips{ margin-right: 10px; }
 
 /*login*/
 .login{ width: 320px; margin: 20px auto; }

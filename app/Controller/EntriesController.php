@@ -1113,6 +1113,14 @@ class EntriesController extends AppController {
             $tempOrder = (isset($_SESSION['order_by'])? $_SESSION['order_by'] : '' );
             $_SESSION['order_by'] = 'form-date asc';
 		}
+        else if($myType['Type']['slug'] == 'diamond' || $myType['Type']['slug'] == 'cor-jewelry')
+        {
+            // default MONTHLY SOLD REPORT order_by ...
+            if(strpos($this->request->query['type-alias'], '-monthly') !== false && !$this->request->is('ajax') )
+            {
+                $_SESSION['order_by'] = 'form-client_invoice_date asc';
+            }
+        }
         
         // query diamond product_type ...
         if($myType['Type']['slug'] == 'surat-jalan' || $myType['Type']['slug'] == 'sr-dmd-payment' || $myChildTypeSlug == 'dc-payment')
@@ -1182,7 +1190,31 @@ class EntriesController extends AppController {
 				$myChildTypeSlug = $myType['Type']['slug'];
 			}
 		}
-		
+        
+        // ========== SRID POST ACTION ============
+        if(empty($myChildTypeSlug) && strpos($myType['Type']['slug'] , '-payment') !== FALSE) // SR / RR
+        {
+            if(!empty($_POST['srid']))
+            {
+                $srid = array_map('breakEntryMetas', $this->Entry->findAllById(explode(',', $_POST['srid'])) );
+                
+                if($myType['Type']['slug'] == 'sr-dmd-payment')
+                {
+                    $srid = array_map(function($value){ return $value['Entry']['slug'].'_'.$value['EntryMeta']['vendor_usd']; }, $srid);
+                }
+                else
+                {
+                    $srid = array_map(function($value){ return $value['Entry']['slug'].'_'.$value['EntryMeta']['item_weight']; }, $srid);
+                }
+                
+                $this->set('srid', implode('|', $srid) );
+
+                // delete temporary POST data ...
+                unset($_POST);
+                unset($this->request->data);
+            }
+        }
+        
 		// main add function ...
 		$this->_admin_default_add(($myType['Type']['slug']=='pages'?NULL:$myType) , $myEntry , $myChildTypeSlug);
         
@@ -1436,6 +1468,15 @@ class EntriesController extends AppController {
                     array('SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-product_status=", -1) LIKE' => 'kllg%'),
                     array('SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-product_status=", -1) LIKE' => ($this->request->query['storage'] == 'exhibition'?'exhibition':'stock').'%')
                 )));
+            }
+            
+            // custom SOLD REPORT monthly search ...
+            if(strpos($this->request->query['type-alias'], '-monthly') !== false)
+            {
+                if(empty($this->request->query['cidm']))    $this->request->query['cidm'] = date('n');
+                if(empty($this->request->query['cidy']))    $this->request->query['cidy'] = date('Y');
+                
+                array_push($options['conditions'], array('SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-client_invoice_date=", -1) LIKE' => sprintf("%02d",$this->request->query['cidm']).'/__/'.$this->request->query['cidy'].'{#}%') );
             }
         }
         else if($myType['Type']['slug'] == 'surat-jalan')

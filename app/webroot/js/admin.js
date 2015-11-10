@@ -8,10 +8,10 @@ var jcrop_api = new Array();
                 e.preventDefault();
                 $.colorbox({
                     href:$(this).attr('href'),
-                    fixed: true,
+//                    fixed: true,
                     reposition: false,
                     maxWidth:'95%',
-                    maxHeight:'95%'
+//                    maxHeight:'95%',
                 });
             });
         }

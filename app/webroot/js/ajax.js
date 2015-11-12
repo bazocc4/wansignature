@@ -56,6 +56,15 @@ function openRequestedSinglePopup(strUrl , targetName)
 }
 
 (function($) {
+    // guide the user to search item before showing entries ...
+    $.fn.guideUserToSearch = function(){
+        if($('input#searchMe').length && $('input#searchMe').val().length==0 && $('div.wrapper-empty-state').length)
+        {
+            $('div.wrapper-empty-state a').hide();
+            $('div.wrapper-empty-state h2').html('<a onclick="javascript:$(\'input#searchMe\').focus();" href="javascript:void(0);">search item first!</a>');
+        }
+    }
+    
     // Get URL parameters using jQuery ...
     // http://www.sitepoint.com/url-parameters-jquery/
     $.fn.urlParam = function(name , url){
@@ -433,6 +442,9 @@ function openRequestedSinglePopup(strUrl , targetName)
 			{
 				$.colorbox.resize();
 			}
+            
+            // guide the user to search item before showing entries ...
+            $.fn.guideUserToSearch();
 		});
 	};
 	

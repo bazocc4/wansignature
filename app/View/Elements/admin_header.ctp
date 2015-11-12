@@ -78,6 +78,9 @@
 				$('input#check-all').focus();
 			}
 		});
+        
+        // guide the user to search item before showing entries ...
+        $.fn.guideUserToSearch();
 	});
 </script>
 

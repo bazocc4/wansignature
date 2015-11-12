@@ -1588,13 +1588,20 @@ class EntriesController extends AppController {
         // ========================================= >>
 		// EXECUTE MAIN QUERY !!
 		// ========================================= >>
-        $data['totalList'] = $this->Entry->find('count' ,$options);
-        if($paging >= 1)
+        $data['totalList'] = 0;
+		$data['myList'] = array();
+        if(!empty($_SESSION['searchMe'])) // CUSTOM REQUEST BY WAN !!
         {
-            $options['limit'] = $countPage;
-            $options['page'] = $paging;
+            $data['totalList'] = $this->Entry->find('count' ,$options);
+            
+            if($paging >= 1)
+            {
+                $options['limit'] = $countPage;
+                $options['page'] = $paging;
+            }
+            
+            $data['myList'] = array_map('breakEntryMetas', $this->Entry->find('all' ,$options));
         }
-		$data['myList'] = array_map('breakEntryMetas', $this->Entry->find('all' ,$options));
         
         // check for image is used for this entries or not ??
 		$data['imageUsed'] = (empty(array_filter(array_column(array_column($data['myList'], 'Entry'), 'main_image')))?0:1);

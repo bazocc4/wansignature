@@ -239,7 +239,7 @@
                 $('li.database-menu').each(function(i,el){
                     var typecat = $(el).find('input[type=hidden]').val();                    
                     var $groupmenu = $('li.separator > a.sidebar-menu').filter(function(){
-                        return $.trim(this.innerHTML) == typecat;
+                        return $.trim( $(this).text() ) == typecat;
                     });
                     if($groupmenu.length > 0)
                     {

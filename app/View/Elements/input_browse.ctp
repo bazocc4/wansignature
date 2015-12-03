@@ -165,6 +165,11 @@
                         $popupExtensions['value'] = '!diamond';
                     }
                 }
+            
+                if(is_array($request_query))
+                {
+                    $popupExtensions = array_merge($popupExtensions, $request_query);
+                }
 
                 echo $this->Html->link('Browse',array('controller'=>'entries','action'=>$browse_slug,'admin'=>true,'?'=>$popupExtensions),array('class'=>'btn btn-info get-from-table'));
             ?>

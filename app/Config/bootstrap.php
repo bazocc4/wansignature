@@ -134,7 +134,7 @@ function redirectUsingScript($url)
 	**/
 function string_unslug($str)
 {
-	return Inflector::humanize(  str_replace('-','_', $str )  );
+	return Inflector::humanize(  str_replace('-','_', strtolower($str) )  );
 }
 
 function get_slug($value)

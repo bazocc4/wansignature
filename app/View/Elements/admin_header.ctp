@@ -80,7 +80,12 @@
 		});
         
         // guide the user to search item before showing entries ...
-        $.fn.guideUserToSearch();
+        <?php
+            if(empty($noNeedToSearch))
+            {
+                echo '$.fn.guideUserToSearch();';
+            }
+        ?>
 	});
 </script>
 

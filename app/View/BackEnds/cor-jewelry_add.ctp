@@ -80,7 +80,7 @@
 			}
 			
 			$value = array();
-			$value['key'] = 'form-'.Inflector::slug(strtolower($titlekey));
+			$value['key'] = 'form-'.Inflector::slug($titlekey);
 			$value['model'] = 'Entry';
 			$value['counter'] = 0;
 			$value['input_type'] = 'text';

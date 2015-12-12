@@ -1590,7 +1590,15 @@ class EntriesController extends AppController {
 		// ========================================= >>
         $data['totalList'] = 0;
 		$data['myList'] = array();
-        if(!empty($_SESSION['searchMe'])) // CUSTOM REQUEST BY WAN !!
+        
+        // CUSTOM REQUEST BY WAN !!
+        if($myType['Type']['slug'] == 'diamond' && $this->request->query['type-alias'] == 'sr-dmd-monthly' ||
+           $myType['Type']['slug'] == 'cor-jewelry' && $this->request->query['type-alias'] == 'sr-cor-monthly')
+        {
+            $data['noNeedToSearch'] = 1;
+        }
+        
+        if(!empty($_SESSION['searchMe']) || !empty($data['noNeedToSearch']) )
         {
             $data['totalList'] = $this->Entry->find('count' ,$options);
             

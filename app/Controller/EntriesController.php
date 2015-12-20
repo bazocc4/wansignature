@@ -1592,8 +1592,7 @@ class EntriesController extends AppController {
 		$data['myList'] = array();
         
         // CUSTOM REQUEST BY WAN !!
-        if($myType['Type']['slug'] == 'diamond' && $this->request->query['type-alias'] == 'sr-dmd-monthly' ||
-           $myType['Type']['slug'] == 'cor-jewelry' && $this->request->query['type-alias'] == 'sr-cor-monthly')
+        if(!empty($this->request->query) || $myType['Type']['slug'] == 'media' || $this->user['role_id'] == 1)
         {
             $data['noNeedToSearch'] = 1;
         }

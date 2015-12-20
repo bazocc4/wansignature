@@ -12,6 +12,7 @@ var jcrop_api = new Array();
                     reposition: false,
                     maxWidth:'95%',
 //                    maxHeight:'95%',
+                    title:$(this).attr('title'),
                 });
             });
         }

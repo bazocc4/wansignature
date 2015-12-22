@@ -1,4 +1,0 @@
-Excel Report List :
-1. Invoice.
-2. Sale Report.
-3. Warehouse & Exhibition with SURAT JALAN detail.

@@ -90,7 +90,7 @@
                         }
                     ?>
                     
-                    $('div.inner-header > div:last > div:last').before("<form /*class='hide'*/ id='download-excel' action='"+site+"entries/download_jewelry' method='POST'><input type='hidden' name='data[record]'><button style='margin-bottom:10px;' class='btn btn-inverse right-btn fr' type='submit'><i class='icon-download-alt icon-white'></i> Download Excel</button></form>"); // download Excel ...
+                    $('div.inner-header > div:last > div:last').before("<form /*class='hide'*/ id='download-excel' action='"+site+"entries/download_jewelry<?php echo (!empty($this->request->query['cidm']) && !empty($this->request->query['cidy'])?'?cidm='.$this->request->query['cidm'].'&cidy='.$this->request->query['cidy']:''); ?>' method='POST'><input type='hidden' name='data[record]'><button style='margin-bottom:10px;' class='btn btn-inverse right-btn fr' type='submit'><i class='icon-download-alt icon-white'></i> Download Excel</button></form>"); // download Excel ...
 
                     $('form#download-excel').submit(function(){
                         var checked_data = $('#checked-data').val();

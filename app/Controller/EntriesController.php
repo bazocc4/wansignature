@@ -23,7 +23,16 @@ class EntriesController extends AppController {
         App::import('Vendor', 'excel/worksheet');
         App::import('Vendor', 'excel/workbook');
 
-        $filename = 'WAN_JEWELRY_'.date('dmy_Hi');
+        $filename = 'WAN_JEWELRY_';
+        if(!empty($this->request->query['cidm']) && !empty($this->request->query['cidy']))
+        {
+            $filename .= 'SOLD_'.date("MY", strtotime($this->request->query['cidm'].'/1/'.$this->request->query['cidy']) );
+        }
+        else
+        {
+            $filename .= date('dmy_Hi');
+        }
+        
         $excel1995 = getTempFolderPath().$filename.'.xls';
         $excel2007 = getTempFolderPath().$filename.'.xlsx';
 
@@ -374,7 +383,16 @@ class EntriesController extends AppController {
         App::import('Vendor', 'excel/worksheet');
         App::import('Vendor', 'excel/workbook');
 
-        $filename = 'WAN_DIAMOND_'.date('dmy_Hi');
+        $filename = 'WAN_DIAMOND_';
+        if(!empty($this->request->query['cidm']) && !empty($this->request->query['cidy']))
+        {
+            $filename .= 'SOLD_'.date("MY", strtotime($this->request->query['cidm'].'/1/'.$this->request->query['cidy']) );
+        }
+        else
+        {
+            $filename .= date('dmy_Hi');
+        }
+        
         $excel1995 = getTempFolderPath().$filename.'.xls';
         $excel2007 = getTempFolderPath().$filename.'.xlsx';
 

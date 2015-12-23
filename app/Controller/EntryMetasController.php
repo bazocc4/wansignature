@@ -339,159 +339,156 @@ class EntryMetasController extends AppController {
         App::import('Vendor', 'excel/worksheet');
         App::import('Vendor', 'excel/workbook');
         
-        $time_start_date = strtotime($this->request->data['start_date']);
-        $time_end_date = strtotime($this->request->data['end_date']);
         $storage = $this->Type->findBySlug($entry_type);
-
-        $filename = 'WAN_'.strtoupper($storage['Type']['name']).'_'.date('dMY', $time_start_date).'_'.date('dMY', $time_end_date);
+        
+        $time_start_date = '';
+        $time_end_date = '';
+        if(!empty($this->request->data['start_date']) && !empty($this->request->data['end_date']))
+        {
+            $time_start_date = strtotime($this->request->data['start_date']);
+            $time_end_date = strtotime($this->request->data['end_date']);
+            $filename = 'WAN_'.strtoupper($storage['Type']['name']).'_'.date('dMY', $time_start_date).'_'.date('dMY', $time_end_date);
+        }
+        else
+        {
+            $filename = 'WAN_'.strtoupper($storage['Type']['name']).'_'.date('dmy_Hi');
+        }
         
         $excel1995 = getTempFolderPath().$filename.'.xls';
         $excel2007 = getTempFolderPath().$filename.'.xlsx';
 
         // Creating a workbook
         $workbook = new Workbook($excel1995);
-        // Creating the worksheet
-        $worksheet1 =& $workbook->add_worksheet();
-
-        // $worksheet1->hide_gridlines();
-        $worksheet1->set_landscape();
-        $worksheet1->fit_to_pages(0,0);
-        $worksheet1->repeat_rows(0,2);
-
-        $worksheet1->set_column(0, 0, 8);
-        $worksheet1->set_column(1, 70, 15);
-
-        // Format for the headings
-        $formatot =& $workbook->add_format();
-        $formatot->set_size(12);
-        $formatot->set_bold();
-        $formatot->set_border(1);
-        $formatot->set_merge();
-        $formatot->set_align('vcenter');
-
-        // ==================== >>>
-        // write the 1st header ...
-        // ==================== >>>
-        $indexbaris = 0;
-        $worksheet1->set_row($indexbaris, 18);
-
-        $worksheet1->write($indexbaris,1,"WAN DETAIL INFORMATION (商品详细信息) … WAN DETAIL INFORMATION (商品详细信息) … WAN DETAIL INFORMATION (商品详细信息) … WAN DETAIL INFORMATION (商品详细信息)",$formatot);
-        for($col=2 ; $col <= 11 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        $worksheet1->write($indexbaris,13,"ITEM DESCRIPTION / SPECIFICATIONS … (项目描述/规格) … (项目描述/规格)",$formatot);
-        for($col=14 ; $col <= 18 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        $worksheet1->write($indexbaris,22,"VENDOR & SUPPLIER DETAIL (供应商和供应商的详细信息) … VENDOR & SUPPLIER DETAIL (供应商和供应商的详细信息) … VENDOR & SUPPLIER DETAIL (供应商和供应商的详细信息)",$formatot);
-        for($col=23 ; $col <= 36 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        $worksheet1->write($indexbaris,38,"SOLD & RETURN REPORT TO VD (出售及向供应商退回报告)",$formatot);
-        for($col=39 ; $col <= 42 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        $worksheet1->write($indexbaris,47,"EVERYTHING ABOUT WAN TRANSACTIONS (卖出交易的完整信息) … EVERYTHING ABOUT WAN TRANSACTIONS (卖出交易的完整信息) … EVERYTHING ABOUT WAN TRANSACTIONS (卖出交易的完整信息)",$formatot);
-        for($col=48 ; $col <= 66 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        $worksheet1->write($indexbaris,68,"HISTORY OF TRANSACTIONS (交易历史)",$formatot);
-        for($col=69 ; $col <= 70 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        // ==================== >>>
-        // write the 2nd header ...
-        // ==================== >>>
-        $indexbaris++;
-        $worksheet1->set_row($indexbaris, 18);
-
-        $worksheet1->write($indexbaris,1,"MERCHANDISE INFO (商品信息) … MERCHANDISE INFO (商品信息) … MERCHANDISE INFO (商品信息)",$formatot);
-        for($col=2 ; $col <= 8 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        $worksheet1->write($indexbaris,9,"FEE (费) … FEE (费) … FEE (费)",$formatot);
-        for($col=10 ; $col <= 11 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        $worksheet1->write($indexbaris,13,"DIAMOND DESCRIPTION / SPEC (钻石总重)",$formatot);
-        for($col=14 ; $col <= 16 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        $worksheet1->write($indexbaris,17,"GOLD (金重)",$formatot);
-        $worksheet1->write_blank($indexbaris,18,$formatot);
-
-        $worksheet1->write($indexbaris,22,"VENDOR INVOICE DETAIL … (供应商发票的详细信息)",$formatot);
-        for($col=23 ; $col <= 27 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        $worksheet1->write($indexbaris,28,"VENDOR PRICE (CAPITAL) (资本价格)",$formatot);
-        for($col=29 ; $col <= 32 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        $worksheet1->write($indexbaris,33,"PAYMENT TO VENDOR (向供应商付款)",$formatot);
-        for($col=34 ; $col <= 36 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        $worksheet1->write($indexbaris,38,"SOLD REPORT (销售报告)",$formatot);
-        for($col=39 ; $col <= 40 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        $worksheet1->write($indexbaris,41,"RETURN REPORT (将报表)",$formatot);
-        $worksheet1->write_blank($indexbaris,42,$formatot);
-
-        $worksheet1->write($indexbaris,43,"SALES REPORT (销售报告)",$formatot);
-        for($col=44 ; $col <= 45 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        $worksheet1->write($indexbaris,47,"CLIENT TRANSACTION DETAIL (客户信息) … CLIENT TRANSACTION DETAIL (客户信息)",$formatot);
-        for($col=48 ; $col <= 52 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        $worksheet1->write($indexbaris,53,"SOLD INV 出售发票",$formatot);
-        $worksheet1->write_blank($indexbaris,54,$formatot);
-
-        $worksheet1->write($indexbaris,55,"SELLING PRICE (售价) … SELLING PRICE (售价) … SELLING PRICE (售价)",$formatot);
-        for($col=56 ; $col <= 59 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        $worksheet1->write($indexbaris,60,"TYPE OF PAYMENT (描述支付) … TYPE OF PAYMENT (描述支付) … TYPE OF PAYMENT (描述支付)",$formatot);
-        for($col=61 ; $col <= 66 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        $worksheet1->write($indexbaris,68,"PREVIOUS SOLD INFO",$formatot);
-        for($col=69 ; $col <= 70 ; ++$col) $worksheet1->write_blank($indexbaris,$col,$formatot);
-
-        // ==================== >>>
-        // write the 3rd header ...
-        // ==================== >>>
-        $indexbaris++;
-        $worksheet1->set_row($indexbaris, 100);
-
-        // set certain index as custom color for header table background ...
-        $workbook->set_custom_color(24, 175, 171, 171);            
-        $workbook->set_custom_color(25, 219, 219, 219);
-        $workbook->set_custom_color(26, 251, 228, 213);
-        $workbook->set_custom_color(27, 255, 255, 255);
-        $workbook->set_custom_color(28, 222, 235, 246);
-        $workbook->set_custom_color(29, 255, 231, 153);
-
-        $counterColor = 23;
-        foreach(array(
-            NULL, "WAN # 项目编号", "TYPE 类型", "BARCODE 价格标签", "SELL BRCD (价格标签)", "STATUS IN WAN (状态)", "ADDITIONAL NOTE 附加说明", "WH", "√", "FEE (费)", "DATE (日期)", "PAID (高薪)",
-            NULL, "CARAT (总克拉)", "CARAT (总克拉)", "CARAT (总克拉)", "CARAT (总克拉)", "%", "GRAM (总克)",
-            NULL, "ITEM REFERENCE CODE 项目参考代码", "ITEM REFERENCE CODE 项目参考代码 (X2)", "VENDOR 供应商", "VENDOR ITEM # 供应商伴奏编号", "VENDOR INV # 供应商发票号", "VD DATE 发票日期", "STATUS WITH VENDOR", "NOTE 附加信息", "USD HKD", "BARCODE (价格)", "X", "USD (美元)", "HKD (港元)", "PAID FACTORY", "PAID DATE", "PAID 2ND VENDOR", "PAID DATE",
-            NULL, "SR DATE (报告日期)", "SR  RR", "TEMP/R (临时报告)", "DATE (返程日期)", "RETURN DETAIL (返回的信息)", "SALES NAME", "COMMISION (回扣)", "OMZET",
-            NULL, "CLIENT NAME (客户名称) WHOLESALE (批发)", "SELL X", "CD 守则", "CLIENT NAME (客户名称) RETAIL", "SELL X", "INPUT DATA", "SOLD DT 销售日期", "S INV # 发票号码", "TOTAL (合計)", "USD (美元)", "RUPIAH (卢比)", "RATE", "CLIENT OUTSTANDING (未偿还余额)", "CREDIT CARD (信用卡)", "CICILAN 债务 (HSBC PERMATA CITI)   3-6-12 MONTHS", "CASH (现金) TRANSFER (银行汇款) DEBIT CARD (借记卡)", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式",
-            NULL, "PREV SOLD PRICE (成交价历史)", "PREV BARCODE", "PREVIOUS SOLD NOTE (注：关于交易历史)",
-        ) as $key => $value)
+        
+        // set index 24 as custom gray color for header table background ...
+        $workbook->set_custom_color(24, 242,  242,  242);
+        
+        // query all storage entry !!
+        $myList = array_map('breakEntryMetas', $this->Entry->findAllById(explode(',', $this->request->data['record'])) );
+        foreach($myList as $listKey => $listValue)
         {
-            if(!empty($value))
+            // prepare interval date first !!
+            $start_date = '';
+            $end_date = '';
+            if(!empty($time_start_date) && !empty($time_end_date))
             {
-                $worksheet1->write($indexbaris, $key ,$value, $workbook->add_format(array(
-                    array('key' => 'size',      'value' => 12 ),
-                    array('key' => 'bold',      'value' => 1 ),
-                    array('key' => 'border',    'value' => 1 ),
-                    array('key' => 'text_wrap', 'value' => 1 ),
-                    array('key' => 'align',     'value' => 'center' ),                        
-                    array('key' => 'align',     'value' => 'vcenter' ),
+                $start_date = date($this->mySetting['date_format'], $time_start_date );
+                $end_date = date($this->mySetting['date_format'], $time_end_date );
+            }
+            else // grab from EntryMeta !!
+            {
+                if(!empty($listValue['EntryMeta']['start_date']))
+                {
+                    $start_date = date($this->mySetting['date_format'], strtotime($listValue['EntryMeta']['start_date']) );
+                }
+                
+                if(!empty($listValue['EntryMeta']['end_date']))
+                {
+                    $end_date = date($this->mySetting['date_format'], strtotime($listValue['EntryMeta']['end_date']) );
+                }
+            }
+            
+            // Creating the worksheet
+            $worksheet1 =& $workbook->add_worksheet($listValue['Entry']['title']);
+            
+            // $worksheet1->hide_gridlines();
+            $worksheet1->set_landscape();
+            $worksheet1->fit_to_pages(1,0);
+            $worksheet1->repeat_rows(10);
 
-                    // set background custom color of the cell method !!
-                    array('key' => 'pattern',   'value' => 1 ),
-                    array('key' => 'fg_color',  'value' => $counterColor ),
-                )) );
-            }
-            else
+            // Set Column width !!
+            foreach(array(5, 15, 10, 15, 15, 15, 15, 20, 20, 15, 10 ) as $key => $value)
             {
-                $counterColor++;
+                $worksheet1->set_column($key, $key, $value);
             }
+            
+            // Format TITLE !!
+            $indexbaris = 0;        
+            $worksheet1->write_string($indexbaris,0,strtoupper($storage['Type']['name']).' REPORT', $workbook->add_format(array(
+                'size' => 12,
+                'bold' => 1,
+            )) );
+            
+            $indexbaris += 2;
+            $worksheet1->write_string($indexbaris,0,'Start Date: '.$start_date, $workbook->add_format(array(
+                'size' => 11,
+                'bold' => 1,
+            )) );        
+            $indexbaris++;
+            $worksheet1->write_string($indexbaris,0,'End Date: '.$end_date, $workbook->add_format(array(
+                'size' => 11,
+                'bold' => 1,
+            )) );
+            
+            $indexbaris += 2;
+            $worksheet1->write_string($indexbaris,0,$storage['Type']['name'].' Name: '.$listValue['Entry']['title'].(!empty($listValue['EntryMeta']['kode_warehouse'])?' ('.$listValue['EntryMeta']['kode_warehouse'].')':''), $workbook->add_format(array(
+                'size' => 11,
+                'bold' => 1,
+            )) );
+            $indexbaris++;
+            $worksheet1->write_string($indexbaris,0,'Address: '.str_replace(chr(10), ', ', $listValue['EntryMeta']['alamat']), $workbook->add_format(array(
+                'size' => 11,
+                'bold' => 1,
+            )) );
+            $indexbaris++;
+            $worksheet1->write_string($indexbaris,0,'Phone: '.$listValue['EntryMeta']['telepon'], $workbook->add_format(array(
+                'size' => 11,
+                'bold' => 1,
+            )) );
+            
+            $empString = '';
+            if(!empty($listValue['EntryMeta']['warehouse_employee']))
+            {
+                $employee = $this->Account->findAllById(explode('|', $listValue['EntryMeta']['warehouse_employee']));
+                foreach($employee as $key => $value)
+                {
+                    if($key > 0)
+                    {
+                        $empString .= ', ';
+                    }
+                    
+                    $empString .= $value['User']['firstname'].' '.$value['User']['lastname'];
+                }
+            }
+            
+            $indexbaris++;
+            $worksheet1->write_string($indexbaris,0,'Employee (PIC): '.$empString, $workbook->add_format(array(
+                'size' => 11,
+                'bold' => 1,
+            )) );
+
+            $indexbaris += 2;
+            // write the header ...
+            $worksheet1->set_row($indexbaris, 30 );
+
+            $formatTableHeader =& $workbook->add_format();
+            $formatTableHeader->set_size(11);
+            $formatTableHeader->set_align('center');
+            $formatTableHeader->set_align('vcenter');
+            $formatTableHeader->set_bold();
+            $formatTableHeader->set_border(1);
+
+            // set background custom color of the cell method !!
+            $formatTableHeader->set_pattern();
+            $formatTableHeader->set_fg_color(24);
+
+            foreach(array('No.', 'Surat Jalan', 'Tanggal', 'Jenis Pengiriman', 'Invoice', 'Tempat Asal', 'Tujuan Kirim', 'Diamond', 'Cor Jewelry', 'Logistic', 'Status') as $key => $value)
+            {
+                $worksheet1->write_string($indexbaris,$key,$value, $formatTableHeader );
+            }
+
+            
+
+            
+            
         }
+        
+        
 
         // ===================== >>
         // BEGIN CONTENT PROCESS !!
         // ===================== >>
+/*
         $format1 =& $workbook->add_format();
         $format1->set_size(10);
         $format1->set_border(1);
@@ -537,6 +534,7 @@ class EntryMetasController extends AppController {
 
         // query diamond ...
         $query = array_map('breakEntryMetas', $this->Entry->findAllById(explode(',', $this->request->data['record'])) );
+*/
         
         // process the query phase !!!
         // ...........................

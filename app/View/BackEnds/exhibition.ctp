@@ -35,25 +35,13 @@
                 
                 downloadcon += "<input type='hidden' name='data[record]'>"; // choose storage entity !!
                 
-				downloadcon += '<input REQUIRED placeholder="start date" class="input-small dpicker start-date" type="text" name="data[start_date]" />';
-				downloadcon += '&nbsp;&nbsp;-&nbsp;&nbsp;';
-				downloadcon += '<input REQUIRED placeholder="end date" class="input-small dpicker end-date" type="text" name="data[end_date]" />';
-                
-				downloadcon += "<button style='margin-bottom:10px;' type='submit' title='Download Products Transfer Report' class='btn btn-inverse right-btn'><i class='icon-download-alt icon-white'></i> Products Transfer Report</button>";
+				downloadcon += "<button type='submit' title='Download Products Transfer Report' class='btn btn-inverse right-btn'><i class='icon-download-alt icon-white'></i> Products Transfer Report</button>";
 				downloadcon += '</form>';
 				downloadcon += '</div></div>';
 				
 				$('div.inner-header > div:last').append(downloadcon);
 				
-				$('div.download-rekap input.dpicker').datepicker({
-                    changeMonth: true,
-                    changeYear: true,
-                    showButtonPanel: true,
-                    minDate: new Date(2015,01 - 1,1), // start of 2015 ...
-                    maxDate: new Date(),
-				});
-                
-                $('div.download-rekap form').submit(function(){
+				$('div.download-rekap form').submit(function(){
                     var checked_data = $('#checked-data').val();
                     var total_checked = checked_data.split(',').length - 2;
                     if(total_checked > 0)
@@ -66,16 +54,6 @@
                         $('input#check-all').focus();
                         return false;
                     }
-                    
-                    // check interval date...
-					var diff_date = new Date( $(this).find('input.end-date').val() ) - new Date( $(this).find('input.start-date').val() );
-					
-					if(!$.isNumeric(diff_date) || diff_date < 0)
-					{
-						alert('End Date must be greater than Start Date!');
-						$(this).find('input.start-date').focus();
-        				return false;
-					}
 				});
 			});
 		</script>        

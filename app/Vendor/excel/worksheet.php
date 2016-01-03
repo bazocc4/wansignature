@@ -60,7 +60,7 @@ class Worksheet extends BIFFwriter
         $this->BIFFwriter();     // It needs to call its parent's constructor explicitly
         $rowmax                = 65536; // 16384 in Excel 5
         $colmax                = 256;
-        $strmax                = 255;
+        $strmax                = 32767;
     
         $this->name            = $name;
         $this->index           = $index;

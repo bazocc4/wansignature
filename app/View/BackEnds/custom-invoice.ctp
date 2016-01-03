@@ -30,6 +30,48 @@
 		echo $this->element('admin_header', array('extensionPaging' => $extensionPaging));
 		echo '<div class="inner-content '.(empty($popup)?'':'layout-content-popup').'" id="inner-content">';
 		echo '<div class="autoscroll" id="ajaxed">';
+        
+        if(empty($popup) )
+        {
+        ?>
+        <script>
+			$(document).ready(function(){
+				var downloadcon = '<div class="download-rekap row-fluid"><div class="span12 text-right">';
+                downloadcon += '<form action="'+linkpath+'entries/download_invoice/<?php echo $myType['Type']['slug']; ?>" method="post" enctype="multipart/form-data">';
+                
+				downloadcon += '<input REQUIRED placeholder="start date" class="input-small dpicker start-date" type="text" name="data[start_date]" />';
+				downloadcon += '&nbsp;&nbsp;-&nbsp;&nbsp;';
+				downloadcon += '<input REQUIRED placeholder="end date" class="input-small dpicker end-date" type="text" name="data[end_date]" />';
+                
+				downloadcon += "<button style='margin-bottom:10px;' type='submit' title='Download Invoice Report' class='btn btn-inverse right-btn'><i class='icon-download-alt icon-white'></i> Invoice Report</button>";
+                
+                downloadcon += '</form>';
+				downloadcon += '</div></div>';
+				
+				$('div.inner-header > div:last').append(downloadcon);
+				
+				$('div.download-rekap input.dpicker').datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    showButtonPanel: true,
+                    maxDate: new Date(),
+				});
+                
+                $('div.download-rekap form').submit(function(){
+                    // check interval date...
+					var diff_date = new Date( $(this).find('input.end-date').val() ) - new Date( $(this).find('input.start-date').val() );
+					
+					if(!$.isNumeric(diff_date) || diff_date < 0)
+					{
+						alert('End Date must be greater than Start Date!');
+						$(this).find('input.start-date').focus();
+        				return false;
+					}
+				});
+			});
+		</script>        
+        <?php    
+        }
 	}
 	else
 	{

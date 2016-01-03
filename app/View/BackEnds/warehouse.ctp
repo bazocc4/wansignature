@@ -25,13 +25,13 @@
 		echo '<div class="inner-content '.(empty($popup)?'':'layout-content-popup').'" id="inner-content">';
 		echo '<div class="autoscroll" id="ajaxed">';
         
-        if(empty($popup) && $user['role_id'] == 1 )
+        if(empty($popup) /*&& $user['role_id'] == 1*/ )
         {
         ?>
         <script>
 			$(document).ready(function(){
 				var downloadcon = '<div class="download-rekap row-fluid"><div class="span12 text-right">';
-                downloadcon += '<form action="'+linkpath+'entry_metas/download_storage/<?php echo $myType['Type']['slug']; ?>" method="post" enctype="multipart/form-data">';
+                downloadcon += '<form action="#" method="post" enctype="multipart/form-data">';
                 
                 downloadcon += "<input type='hidden' name='data[record]'>"; // choose storage entity !!
                 
@@ -39,7 +39,14 @@
 				downloadcon += '&nbsp;&nbsp;-&nbsp;&nbsp;';
 				downloadcon += '<input REQUIRED placeholder="end date" class="input-small dpicker end-date" type="text" name="data[end_date]" />';
                 
-				downloadcon += "<button style='margin-bottom:10px;' type='submit' title='Download Products Transfer Report' class='btn btn-inverse right-btn'><i class='icon-download-alt icon-white'></i> Products Transfer Report</button>";
+				downloadcon += "<button data-action='"+linkpath+"entries/download_storage/<?php echo $myType['Type']['slug']; ?>' style='margin-bottom:10px;' type='submit' title='Download Products Transfer Report' class='btn btn-inverse right-btn'><i class='icon-download-alt icon-white'></i> Products Transfer Report</button>";
+                
+                // ============================== >>
+                // Diamond & Cor Statement Report !!
+                downloadcon += "<button data-action='"+linkpath+"entries/download_payment/diamond' style='margin-bottom:10px;' type='submit' title='Download Diamond Statement Report' class='btn btn-info right-btn'><i class='icon-download-alt icon-white'></i> Diamond Statement Report</button>";
+                
+                downloadcon += "<button data-action='"+linkpath+"entries/download_payment/cor-jewelry' style='margin-bottom:10px;' type='submit' title='Download Cor Jewelry Statement Report' class='btn btn-danger right-btn'><i class='icon-download-alt icon-white'></i> Cor Statement Report</button>";
+                
 				downloadcon += '</form>';
 				downloadcon += '</div></div>';
 				
@@ -49,9 +56,12 @@
                     changeMonth: true,
                     changeYear: true,
                     showButtonPanel: true,
-                    minDate: new Date(2015,01 - 1,1), // start of 2015 ...
                     maxDate: new Date(),
 				});
+                
+                $('div.download-rekap form button[type=submit]').click(function(){
+                    $(this).closest('form').attr('action', $(this).attr('data-action') );
+                });
                 
                 $('div.download-rekap form').submit(function(){
                     var checked_data = $('#checked-data').val();

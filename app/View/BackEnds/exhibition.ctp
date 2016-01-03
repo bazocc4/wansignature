@@ -25,13 +25,13 @@
 		echo '<div class="inner-content '.(empty($popup)?'':'layout-content-popup').'" id="inner-content">';
 		echo '<div class="autoscroll" id="ajaxed">';
         
-        if(empty($popup) && $user['role_id'] == 1 )
+        if(empty($popup) /*&& $user['role_id'] == 1*/ )
         {
         ?>
         <script>
 			$(document).ready(function(){
 				var downloadcon = '<div class="download-rekap row-fluid"><div class="span12 text-right">';
-                downloadcon += '<form action="'+linkpath+'entry_metas/download_storage/<?php echo $myType['Type']['slug']; ?>" method="post" enctype="multipart/form-data">';
+                downloadcon += '<form action="'+linkpath+'entries/download_storage/<?php echo $myType['Type']['slug']; ?>" method="post" enctype="multipart/form-data">';
                 
                 downloadcon += "<input type='hidden' name='data[record]'>"; // choose storage entity !!
                 

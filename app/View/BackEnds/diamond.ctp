@@ -88,10 +88,29 @@
                     });
                             <?php
                         }
+            
+                        // DOWNLOAD SETTING VARIABLE !!
+                        $download_query = '';
+                        $submit_func = false;
+                        $download_title = '';
+                        if(!empty($this->request->query['cidm']) && !empty($this->request->query['cidy']))
+                        {
+                            $download_query = '?cidm='.$this->request->query['cidm'].'&cidy='.$this->request->query['cidy'];
+                            $download_title = 'Download Monthly Report';
+                        }
+                        else
+                        {
+                            $submit_func = true;
+                            $download_title = 'Download Excel';
+                        }
                     ?>
                     
-                    $('div.inner-header > div:last > div:last').before("<form id='download-excel' action='"+site+"entries/download_diamond<?php echo (!empty($this->request->query['cidm']) && !empty($this->request->query['cidy'])?'?cidm='.$this->request->query['cidm'].'&cidy='.$this->request->query['cidy']:''); ?>' method='POST'><input type='hidden' name='data[record]'><button style='margin-bottom:10px;' class='btn btn-inverse right-btn fr' type='submit'><i class='icon-download-alt icon-white'></i> Download Excel</button></form>"); // download Excel ...
-
+                    $('div.inner-header > div:last > div:last').before("<form id='download-excel' action='"+site+"entries/download_diamond<?php echo $download_query; ?>' method='POST'><input value=',' type='hidden' name='data[record]'><button style='margin-bottom:10px;' class='btn btn-inverse right-btn fr' type='submit'><i class='icon-download-alt icon-white'></i> <?php echo $download_title; ?></button></form>"); // download Excel ...
+                    
+                    <?php
+                        if($submit_func)
+                        {
+                            ?>
                     $('form#download-excel').submit(function(){
                         var checked_data = $('#checked-data').val();
                         var total_checked = checked_data.split(',').length - 2;
@@ -105,7 +124,10 @@
                             $('input#check-all').focus();
                             return false;
                         }
-                    });
+                    });            
+                            <?php
+                        }
+                    ?>
                 });
             </script>
             <?php

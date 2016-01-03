@@ -12,6 +12,799 @@ class EntriesController extends AppController {
 		$this->Auth->allow('index');
     }
     
+    public function download_payment($entry_type) // Diamond / Cor Jewelry
+    {
+        if(empty($entry_type) || empty($this->request->data))
+        {
+            throw new NotFoundException('Error 404 - Not Found');
+        }
+        
+        set_time_limit(0); // unlimited time limit execution.
+        App::import('Vendor', 'excel/worksheet');
+        App::import('Vendor', 'excel/workbook');
+        
+        $myType = $this->Type->findBySlug($entry_type);
+        
+        $time_start_date = strtotime($this->request->data['start_date']);
+        $time_end_date = strtotime($this->request->data['end_date']);
+        
+        $filename = 'WAN_STATEMENT_'.str_replace(' ', '_', strtoupper($myType['Type']['name'])).'_'.date('dMY', $time_start_date).'_'.date('dMY', $time_end_date);
+        
+        $excel1995 = getTempFolderPath().$filename.'.xls';
+        $excel2007 = getTempFolderPath().$filename.'.xlsx';
+
+        // Creating a workbook
+        $workbook = new Workbook($excel1995);
+        
+        // set index 24 as custom gray color for header table background ...
+        $workbook->set_custom_color(24, 242,  242,  242);
+        
+        // prepare modules ...
+        $client_invoice_type = $this->Type->findBySlug($entry_type=='diamond'?'dmd-client-invoice':'cor-client-invoice');
+        $client_payment_type = $this->Type->findBySlug($entry_type=='diamond'?'dc-payment':'cc-payment');
+        $sr_payment_type = $this->Type->findBySlug($entry_type=='diamond'?'sr-dmd-payment':'sr-cor-payment');
+        
+        $vendor = array_column( array_column( $this->Entry->findAllByEntryType('vendor') , 'Entry'), 'title', 'slug' );
+        $client = array_column( array_column( $this->Entry->findAllByEntryType('client') , 'Entry'), 'title', 'slug' );
+        $warehouse = array_column( array_column( $this->Entry->findAllByEntryType('warehouse') , 'Entry'), 'title', 'slug' );
+        
+        // query all storage entry !!
+        $myList = array_map('breakEntryMetas', $this->Entry->findAllById(explode(',', $this->request->data['record'])) );
+        foreach($myList as $listKey => $listValue)
+        {
+            // Creating the worksheet
+            $worksheet1 =& $workbook->add_worksheet($listValue['Entry']['title']);
+            
+            // $worksheet1->hide_gridlines();
+            $worksheet1->set_landscape();
+            $worksheet1->fit_to_pages(1,0);
+            $worksheet1->repeat_rows(5);
+
+            // Set Column width !!
+            foreach(array(5, 10, 15, 35, 15, 15, 10, 10, 10, 10, 15 ) as $key => $value)
+            {
+                $worksheet1->set_column($key, $key, $value);
+            }
+            
+            // Format TITLE !!
+            $indexbaris = 0;        
+            $worksheet1->write_string($indexbaris,0,$listValue['Entry']['title'].(!empty($listValue['EntryMeta']['kode_warehouse'])?' ('.$listValue['EntryMeta']['kode_warehouse'].')':'').' - '.strtoupper($myType['Type']['name']).' STATEMENT REPORT', $workbook->add_format(array(
+                'size' => 12,
+                'bold' => 1,
+            )) );
+            
+            $indexbaris += 2;
+            $worksheet1->write_string($indexbaris,0,'Start Date: '.date($this->mySetting['date_format'], $time_start_date ), $workbook->add_format(array(
+                'size' => 11,
+                'bold' => 1,
+            )) );        
+            $indexbaris++;
+            $worksheet1->write_string($indexbaris,0,'End Date: '.date($this->mySetting['date_format'], $time_end_date ), $workbook->add_format(array(
+                'size' => 11,
+                'bold' => 1,
+            )) );
+            
+            $indexbaris += 2;
+            // write the header ...
+            $worksheet1->set_row($indexbaris, 30 );
+
+            $formatTableHeader =& $workbook->add_format();
+            $formatTableHeader->set_size(11);
+            $formatTableHeader->set_align('center');
+            $formatTableHeader->set_align('vcenter');
+            $formatTableHeader->set_bold();
+            $formatTableHeader->set_border(1);
+            $formatTableHeader->set_text_wrap();
+
+            // set background custom color of the cell method !!
+            $formatTableHeader->set_pattern();
+            $formatTableHeader->set_fg_color(24);
+
+            foreach(array('No.', 'Tanggal', 'Invoice', 'Keterangan', 'Payer', 'Receiver', 'Payment Type', 'Total Pcs', 'Debit ('.($entry_type=='diamond'?'USD':'GR').')', 'Credit ('.($entry_type=='diamond'?'USD':'GR').')', 'Accumulated Balance') as $key => $value)
+            {
+                $worksheet1->write_string($indexbaris,$key,$value, $formatTableHeader );
+            }
+
+            // ===================== >>
+            // BEGIN STATEMENT PROCESS !!
+            // ===================== >>
+            $format1 =& $workbook->add_format();
+            $format1->set_size(10);
+            $format1->set_border(1);
+            $format1->set_text_wrap();
+            $format1->set_align('center');
+            $format1->set_align('vcenter');
+
+            $formatdate =& $workbook->add_format();
+            $formatdate->set_size(10);
+            $formatdate->set_border(1);
+            $formatdate->set_text_wrap();			
+            $formatdate->set_align('center');
+            $formatdate->set_align('vcenter');
+            $formatdate->set_num_format('d-mmm-yy'); // 7-AUG-15
+            
+            $formatmoney =& $workbook->add_format();
+            $formatmoney->set_size(10);
+            $formatmoney->set_border(1);
+            $formatmoney->set_text_wrap();			
+            $formatmoney->set_align('center');
+            $formatmoney->set_align('vcenter');
+            $formatmoney->set_num_format('#,##0.00');
+            
+            // query all CLIENT invoice from selected WH first !!
+            $temp_data = $this->request->data;
+            unset($this->request->data);
+            $client_invoice = $this->_admin_default($client_invoice_type,0 , NULL , 'warehouse' , $listValue['Entry']['slug'] , NULL , NULL , NULL , NULL , 'manualset')['myList'];
+            $this->request->data = $temp_data;
+            
+            $query = array();
+            if(!empty($client_invoice))
+            {
+                // query all of their client payment children !!
+                $this->request->query['invoice'] = array_column(array_column($client_invoice, 'Entry'), 'id');                
+                $query = $this->_admin_default($client_payment_type,0 , NULL , NULL , NULL , NULL , NULL , NULL , NULL , 'manualset')['myList'];
+                
+                // remake $client_invoice for later usage !!
+                $client_invoice = array_combine(
+                    array_column( array_column( $client_invoice , 'Entry'), 'slug' ), // keys
+                    $client_invoice // values
+                );
+            }
+            
+            // then, query all SR payment !!
+            $this->request->query['warehouse'] = $listValue['Entry']['slug'];
+            $query = array_merge($query, $this->_admin_default($sr_payment_type,0 , NULL , NULL , NULL , NULL , NULL , NULL , NULL , 'manualset')['myList']);
+            
+            // sort all by date !!
+            $query = orderby_metavalue($query , 'EntryMeta' , 'date' , 'ASC' , 'datepicker');
+            
+            // print all the result !!
+            $balance = 0;
+            foreach($query as $key => $value)
+            {
+                $indexbaris++;
+                $worksheet1->write( $indexbaris , 0 , $key+1 ,$format1);
+                $worksheet1->write( $indexbaris, 1, parseExcelDate($value['EntryMeta']['date']), $formatdate );
+                
+                if($value['Entry']['parent_id'] > 0) // payment from client ...
+                {
+                    $worksheet1->write_string( $indexbaris, 2, $value['ParentEntry']['title'], $format1);                    
+                    $worksheet1->write_string( $indexbaris, 3, $value['Entry']['title'].(!empty($value['Entry']['description'])?chr(10).$value['Entry']['description']:''), $format1);
+                    
+                    if(strtolower($value['EntryMeta']['statement']) == 'credit')
+                    {
+                        $worksheet1->write_string( $indexbaris, 4, $client[ $client_invoice[$value['ParentEntry']['slug']]['EntryMeta']['client'] ], $format1); // payer ...
+                        $worksheet1->write_string( $indexbaris, 5, $listValue['Entry']['title'], $format1); // receiver ...
+                        
+                        // jump to balance field !!
+                        $balance += $value['EntryMeta']['amount'];
+                        $worksheet1->write( $indexbaris, 8, $value['EntryMeta']['amount'], $formatmoney);
+                        $worksheet1->write( $indexbaris, 9, '-', $format1);
+                    }
+                    else
+                    {
+                        $worksheet1->write_string( $indexbaris, 4, $listValue['Entry']['title'], $format1); // payer ...
+                        $worksheet1->write_string( $indexbaris, 5, $client[ $client_invoice[$value['ParentEntry']['slug']]['EntryMeta']['client'] ], $format1); // receiver ...
+                        
+                        // jump to balance field !!
+                        $balance -= $value['EntryMeta']['amount'];
+                        $worksheet1->write( $indexbaris, 8, '-', $format1);
+                        $worksheet1->write( $indexbaris, 9, $value['EntryMeta']['amount'], $formatmoney);
+                    }
+                    
+                    $worksheet1->write_string( $indexbaris, 6, $value['EntryMeta']['type'], $format1);                    
+                    $worksheet1->write_string( $indexbaris, 7, count(explode('|', $value['EntryMeta']['diamond'].$value['EntryMeta']['cor_jewelry'])).' pc', $format1);
+                }
+                else // Sold Report ...
+                {
+                    $worksheet1->write_string( $indexbaris, 2, 'SR', $format1);                    
+                    $worksheet1->write_string( $indexbaris, 3, $value['Entry']['title'].(!empty($value['Entry']['description'])?chr(10).$value['Entry']['description']:''), $format1);
+                    
+                    if(strtolower($value['EntryMeta']['statement']) == 'debit')
+                    {
+                        $worksheet1->write_string( $indexbaris, 4, $warehouse[$value['EntryMeta']['warehouse_payer']], $format1); // payer ...
+                        $worksheet1->write_string( $indexbaris, 5, (strtolower($value['EntryMeta']['receiver']) == 'vendor'?$vendor[ $value['EntryMeta']['vendor'] ]:$warehouse[ $value['EntryMeta']['warehouse'] ]) , $format1); // receiver ...
+                    }
+                    else
+                    {
+                        $worksheet1->write_string( $indexbaris, 4, (strtolower($value['EntryMeta']['receiver']) == 'vendor'?$vendor[ $value['EntryMeta']['vendor'] ]:$warehouse[ $value['EntryMeta']['warehouse'] ]) , $format1); // payer ...
+                        $worksheet1->write_string( $indexbaris, 5, $warehouse[$value['EntryMeta']['warehouse_payer']], $format1); // receiver ...
+                    }
+                    
+                    $worksheet1->write_string( $indexbaris, 6, $value['EntryMeta']['type'], $format1);                    
+                    $worksheet1->write_string( $indexbaris, 7, count(explode('|', $value['EntryMeta']['diamond'].$value['EntryMeta']['cor_jewelry'])).' pc', $format1);
+                    
+                    if(strtolower($value['EntryMeta']['statement']) == 'debit' && $value['EntryMeta']['warehouse_payer'] == $listValue['Entry']['slug'] || strtolower($value['EntryMeta']['statement']) == 'credit' && $value['EntryMeta']['warehouse_payer'] != $listValue['Entry']['slug'])
+                    {
+                        $balance -= $value['EntryMeta']['amount'];
+                        $worksheet1->write( $indexbaris, 8, '-', $format1);
+                        $worksheet1->write( $indexbaris, 9, $value['EntryMeta']['amount'], $formatmoney);
+                    }
+                    else
+                    {
+                        $balance += $value['EntryMeta']['amount'];
+                        $worksheet1->write( $indexbaris, 8, $value['EntryMeta']['amount'], $formatmoney);
+                        $worksheet1->write( $indexbaris, 9, '-', $format1);
+                    }
+                }
+                
+                $worksheet1->write( $indexbaris, 10, $balance, $formatmoney);
+            }
+        }
+        
+        $workbook->close();
+        // convert Excel version 5.0 to Excel 2007...
+        convertExcelVersion($excel1995 , $excel2007);
+        // HTTP headers for new Excel 2007 output buffer ...
+        promptDownloadFile($excel2007);
+        // delete temp files ...
+        unlink($excel1995);
+        unlink($excel2007);
+        exit;
+    }
+    
+    public function download_invoice($entry_type)
+    {
+        if(empty($entry_type) || empty($this->request->data))
+        {
+            throw new NotFoundException('Error 404 - Not Found');
+        }
+        
+        set_time_limit(0); // unlimited time limit execution.
+        App::import('Vendor', 'excel/worksheet');
+        App::import('Vendor', 'excel/workbook');
+        
+        $myType = $this->Type->findBySlug($entry_type);
+        
+        // is it Diamond or Cor Jewelry invoice ?
+        $DMD = (strpos($myType['Type']['slug'], 'dmd-')!==FALSE?true:false);
+
+        // is it Vendor or Client invoice ?
+        $VENDOR = (strpos($myType['Type']['slug'], '-vendor-')!==FALSE?true:false);
+        
+        $time_start_date = strtotime($this->request->data['start_date']);
+        $time_end_date = strtotime($this->request->data['end_date']);
+        
+        $filename = 'WAN_'.str_replace(' ', '_', strtoupper($myType['Type']['name'])).'_'.date('dMY', $time_start_date).'_'.date('dMY', $time_end_date);
+        
+        $excel1995 = getTempFolderPath().$filename.'.xls';
+        $excel2007 = getTempFolderPath().$filename.'.xlsx';
+
+        // Creating a workbook
+        $workbook = new Workbook($excel1995);
+        
+        // set index 24 as custom gray color for header table background ...
+        $workbook->set_custom_color(24, 242,  242,  242);
+        
+        // Creating the worksheet
+        $worksheet1 =& $workbook->add_worksheet();
+
+        // $worksheet1->hide_gridlines();
+        $worksheet1->set_landscape();
+        $worksheet1->fit_to_pages(1,0);
+        $worksheet1->repeat_rows(0,2);
+
+        // Set Column width !!
+        $colwidth = array(
+            'dmd-vendor-invoice' => array(5, 20, 10, 10, 15, 10, 10, 15, 10, 50 ),
+            'cor-vendor-invoice' => array(5, 20, 10, 10, 15, 15, 10, 70),
+            'dmd-client-invoice' => array(5, 15, 10, 15, 15, 15, 10, 10, 10, 10, 40),
+            'cor-client-invoice' => array(5, 15, 10, 15, 15, 15, 10, 10, 10, 10, 40),
+        );
+        
+        foreach($colwidth[$entry_type] as $key => $value)
+        {
+            $worksheet1->set_column($key, $key, $value);
+        }
+
+        // Format TITLE !!
+        $report_title = array(
+            'dmd-vendor-invoice' => 'DIAMOND VENDOR INVOICE',
+            'cor-vendor-invoice' => 'COR JEWELRY VENDOR INVOICE',
+            'dmd-client-invoice' => 'DIAMOND CLIENT INVOICE',
+            'cor-client-invoice' => 'COR JEWELRY CLIENT INVOICE',
+        );
+        
+        $indexbaris = 0;        
+        $worksheet1->write_string($indexbaris,0,$report_title[$entry_type].' REPORT ('.date($this->mySetting['date_format'], $time_start_date ).' - '.date($this->mySetting['date_format'], $time_end_date ).')', $workbook->add_format(array(
+            'size' => 12,
+            'bold' => 1,
+        )) );
+        
+        $indexbaris += 2;
+        // write the header ...
+        $worksheet1->set_row($indexbaris, 30 );
+
+        $formatTableHeader =& $workbook->add_format();
+        $formatTableHeader->set_size(11);
+        $formatTableHeader->set_align('center');
+        $formatTableHeader->set_align('vcenter');
+        $formatTableHeader->set_bold();
+        $formatTableHeader->set_border(1);
+        $formatTableHeader->set_text_wrap();
+
+        // set background custom color of the cell method !!
+        $formatTableHeader->set_pattern();
+        $formatTableHeader->set_fg_color(24);
+        
+        $table_header = array(
+            'dmd-vendor-invoice' => array('No.', 'Invoice', 'Tanggal', 'Vendor', 'Warehouse', 'Currency', 'HKD Rate / $1 USD', 'Total Price (USD)', 'Total Pcs', 'Diamond Purchased'),
+            'cor-vendor-invoice' => array('No.', 'Invoice', 'Tanggal', 'Vendor', 'Warehouse', 'Total Weight (GR)', 'Total Pcs', 'Cor Jewelry Purchased'),
+            'dmd-client-invoice' => array('No.', 'Invoice', 'Tanggal', 'Client', 'Wholesaler', 'Salesman', 'Sale Venue', 'Rp Rate / $1 USD', 'Total Price (USD)', 'Total Pcs', 'Diamond Sold'),
+            'cor-client-invoice' => array('No.', 'Invoice', 'Tanggal', 'Client', 'Wholesaler', 'Salesman', 'Sale Venue', 'Gold Price / 1GR', 'Total Weight (GR)', 'Total Pcs', 'Cor Jewelry Sold'),
+        );
+
+        foreach($table_header[$entry_type] as $key => $value)
+        {
+            $worksheet1->write_string($indexbaris,$key,$value, $formatTableHeader );
+        }
+        
+        // ===================== >>
+        // BEGIN INVOICE PROCESS !!
+        // ===================== >>
+        $format1 =& $workbook->add_format();
+        $format1->set_size(10);
+        $format1->set_border(1);
+        $format1->set_text_wrap();
+        $format1->set_align('center');
+        $format1->set_align('vcenter');
+
+        $formatdate =& $workbook->add_format();
+        $formatdate->set_size(10);
+        $formatdate->set_border(1);
+        $formatdate->set_text_wrap();			
+        $formatdate->set_align('center');
+        $formatdate->set_align('vcenter');
+        $formatdate->set_num_format('d-mmm-yy'); // 7-AUG-15
+        
+        $formatmoney =& $workbook->add_format();
+        $formatmoney->set_size(10);
+        $formatmoney->set_border(1);
+        $formatmoney->set_text_wrap();			
+        $formatmoney->set_align('center');
+        $formatmoney->set_align('vcenter');
+        $formatmoney->set_num_format('#,##0.00');
+        
+        $formatRP =& $workbook->add_format();
+        $formatRP->set_size(10);
+        $formatRP->set_border(1);
+        $formatRP->set_text_wrap();			
+        $formatRP->set_align('center');
+        $formatRP->set_align('vcenter');
+        $formatRP->set_num_format('_("Rp"* #,##0_);_("Rp"* (#,##0);_("Rp"* "-"_);_(@_)');
+        
+        // prepare modules ...
+        if($DMD)
+        {
+            $product_type = $this->EntryMeta->get_diamond_type();
+        }
+        
+        $temp_order = $_SESSION['order_by'];
+        $_SESSION['order_by'] = 'form-date ASC';
+        
+        // query all invoice entry matched the interval date !!
+        $query = $this->_admin_default($myType,0 , NULL , NULL , NULL , NULL , NULL , NULL , NULL , 'manualset')['myList'];
+        switch($entry_type)
+        {
+            case 'dmd-vendor-invoice':
+                foreach($query as $key => $value)
+                {
+                    $indexbaris++;
+                    $worksheet1->write( $indexbaris , 0 , $key+1 ,$format1);
+                    $worksheet1->write_string( $indexbaris, 1, $value['Entry']['title'], $format1);
+                    $worksheet1->write( $indexbaris, 2, parseExcelDate($value['EntryMeta']['date']), $formatdate );
+                    $worksheet1->write_string($indexbaris, 3, $this->Entry->findByEntryTypeAndSlug('vendor', $value['EntryMeta']['vendor'])['Entry']['title'], $format1 );
+                    $worksheet1->write_string($indexbaris, 4, $this->Entry->findByEntryTypeAndSlug('warehouse', $value['EntryMeta']['warehouse'])['Entry']['title'], $format1 );
+                    $worksheet1->write_string($indexbaris, 5, $value['EntryMeta']['currency'], $format1);
+                    $worksheet1->write($indexbaris, 6, $value['EntryMeta']['hkd_rate'], $format1);
+                    $worksheet1->write($indexbaris, 7, $value['EntryMeta']['total_price'], $formatmoney);
+                    $worksheet1->write_string($indexbaris, 8, $value['EntryMeta']['total_pcs'].' pc', $format1);
+                    
+                    $diamond = $this->EntryMeta->find('all', array(
+                        'conditions' => array(
+                            'Entry.entry_type' => 'diamond',
+                            'EntryMeta.key' => 'form-vendor_invoice_code',
+                            'EntryMeta.value' => $value['Entry']['slug'],
+                        ),
+                        'order' => array('Entry.title ASC'),
+                    ));
+                    $diamond = $this->EntryMeta->findAllByEntryIdAndKey(array_column(array_column($diamond, 'Entry'), 'id'), 'form-product_type');
+                    $diamond = implode(', ', array_map(function($el) use($product_type){ return $el['Entry']['title'].' '.$product_type[$el['EntryMeta']['value']]; }, $diamond));
+                    $worksheet1->write_string( $indexbaris, 9, $diamond, $format1);
+                }
+                break;
+            case 'cor-vendor-invoice':
+                foreach($query as $key => $value)
+                {
+                    $indexbaris++;
+                    $worksheet1->write( $indexbaris , 0 , $key+1 ,$format1);
+                    $worksheet1->write_string( $indexbaris, 1, $value['Entry']['title'], $format1);
+                    $worksheet1->write( $indexbaris, 2, parseExcelDate($value['EntryMeta']['date']), $formatdate );
+                    $worksheet1->write_string($indexbaris, 3, $this->Entry->findByEntryTypeAndSlug('vendor', $value['EntryMeta']['vendor'])['Entry']['title'], $format1 );
+                    $worksheet1->write_string($indexbaris, 4, $this->Entry->findByEntryTypeAndSlug('warehouse', $value['EntryMeta']['warehouse'])['Entry']['title'], $format1 );
+                    $worksheet1->write($indexbaris, 5, $value['EntryMeta']['total_weight'], $formatmoney);
+                    $worksheet1->write_string($indexbaris, 6, $value['EntryMeta']['total_pcs'].' pc', $format1);
+                    
+                    $cor = $this->EntryMeta->find('all', array(
+                        'conditions' => array(
+                            'Entry.entry_type' => 'cor-jewelry',
+                            'EntryMeta.key' => 'form-vendor_invoice_code',
+                            'EntryMeta.value' => $value['Entry']['slug'],
+                        ),
+                        'order' => array('Entry.title ASC'),
+                    ));
+                    $cor = implode(', ', array_column(array_column($cor, 'Entry'), 'title'));
+                    $worksheet1->write_string($indexbaris, 7, $cor, $format1);
+                }
+                break;
+            case 'dmd-client-invoice':
+                foreach($query as $key => $value)
+                {
+                    $indexbaris++;
+                    $worksheet1->write( $indexbaris , 0 , $key+1 ,$format1);
+                    $worksheet1->write_string( $indexbaris, 1, $value['Entry']['title'], $format1);
+                    $worksheet1->write( $indexbaris, 2, parseExcelDate($value['EntryMeta']['date']), $formatdate );
+                    
+                    $client = $this->Entry->findByEntryTypeAndSlug('client', $value['EntryMeta']['client']);
+                    if($client['EntryMeta'][0]['key'] == 'form-kode_pelanggan')
+                    {
+                        $client = $client['Entry']['title'].' ('.$client['EntryMeta'][0]['value'].')';
+                    }
+                    else
+                    {
+                        $client = $client['Entry']['title'];
+                    }                    
+                    $worksheet1->write_string($indexbaris, 3, $client, $format1 );
+                    
+                    $wholesaler = '-';
+                    if(!empty($value['EntryMeta']['wholesaler']))
+                    {
+                        $wholesaler = $this->Entry->findByEntryTypeAndSlug('client', $value['EntryMeta']['wholesaler']);
+                        if($wholesaler['EntryMeta'][0]['key'] == 'form-kode_pelanggan')
+                        {
+                            $wholesaler = $wholesaler['Entry']['title'].' ('.$wholesaler['EntryMeta'][0]['value'].')';
+                        }
+                        else
+                        {
+                            $wholesaler = $wholesaler['Entry']['title'];
+                        } 
+                    }
+                    $worksheet1->write_string($indexbaris, 4, $wholesaler, $format1 );
+                    $worksheet1->write_string($indexbaris, 5, (!empty($value['EntryMeta']['salesman'])?$this->Entry->findByEntryTypeAndSlug('salesman', $value['EntryMeta']['salesman'])['Entry']['title']:'-'), $format1 );
+                    $worksheet1->write_string($indexbaris, 6, $this->Entry->findByEntryTypeAndSlug($value['EntryMeta']['sale_venue'], $value['EntryMeta']['warehouse'].$value['EntryMeta']['exhibition'])['Entry']['title'], $format1);
+                    $worksheet1->write($indexbaris, 7, $value['EntryMeta']['rp_rate'], $formatRP);
+                    $worksheet1->write($indexbaris, 8, $value['EntryMeta']['total_price'], $formatmoney);
+                    $worksheet1->write_string($indexbaris, 9, $value['EntryMeta']['total_pcs'].' pc', $format1);
+                    
+                    $diamond = $this->EntryMeta->find('all', array(
+                        'conditions' => array(
+                            'Entry.entry_type' => 'diamond',
+                            'EntryMeta.key' => 'form-client_invoice_code',
+                            'EntryMeta.value' => $value['Entry']['slug'],
+                        ),
+                        'order' => array('Entry.title ASC'),
+                    ));
+                    $diamond = $this->EntryMeta->findAllByEntryIdAndKey(array_column(array_column($diamond, 'Entry'), 'id'), 'form-product_type');
+                    $diamond = implode(', ', array_map(function($el) use($product_type){ return $el['Entry']['title'].' '.$product_type[$el['EntryMeta']['value']]; }, $diamond));
+                    $worksheet1->write_string( $indexbaris, 10, $diamond, $format1);
+                }
+                break;
+            case 'cor-client-invoice':
+                foreach($query as $key => $value)
+                {
+                    $indexbaris++;
+                    $worksheet1->write( $indexbaris , 0 , $key+1 ,$format1);
+                    $worksheet1->write_string( $indexbaris, 1, $value['Entry']['title'], $format1);
+                    $worksheet1->write( $indexbaris, 2, parseExcelDate($value['EntryMeta']['date']), $formatdate );
+                    
+                    $client = $this->Entry->findByEntryTypeAndSlug('client', $value['EntryMeta']['client']);
+                    if($client['EntryMeta'][0]['key'] == 'form-kode_pelanggan')
+                    {
+                        $client = $client['Entry']['title'].' ('.$client['EntryMeta'][0]['value'].')';
+                    }
+                    else
+                    {
+                        $client = $client['Entry']['title'];
+                    }                    
+                    $worksheet1->write_string($indexbaris, 3, $client, $format1 );
+                    
+                    $wholesaler = '-';
+                    if(!empty($value['EntryMeta']['wholesaler']))
+                    {
+                        $wholesaler = $this->Entry->findByEntryTypeAndSlug('client', $value['EntryMeta']['wholesaler']);
+                        if($wholesaler['EntryMeta'][0]['key'] == 'form-kode_pelanggan')
+                        {
+                            $wholesaler = $wholesaler['Entry']['title'].' ('.$wholesaler['EntryMeta'][0]['value'].')';
+                        }
+                        else
+                        {
+                            $wholesaler = $wholesaler['Entry']['title'];
+                        } 
+                    }
+                    $worksheet1->write_string($indexbaris, 4, $wholesaler, $format1 );
+                    $worksheet1->write_string($indexbaris, 5, (!empty($value['EntryMeta']['salesman'])?$this->Entry->findByEntryTypeAndSlug('salesman', $value['EntryMeta']['salesman'])['Entry']['title']:'-'), $format1 );
+                    $worksheet1->write_string($indexbaris, 6, $this->Entry->findByEntryTypeAndSlug($value['EntryMeta']['sale_venue'], $value['EntryMeta']['warehouse'].$value['EntryMeta']['exhibition'])['Entry']['title'], $format1);
+                    $worksheet1->write($indexbaris, 7, $value['EntryMeta']['gold_price'], $formatRP);
+                    $worksheet1->write($indexbaris, 8, $value['EntryMeta']['total_weight'], $formatmoney);
+                    $worksheet1->write_string($indexbaris, 9, $value['EntryMeta']['total_pcs'].' pc', $format1);
+                    
+                    $cor = $this->EntryMeta->find('all', array(
+                        'conditions' => array(
+                            'Entry.entry_type' => 'cor-jewelry',
+                            'EntryMeta.key' => 'form-client_invoice_code',
+                            'EntryMeta.value' => $value['Entry']['slug'],
+                        ),
+                        'order' => array('Entry.title ASC'),
+                    ));
+                    $cor = implode(', ', array_column(array_column($cor, 'Entry'), 'title'));
+                    $worksheet1->write_string($indexbaris, 10, $cor, $format1);
+                }
+                break;
+        }
+        
+        // get back OLD order_by !!
+        $_SESSION['order_by'] = $temp_order;
+
+        $workbook->close();
+        // convert Excel version 5.0 to Excel 2007...
+        convertExcelVersion($excel1995 , $excel2007);
+        // HTTP headers for new Excel 2007 output buffer ...
+        promptDownloadFile($excel2007);
+        // delete temp files ...
+        unlink($excel1995);
+        unlink($excel2007);
+        exit;
+    }
+    
+    public function download_storage($entry_type)
+    {
+        if(empty($entry_type) || empty($this->request->data))
+        {
+            throw new NotFoundException('Error 404 - Not Found');
+        }
+        
+        set_time_limit(0); // unlimited time limit execution.
+        App::import('Vendor', 'excel/worksheet');
+        App::import('Vendor', 'excel/workbook');
+        
+        $storage = $this->Type->findBySlug($entry_type);
+        
+        $time_start_date = '';
+        $time_end_date = '';
+        if(!empty($this->request->data['start_date']) && !empty($this->request->data['end_date']))
+        {
+            $time_start_date = strtotime($this->request->data['start_date']);
+            $time_end_date = strtotime($this->request->data['end_date']);
+            $filename = 'WAN_'.strtoupper($storage['Type']['name']).'_'.date('dMY', $time_start_date).'_'.date('dMY', $time_end_date);
+        }
+        else
+        {
+            $filename = 'WAN_'.strtoupper($storage['Type']['name']).'_'.date('d.m.y_H.i');
+        }
+        
+        $excel1995 = getTempFolderPath().$filename.'.xls';
+        $excel2007 = getTempFolderPath().$filename.'.xlsx';
+
+        // Creating a workbook
+        $workbook = new Workbook($excel1995);
+        
+        // set index 24 as custom gray color for header table background ...
+        $workbook->set_custom_color(24, 242,  242,  242);
+        
+        // prepare modules ...
+        $product_type = $this->EntryMeta->get_diamond_type();
+        $myType = $this->Type->findBySlug('surat-jalan');
+        
+        $temp_order = $_SESSION['order_by'];
+        $_SESSION['order_by'] = 'form-date ASC';
+        
+        $statusDict = array('On Process', 'Accepted', 'Repair');    
+        
+        // query all storage entry !!
+        $myList = array_map('breakEntryMetas', $this->Entry->findAllById(explode(',', $this->request->data['record'])) );
+        foreach($myList as $listKey => $listValue)
+        {
+            // prepare interval date first !!
+            $start_date = '';
+            $end_date = '';
+            if(!empty($time_start_date) && !empty($time_end_date))
+            {
+                $start_date = date($this->mySetting['date_format'], $time_start_date );
+                $end_date = date($this->mySetting['date_format'], $time_end_date );
+            }
+            else // grab from EntryMeta !!
+            {
+                if(!empty($listValue['EntryMeta']['start_date']))
+                {
+                    $start_date = date($this->mySetting['date_format'], strtotime($listValue['EntryMeta']['start_date']) );
+                }
+                
+                if(!empty($listValue['EntryMeta']['end_date']))
+                {
+                    $end_date = date($this->mySetting['date_format'], strtotime($listValue['EntryMeta']['end_date']) );
+                }
+            }
+            
+            // Creating the worksheet
+            $worksheet1 =& $workbook->add_worksheet($listValue['Entry']['title']);
+            
+            // $worksheet1->hide_gridlines();
+            $worksheet1->set_landscape();
+            $worksheet1->fit_to_pages(1,0);
+            $worksheet1->repeat_rows(10);
+
+            // Set Column width !!
+            foreach(array(5, 15, 10, 15, 15, 15, 15, 20, 20, 15, 10 ) as $key => $value)
+            {
+                $worksheet1->set_column($key, $key, $value);
+            }
+            
+            // Format TITLE !!
+            $indexbaris = 0;        
+            $worksheet1->write_string($indexbaris,0,strtoupper($storage['Type']['name']).' REPORT', $workbook->add_format(array(
+                'size' => 12,
+                'bold' => 1,
+            )) );
+            
+            $indexbaris += 2;
+            $worksheet1->write_string($indexbaris,0,'Start Date: '.$start_date, $workbook->add_format(array(
+                'size' => 11,
+                'bold' => 1,
+            )) );        
+            $indexbaris++;
+            $worksheet1->write_string($indexbaris,0,'End Date: '.$end_date, $workbook->add_format(array(
+                'size' => 11,
+                'bold' => 1,
+            )) );
+            
+            $indexbaris += 2;
+            $worksheet1->write_string($indexbaris,0,$storage['Type']['name'].' Name: '.$listValue['Entry']['title'].(!empty($listValue['EntryMeta']['kode_warehouse'])?' ('.$listValue['EntryMeta']['kode_warehouse'].')':''), $workbook->add_format(array(
+                'size' => 11,
+                'bold' => 1,
+            )) );
+            $indexbaris++;
+            $worksheet1->write_string($indexbaris,0,'Address: '.str_replace(chr(10), ', ', $listValue['EntryMeta']['alamat']), $workbook->add_format(array(
+                'size' => 11,
+                'bold' => 1,
+            )) );
+            $indexbaris++;
+            $worksheet1->write_string($indexbaris,0,'Phone: '.$listValue['EntryMeta']['telepon'], $workbook->add_format(array(
+                'size' => 11,
+                'bold' => 1,
+            )) );
+            
+            $empString = '';
+            if(!empty($listValue['EntryMeta']['warehouse_employee']))
+            {
+                $employee = $this->Account->findAllById(explode('|', $listValue['EntryMeta']['warehouse_employee']));
+                foreach($employee as $key => $value)
+                {
+                    if($key > 0)
+                    {
+                        $empString .= ', ';
+                    }
+                    
+                    $empString .= $value['User']['firstname'].' '.$value['User']['lastname'];
+                }
+            }
+            
+            $indexbaris++;
+            $worksheet1->write_string($indexbaris,0,'Employee (PIC): '.$empString, $workbook->add_format(array(
+                'size' => 11,
+                'bold' => 1,
+            )) );
+
+            $indexbaris += 2;
+            // write the header ...
+            $worksheet1->set_row($indexbaris, 30 );
+
+            $formatTableHeader =& $workbook->add_format();
+            $formatTableHeader->set_size(11);
+            $formatTableHeader->set_align('center');
+            $formatTableHeader->set_align('vcenter');
+            $formatTableHeader->set_bold();
+            $formatTableHeader->set_border(1);
+
+            // set background custom color of the cell method !!
+            $formatTableHeader->set_pattern();
+            $formatTableHeader->set_fg_color(24);
+
+            foreach(array('No.', 'Surat Jalan', 'Tanggal', 'Jenis Pengiriman', 'Invoice', 'Tempat Asal', 'Tujuan Kirim', 'Diamond', 'Cor Jewelry', 'Logistic', 'Status') as $key => $value)
+            {
+                $worksheet1->write_string($indexbaris,$key,$value, $formatTableHeader );
+            }
+
+            // ===================== >>
+            // BEGIN S.J. PROCESS !!
+            // ===================== >>
+            $format1 =& $workbook->add_format();
+            $format1->set_size(10);
+            $format1->set_border(1);
+            $format1->set_text_wrap();
+            $format1->set_align('center');
+            $format1->set_align('vcenter');
+
+            $formatdate =& $workbook->add_format();
+            $formatdate->set_size(10);
+            $formatdate->set_border(1);
+            $formatdate->set_text_wrap();			
+            $formatdate->set_align('center');
+            $formatdate->set_align('vcenter');
+            $formatdate->set_num_format('d-mmm-yy'); // 7-AUG-15
+
+            $this->request->query['storage'] = $storage['Type']['slug'];
+            $this->request->query['content'] = $listValue['Entry']['slug'];
+            $query = $this->_admin_default($myType,0 , NULL , NULL , NULL , NULL , NULL , NULL , NULL , 'manualset')['myList'];
+            foreach($query as $key => $value)
+            {
+                $indexbaris++;
+                $worksheet1->write( $indexbaris , 0 , $key+1 ,$format1);
+                $worksheet1->write_string( $indexbaris, 1, $value['Entry']['title'], $format1);
+                $worksheet1->write( $indexbaris, 2, parseExcelDate($value['EntryMeta']['date']), $formatdate );
+                $worksheet1->write_string( $indexbaris, 3, $value['EntryMeta']['delivery_type'] , $format1 );
+                
+                $invoice = trim($value['EntryMeta']['dmd_vendor_invoice'].$value['EntryMeta']['cor_vendor_invoice'].$value['EntryMeta']['dmd_client_invoice'].$value['EntryMeta']['cor_client_invoice']);
+                if(!empty($invoice))
+                {
+                    $invoice = $this->Entry->findBySlug($invoice)['Entry']['title'];
+                }
+                else
+                {
+                    $invoice = '-';
+                }
+                $worksheet1->write_string( $indexbaris, 4, $invoice , $format1 );
+                
+                $partners = trim($value['EntryMeta']['client'].$value['EntryMeta']['vendor'].$value['EntryMeta']['salesman']);
+                $origin = trim($value['EntryMeta']['warehouse_origin'].$value['EntryMeta']['exhibition_origin']);
+                $destination = trim($value['EntryMeta']['warehouse_destination'].$value['EntryMeta']['exhibition_destination']);
+                
+                $worksheet1->write_string( $indexbaris, 5, $this->Entry->findBySlug(!empty($origin)?$origin:$partners)['Entry']['title'], $format1); // origin place ...
+                $worksheet1->write_string( $indexbaris, 6, $this->Entry->findBySlug(!empty($destination)?$destination:$partners)['Entry']['title'], $format1); // destination place ...
+                
+                $diamond = '-';
+                if(!empty($value['EntryMeta']['diamond']))
+                {
+                    $diamond = $this->Entry->findAllByEntryTypeAndSlug('diamond', explode('|', $value['EntryMeta']['diamond']));
+                    $diamond = implode(', ', array_map(function($el) use($product_type){ return $el['Entry']['title'].' '.$product_type[$el['EntryMeta'][0]['value']]; }, $diamond));
+                }
+                $worksheet1->write_string( $indexbaris, 7, $diamond, $format1);
+                
+                $cor_jewelry = '-';
+                if(!empty($value['EntryMeta']['cor_jewelry']))
+                {
+                    $cor_jewelry = $this->Entry->findAllByEntryTypeAndSlug('cor-jewelry', explode('|', $value['EntryMeta']['cor_jewelry']));
+                    $cor_jewelry = implode(', ', array_column(array_column($cor_jewelry, 'Entry'), 'title'));
+                }
+                $worksheet1->write_string( $indexbaris, 8, $cor_jewelry, $format1);
+                
+                $logistic = '-';
+                if(!empty($value['EntryMeta']['logistic']))
+                {
+                    $pecah_logistic = explode('|', $value['EntryMeta']['logistic']);
+                    $logistic = $this->Entry->findAllByEntryTypeAndSlug('logistic', array_map(function($el){ return explode('_', $el)[0]; }, $pecah_logistic));
+                    $logistic = implode(', ', array_map(function($el1, $el2){ return explode('_', $el2)[1].' '.$el1['Entry']['title']; }, $logistic, $pecah_logistic));
+                }
+                $worksheet1->write_string( $indexbaris, 9, $logistic, $format1);
+                
+                // status SJ !!
+                $worksheet1->write_string( $indexbaris, 10, $statusDict[$value['Entry']['status']], $format1);
+            }
+        }
+        
+        // get back OLD order_by !!
+        $_SESSION['order_by'] = $temp_order;
+
+        $workbook->close();
+        // convert Excel version 5.0 to Excel 2007...
+        convertExcelVersion($excel1995 , $excel2007);
+        // HTTP headers for new Excel 2007 output buffer ...
+        promptDownloadFile($excel2007);
+        // delete temp files ...
+        unlink($excel1995);
+        unlink($excel2007);
+        exit;
+    }
+    
     public function download_jewelry()
     {
         if(empty($this->request->data))
@@ -24,13 +817,15 @@ class EntriesController extends AppController {
         App::import('Vendor', 'excel/workbook');
 
         $filename = 'WAN_JEWELRY_';
+        $sold_report = false;
         if(!empty($this->request->query['cidm']) && !empty($this->request->query['cidy']))
         {
             $filename .= 'SOLD_'.date("MY", strtotime($this->request->query['cidm'].'/1/'.$this->request->query['cidy']) );
+            $sold_report = true;
         }
         else
         {
-            $filename .= date('dmy_Hi');
+            $filename .= date('d.m.y_H.i');
         }
         
         $excel1995 = getTempFolderPath().$filename.'.xls';
@@ -143,7 +938,7 @@ class EntriesController extends AppController {
             "WH", "TGL BRG MASUK", "STATUS",
             "CLIENT NAME", "2ND LEVEL CLIENT NAME", "CODE",
             "SR", "DATE",
-            "SELL INV DATE", "SELL INV #", "∑ PCS SOLD", "SOLD 125 (GR)", "X 125", "SOLD 100 (GR)", "X 100", "SOLD 110 (GR)", "X 110", "SOLD 115 (GR)", "X 115", "DISC/RETURN", "∑ SOLD 24K", "INV BALANCE", "GOLD PRICE",
+            "SELL INV DATE".($sold_report?' ▲':''), "SELL INV #", "∑ PCS SOLD", "SOLD 125 (GR)", "X 125", "SOLD 100 (GR)", "X 100", "SOLD 110 (GR)", "X 110", "SOLD 115 (GR)", "X 115", "DISC/RETURN", "∑ SOLD 24K", "INV BALANCE", "GOLD PRICE",
             "PAYMENT : CT (BAHAN LOKAL) & LD", "PAYMENT : ROSOK", "PAYMENT : CHEQUES", "PAYMENT : CASH OR TRANSFER", "PAYMENT : DEBIT OR CREDIT CARD", "PAYMENT : RETURN GOODS", "TOTAL PAYMENT 24K (GR)",
             "CLIENT TOTAL BALANCE", "TRANSACTION HISTORY", "KETERANGAN / DETAIL BARANG",
         ) as $key => $value)
@@ -168,6 +963,11 @@ class EntriesController extends AppController {
                         array('key' => 'color',     'value' => 'white' ),
                         array('key' => 'border_color',     'value' => 'white' )
                     );
+                }
+                
+                if(strpos($value, 'SELL INV DATE ▲') === 0)
+                {
+                    $tempformat[] = array('key' => 'color', 'value' => 'red');
                 }
                 
                 $worksheet1->write($indexbaris, $key ,$value, $workbook->add_format($tempformat) );
@@ -246,7 +1046,22 @@ class EntriesController extends AppController {
         );
         
         // query cor-jewelry ...
-        $query = array_map('breakEntryMetas', $this->Entry->findAllById(explode(',', $this->request->data['record'])) );
+        $query = '';
+        if($sold_report)
+        {
+            $this->request->query['type-alias'] = 'sr-cor-monthly';
+            
+            $temp_order = $_SESSION['order_by'];
+            $_SESSION['order_by'] = 'form-client_invoice_date ASC';
+            
+            $query = $this->_admin_default($this->Type->findBySlug('cor-jewelry'),0 , NULL , 'product_status' , 'sold' , NULL , NULL , NULL , NULL , 'manualset')['myList'];
+            
+            $_SESSION['order_by'] = $temp_order;
+        }
+        else
+        {
+            $query = array_map('breakEntryMetas', $this->Entry->findAllById(explode(',', $this->request->data['record'])) );
+        }
         foreach($query as $key => $value)
         {
             $indexbaris++;
@@ -384,13 +1199,15 @@ class EntriesController extends AppController {
         App::import('Vendor', 'excel/workbook');
 
         $filename = 'WAN_DIAMOND_';
+        $sold_report = false;
         if(!empty($this->request->query['cidm']) && !empty($this->request->query['cidy']))
         {
             $filename .= 'SOLD_'.date("MY", strtotime($this->request->query['cidm'].'/1/'.$this->request->query['cidy']) );
+            $sold_report = true;
         }
         else
         {
-            $filename .= date('dmy_Hi');
+            $filename .= date('d.m.y_H.i');
         }
         
         $excel1995 = getTempFolderPath().$filename.'.xls';
@@ -512,13 +1329,13 @@ class EntriesController extends AppController {
             NULL, "CARAT (总克拉)", "CARAT (总克拉)", "CARAT (总克拉)", "CARAT (总克拉)", "%", "GRAM (总克)",
             NULL, "ITEM REFERENCE CODE 项目参考代码", "ITEM REFERENCE CODE 项目参考代码 (X2)", "VENDOR 供应商", "VENDOR ITEM # 供应商伴奏编号", "VENDOR INV # 供应商发票号", "VD DATE 发票日期", "STATUS WITH VENDOR", "NOTE 附加信息", "USD HKD", "BARCODE (价格)", "X", "USD (美元)", "HKD (港元)", "PAID FACTORY", "PAID DATE", "PAID 2ND VENDOR", "PAID DATE",
             NULL, "SR DATE (报告日期)", "SR  RR", "TEMP/R (临时报告)", "DATE (返程日期)", "RETURN DETAIL (返回的信息)", "SALES NAME", "COMMISION (回扣)", "OMZET",
-            NULL, "CLIENT NAME (客户名称) WHOLESALE (批发)", "SELL X", "CD 守则", "CLIENT NAME (客户名称) RETAIL", "SELL X", "INPUT DATA", "SOLD DT 销售日期", "S INV # 发票号码", "TOTAL (合計)", "USD (美元)", "RUPIAH (卢比)", "RATE", "CLIENT OUTSTANDING (未偿还余额)", "CREDIT CARD (信用卡)", "CICILAN 债务 (HSBC PERMATA CITI)   3-6-12 MONTHS", "CASH (现金) TRANSFER (银行汇款) DEBIT CARD (借记卡)", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式",
+            NULL, "CLIENT NAME (客户名称) WHOLESALE (批发)", "SELL X", "CD 守则", "CLIENT NAME (客户名称) RETAIL", "SELL X", "INPUT DATA", "SOLD DT".($sold_report?' ▲':'')." 销售日期", "S INV # 发票号码", "TOTAL (合計)", "USD (美元)", "RUPIAH (卢比)", "RATE", "CLIENT OUTSTANDING (未偿还余额)", "CREDIT CARD (信用卡)", "CICILAN 债务 (HSBC PERMATA CITI)   3-6-12 MONTHS", "CASH (现金) TRANSFER (银行汇款) DEBIT CARD (借记卡)", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式", "CHECKS (检查) OR OTHERS (ADDITIONAL INFO) 或其他类型的付款方式",
             NULL, "PREV SOLD PRICE (成交价历史)", "PREV BARCODE", "PREVIOUS SOLD NOTE (注：关于交易历史)",
         ) as $key => $value)
         {
             if(!empty($value))
             {
-                $worksheet1->write($indexbaris, $key ,$value, $workbook->add_format(array(
+                $tempformat = array(
                     array('key' => 'size',      'value' => 12 ),
                     array('key' => 'bold',      'value' => 1 ),
                     array('key' => 'border',    'value' => 1 ),
@@ -529,7 +1346,14 @@ class EntriesController extends AppController {
                     // set background custom color of the cell method !!
                     array('key' => 'pattern',   'value' => 1 ),
                     array('key' => 'fg_color',  'value' => $counterColor ),
-                )) );
+                );
+                
+                if(strpos($value, 'SOLD DT ▲') === 0)
+                {
+                    $tempformat[] = array('key' => 'color', 'value' => 'red');
+                }
+                
+                $worksheet1->write($indexbaris, $key ,$value, $workbook->add_format($tempformat) );
             }
             else
             {
@@ -564,14 +1388,7 @@ class EntriesController extends AppController {
         $formatRP->set_num_format('_("Rp"* #,##0_);_("Rp"* (#,##0);_("Rp"* "-"_);_(@_)');
 
         // prepare modules ...
-        $product_type = $this->EntryMeta->find('all', array(
-            'conditions' => array(
-                'Entry.entry_type' => 'product-type',
-                'EntryMeta.key' => 'form-category',
-                'EntryMeta.value' => 'Diamond',
-            ),
-        ));
-        $product_type = array_column( array_column($product_type, 'Entry'), 'title', 'slug' );
+        $product_type = $this->EntryMeta->get_diamond_type();
         $warehouse = array_column( array_column( $this->Entry->findAllByEntryType('warehouse') , 'Entry'), 'title', 'slug' );
         $vendor = array_column( array_column( $this->Entry->findAllByEntryType('vendor') , 'Entry'), 'title', 'slug' );
         $vendor_invoice = array_column( array_column( $this->Entry->findAllByEntryType('dmd-vendor-invoice') , 'Entry'), 'title', 'slug' );
@@ -584,7 +1401,22 @@ class EntriesController extends AppController {
         $client_invoice = array_column( array_column( $this->Entry->findAllByEntryType('dmd-client-invoice') , 'Entry'), 'title', 'slug' );
 
         // query diamond ...
-        $query = array_map('breakEntryMetas', $this->Entry->findAllById(explode(',', $this->request->data['record'])) );
+        $query = '';
+        if($sold_report)
+        {
+            $this->request->query['type-alias'] = 'sr-dmd-monthly';
+            
+            $temp_order = $_SESSION['order_by'];
+            $_SESSION['order_by'] = 'form-client_invoice_date ASC';
+            
+            $query = $this->_admin_default($this->Type->findBySlug('diamond'),0 , NULL , 'product_status' , 'sold' , NULL , NULL , NULL , NULL , 'manualset')['myList'];
+            
+            $_SESSION['order_by'] = $temp_order;
+        }
+        else
+        {
+            $query = array_map('breakEntryMetas', $this->Entry->findAllById(explode(',', $this->request->data['record'])) );
+        }
         foreach($query as $key => $value)
         {
             $indexbaris++;
@@ -1506,6 +2338,48 @@ class EntriesController extends AppController {
                     array('SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-'.$this->request->query['storage'].'_destination=", -1) LIKE' => $this->request->query['content'].'{#}%'),
                 )));
             }
+        }
+        else if($myType['Type']['slug'] == 'sr-dmd-payment' || $myType['Type']['slug'] == 'sr-cor-payment')
+        {
+            if(!empty($this->request->query['warehouse']))
+            {
+                $options['conditions'][] = array('OR' => array(
+                    array('SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-warehouse_payer=", -1) LIKE' => $this->request->query['warehouse'].'{#}%'),
+                    array('SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-warehouse=", -1) LIKE' => $this->request->query['warehouse'].'{#}%'),
+                ));
+                
+                $options['conditions'][] = array('Entry.status' => 1);
+                $options['conditions'][] = array('EntryMeta.key_value NOT LIKE' => '%{#}form-loan_period=%');
+                $options['conditions'][] = array('OR' => array(
+                    array('EntryMeta.key_value NOT LIKE' => '%{#}form-checks_date=%'),
+                    array('STR_TO_DATE( SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-checks_date=", -1) ,"%m/%d/%Y") <=' => date('Y-m-d')),
+                ));
+            }
+        }
+        else if($myType['Type']['slug'] == 'dc-payment' || $myType['Type']['slug'] == 'cc-payment')
+        {
+            if(!empty($this->request->query['invoice']))
+            {
+                $options['conditions'][] = array('Entry.parent_id' => $this->request->query['invoice']);
+                
+                $options['conditions'][] = array('Entry.status' => 1);
+                $options['conditions'][] = array('EntryMeta.key_value NOT LIKE' => '%{#}form-loan_period=%');
+                $options['conditions'][] = array('OR' => array(
+                    array('EntryMeta.key_value NOT LIKE' => '%{#}form-checks_date=%'),
+                    array('STR_TO_DATE( SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-checks_date=", -1) ,"%m/%d/%Y") <=' => date('Y-m-d')),
+                ));
+            }
+        }
+        
+        // GENERAL QUERY WITH INTERVAL DATE ...
+        if(!empty($this->request->data['start_date']) && !empty($this->request->data['end_date']))
+        {
+            array_push($options['conditions'], array(
+                'STR_TO_DATE( SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-date=", -1) ,"%m/%d/%Y") BETWEEN ? AND ?' => array(
+                    date('Y-m-d', strtotime($this->request->data['start_date']) ),
+                    date('Y-m-d', strtotime($this->request->data['end_date']) )
+                )
+            ));
         }
         
         // SPECIAL THREAT FOR $myMetaKey !!

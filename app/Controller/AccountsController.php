@@ -125,6 +125,27 @@ class AccountsController extends AppController {
 		
 		$this->set('left_limit' , $left_limit);
 		$this->set('right_limit' , $right_limit);
+        
+        // query all WH employee storage placement !!
+        if(empty($popup))
+        {
+            $empList = $this->EntryMeta->findAllByKey('form-warehouse_employee');
+        
+            $empPlacement = array();
+            foreach($empList as $key => $value)
+            {
+                if(!empty($value['EntryMeta']['value']))
+                {
+                    foreach(explode('|', $value['EntryMeta']['value']) as $subkey => $subvalue)
+                    {
+                        $empPlacement[$subvalue][] = $value['Entry']['title'];
+                    }
+                }
+            }
+
+            $empPlacement = array_map(function($el){ return implode(', ', $el); }, $empPlacement);
+            $this->set('empPlacement', $empPlacement);
+        }
 	}
 
 	/**
@@ -137,7 +158,8 @@ class AccountsController extends AppController {
 		$this->setTitle('Add New Account');
 		$listRoles = $this->Role->find('all',array(
 			"conditions" => array(
-				"Role.id >" => 1
+				"Role.id >" => 1,
+                "Role.name !=" => "regular user",
 			)
 		));
 		$this->set('listRoles' , $listRoles);

@@ -515,7 +515,27 @@
 	<!-- SAVE BUTTON -->
 		<div class="control-action">
 			<!-- always use submit button to submit form -->
-			<button id="save-button" type="submit" class="btn btn-primary"><?php echo $saveButton; ?></button>
+			<?php
+                // TIDAK BISA EDIT / UPDATE SURAT JALAN YANG BUKAN DIA BUAT (KHUSUS WH EMPLOYEE)...
+                if(!empty($myEntry) && $user['role_id'] > 2 && $myEntry['Entry']['created_by'] != $user['id'])
+                {
+                    ?>
+            <script type="text/javascript">
+                $('form').removeClass('notif-change');
+                
+                $(document).ready(function(){
+                    $('form').find('input, textarea').attr('disabled', 'disabled');
+                });
+            </script>        
+                    <?php
+                }
+                else
+                {
+                    ?>
+            <button id="save-button" type="submit" class="btn btn-primary"><?php echo $saveButton; ?></button>        
+                    <?php
+                }
+            ?>
            
         	<button type="button" class="btn cancel-form-button" onclick="javascript: window.location=site+'admin/entries/<?php echo (empty($myType)?'pages':$myType['Type']['slug']).(empty($myChildType)?'':'/'.$myParentEntry['Entry']['slug']).$myChildTypeLink; ?>'">Cancel</button>
 		</div>

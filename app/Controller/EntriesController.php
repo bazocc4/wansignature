@@ -1978,6 +1978,9 @@ class EntriesController extends AppController {
             $this->set('diamondType', $this->EntryMeta->get_diamond_type() );
         }
         
+        // always void "lang" query !!
+        unset($this->request->query['lang']);
+        
 		$this->_admin_default($myType , $this->request->params['page'] , $myEntry , $this->request->query['key'] , $this->request->query['value'] , $myChildTypeSlug , $this->request->data['search_by'] , $this->request->query['popup'] , strtolower($this->request->query['lang']));
         
         $myTemplate = $this->_get_template($myType['Type']['slug'], $myChildTypeSlug);
@@ -2299,6 +2302,22 @@ class EntriesController extends AppController {
 		// ======================================== >>
 		// JOIN TABLE & ADDITIONAL FILTERING METHOD !!
 		// ======================================== >>
+        if(!empty($this->user['storage'])) // WAREHOUSE EMPLOYEE !!
+        {
+/*
+            if($myType['Type']['slug'] == 'client')
+            {
+                $wh_cond = array(array('Entry.created_by' => $this->user['id']));
+                foreach($this->user['storage'] as $key => $value)
+                {
+                    $wh_cond[] = array('CONCAT("|", SUBSTRING_INDEX(SUBSTRING_INDEX(EntryMeta.key_value, "{#}form-'.$value['entry_type'].'=", -1), "{#}", 1), "|") LIKE' => '%|'.$value['slug'].'|%');
+                }
+                
+                $options['conditions'][] = array('OR' => $wh_cond);
+            }
+*/
+        }
+        
         if($myType['Type']['slug'] == 'logistic')
         {
             if(!empty($this->request->query['storage']) && !empty($this->request->query['content']) )
@@ -2692,6 +2711,32 @@ class EntriesController extends AppController {
 					$this->Session->setFlash($errMsg,'failed');
 					return;
 				}
+                
+                // CUSTOM CHECKER FOR WAREHOUSE EMPLOYEE ROLE !!
+                if(!empty($this->user['storage']))
+                {
+                    if($myType['Type']['slug'] == 'surat-jalan')
+                    {
+                        $invalid_storage = true;
+                        $breaked_data = breakEntryMetas($this->request->data);
+                        
+                        foreach($this->user['storage'] as $key => $value)
+                        {
+                            if($breaked_data['EntryMeta'][ $value['entry_type'].'_origin' ] == $value['slug'] || $breaked_data['EntryMeta'][ $value['entry_type'].'_destination' ] == $value['slug'])
+                            {
+                                $invalid_storage = false;
+                                break;
+                            }
+                        }
+                        
+                        if($invalid_storage)
+                        {
+                            $alert_tail = implode(', ', array_column($this->user['storage'], 'title'));
+                            $this->Session->setFlash('Pembuatan Surat Jalan tidak valid!<br>Akun Anda hanya diperbolehkan untuk menambahkan Surat Jalan dengan tempat asal / destinasi di mana Anda ditugaskan ('.$alert_tail.'). Silahkan cek dan ulangi kembali.','failed');
+					        return;
+                        }
+                    }
+                }
 				// ------------------------------------- end of entry details...
 				$this->Entry->create();
 				$this->Entry->save($this->request->data);

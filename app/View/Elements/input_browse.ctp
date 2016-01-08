@@ -182,7 +182,14 @@
             <a target="_blank" id="<?php echo $shortkey; ?>_view_detail" class="btn btn-primary" href="#">View Detail</a>
             
             <p class="help-block">
-                Want to create new one? Click <?php echo $this->Html->link('here<img alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>'entries','action'=>$browse_slug.'/add'),array("onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;","escape"=>false)); ?>.<br/>
+                <?php
+                    if( !($user['role_id']>2 && ($browse_slug == 'vendor' || $browse_slug == 'bank' || $browse_slug == 'usd-rate' || $browse_slug == 'warehouse')) )
+                    {
+                        ?>
+                Want to create new one? Click <?php echo $this->Html->link('here<img alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>'entries','action'=>$browse_slug.'/add'),array("onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;","escape"=>false)); ?>.<br/>        
+                        <?php
+                    }
+                ?>
                 <?php echo $p; ?>
             </p>
         </div>

@@ -343,9 +343,13 @@
 				<input <?php echo (empty($mySetting[14]['Setting']['value'])?'':'CHECKED'); ?> type="checkbox" name="data[Setting][14][value]" value="1"/><label>Enable Cropping</label>
 			</div>
 		</div>
-	
-	<!-- PAGE STATUS -->
-		<div class="alert alert-info full fl">
+       
+        <?php
+            if($user['role_id'] <= 2)
+            {
+                ?>
+    <!-- PAGE STATUS -->    
+        <div class="alert alert-info full fl">
 			<strong>Additional Info</strong>
 		</div>
 		<div id="inputWrapper">
@@ -390,8 +394,10 @@
 				}
 			}
 		?>
-		</div>
-		<?php
+		</div>        
+                <?php
+            }
+        
 			if($user['role_id'] <= 1)
 			{
 				?>

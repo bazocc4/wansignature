@@ -514,7 +514,7 @@
 			{
 				?>
 		<th class="action">
-			<form id="global-action" style="margin: 0;" action="#" accept-charset="utf-8" method="post" enctype="multipart/form-data">
+			<form id="global-action" style="margin: 0;" action="#" accept-charset="utf-8" method="post" enctype="multipart/form-data" class="<?php echo ($user['role_id']<=2?'':'hide'); ?>">
 				<select REQUIRED name="data[action]" class="input-small">
 					<option style="font-weight: bold;" value="">Action :</option>
 					<?php
@@ -777,7 +777,7 @@
                 
                 echo $this->Html->link('<i class="icon-edit icon-white"></i>', $editUrl, array('escape'=>false, 'class'=>'btn btn-info','data-toggle'=>'tooltip', 'title'=>'CLICK TO EDIT / VIEW DETAIL') );
 				?>
-            &nbsp;<a data-toggle="tooltip" title="CLICK TO DELETE RECORD" href="javascript:void(0)" onclick="show_confirm('Are you sure want to delete <?php echo strtoupper($value['Entry']['title']); ?> ?','entries/delete/<?php echo $value['Entry']['id']; ?>')" class="btn btn-danger"><i class="icon-trash icon-white"></i></a>
+            &nbsp;<a data-toggle="tooltip" title="CLICK TO DELETE RECORD" href="javascript:void(0)" onclick="show_confirm('Are you sure want to delete <?php echo strtoupper($value['Entry']['title']); ?> ?','entries/delete/<?php echo $value['Entry']['id']; ?>')" class="btn btn-danger <?php echo ($user['role_id']>2&&$value['Entry']['created_by']!=$user['id']?'hide':''); ?>"><i class="icon-trash icon-white"></i></a>
 				<?php
 				echo "</td>";
 			}				

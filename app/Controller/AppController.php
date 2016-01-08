@@ -230,6 +230,27 @@ class AppController extends Controller {
 			foreach ($myUser['UserMeta'] as $key => $value) $this->user['UserMeta'][ $value['key'] ] = $value['value'];
 		}
         
+        // check authorization of the WH Employee...        
+        if( !empty($this->user) && strtolower($this->user['Role']['name']) == 'warehouse employee' )
+        {
+            $empChecker = $this->EntryMeta->find('all', array(
+                'conditions' => array(
+                    'EntryMeta.key' => 'form-warehouse_employee',
+                    'CONCAT("|", EntryMeta.value, "|") LIKE' => '%|'.$this->user['id'].'|%',
+                )
+            ));
+            
+            if(empty($empChecker))
+            {
+                $this->Session->setFlash(__('Authorization failed. Contact your administrator to assign your account with any warehouse / exhibition.'),'default',array() , 'auth');
+                $this->redirect($this->Auth->logout());
+            }
+            else
+            {
+                $this->user['storage'] = array_column($empChecker, 'Entry');
+            }
+        }
+        
         // set other general attributes ...
 		$temp = $this->Setting->findByKey("custom-pagination");
 		$this->countListPerPage = (empty($temp['Setting']['value'])?10:$temp['Setting']['value']);

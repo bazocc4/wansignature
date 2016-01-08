@@ -165,7 +165,20 @@
 		
 		<td class="name-code"><?php echo $value['User']['firstname'] . ' ' . $value['User']['lastname']; ?></td>
 		
-		<?php echo (empty($popup)?"<td>".$value['Role']['name']."</td>":""); ?>
+		<?php
+            if(empty($popup))
+            {
+                echo "<td>";
+                echo $value['Role']['name'];
+                
+                if(!empty($empPlacement[ $value['Account']['id'] ]))
+                {
+                    echo "<br><span style='color:red;'>(".$empPlacement[ $value['Account']['id'] ].")</span>";
+                }
+                
+                echo "</td>";
+            }
+        ?>
 		
 		<td>
 			<?php

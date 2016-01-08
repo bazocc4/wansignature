@@ -162,7 +162,7 @@
 		<a data-storage="" data-content="" data-key="" data-value="" href="javascript:void(0)" class="add-raw underline <?php echo ($view_mode?'hide':''); ?>">Add a <?php echo str_replace('_', ' ', $shortkey); ?></a>
 		<p class="help-block">
         
-		    <?php if(!$view_mode): ?>
+		    <?php if(!$view_mode && !($user['role_id']>2 && ($action == 'vendor' || $action == 'bank' || $action == 'usd-rate' || $controller == 'accounts' || $action == 'warehouse')) ): ?>
 			Want to create new one? Click <?php echo $this->Html->link('here<img alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>$controller,'action'=>$action.'/add'),array("onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;","escape"=>false)); ?>.<br/>
             <?php endif; ?>
             

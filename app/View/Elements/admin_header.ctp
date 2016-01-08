@@ -91,6 +91,8 @@
 
 <!-- save id of entries that had already checked -->
 <input type="hidden" id="checked-data" value=",">
+<!-- used as jQuery colorbox checker bait (admin.js) -->
+<a class="popup-image hide" href="#"></a>
 
 <div class="inner-header <?php echo (empty($popup)?'':'layout-header-popup'); ?> row-fluid">
 	<div class="span5">

@@ -209,16 +209,22 @@
                                 
                                 echo '</div>';
                             }
-						?>
-						
-						<li class='separator'><?php echo $this->Html->link('Others','#',array('class'=>'sidebar-menu')); ?></li>
+                        
+                            // BACKUP MODULE !!
+                            if($user['role_id'] <= 2)
+                            {
+                                ?>
+                        <li class='separator'><?php echo $this->Html->link('Others','#',array('class'=>'sidebar-menu')); ?></li>
                         <div style="display:none;">
                             <?php
                                 echo "<li>";
                                 echo $this->Html->link('backup data' ,array('controller'=>'entries','action'=>'backup') ,array('id'=>'backup'));
                                 echo "</li>";
                             ?>
-                        </div>
+                        </div>        
+                                <?php
+                            }
+						?>
 					</ul>
 				</div>
 				

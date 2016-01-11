@@ -187,7 +187,7 @@
 		<a data-storage="" data-content="" href="javascript:void(0)" class="add-raw underline <?php echo ($view_mode?'hide':''); ?>">Add a <?php echo str_replace('_', ' ', $shortkey); ?></a>
 		<p class="help-block">
 		
-		    <?php if(!$view_mode && !($user['role_id']>2 && ($browse_slug == 'vendor' || $browse_slug == 'bank' || $browse_slug == 'usd-rate' || $browse_slug == 'warehouse')) ): ?>
+		    <?php if(!$view_mode && !($user['role_id']>2 && in_array($browse_slug, restrictedModuleCreation() ) ) ): ?>
 			Want to create new one? Click <?php echo $this->Html->link('here<img alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>'entries','action'=>$browse_slug.'/add'),array("onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;","escape"=>false)); ?>.<br/>
             <?php endif; ?>
             

@@ -183,7 +183,7 @@
             
             <p class="help-block">
                 <?php
-                    if( !($user['role_id']>2 && ($browse_slug == 'vendor' || $browse_slug == 'bank' || $browse_slug == 'usd-rate' || $browse_slug == 'warehouse')) )
+                    if( !($user['role_id']>2 && in_array($browse_slug, restrictedModuleCreation() ) ) )
                     {
                         ?>
                 Want to create new one? Click <?php echo $this->Html->link('here<img alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>'entries','action'=>$browse_slug.'/add'),array("onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;","escape"=>false)); ?>.<br/>        

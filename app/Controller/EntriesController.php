@@ -2722,7 +2722,7 @@ class EntriesController extends AppController {
                         
                         foreach($this->user['storage'] as $key => $value)
                         {
-                            if($breaked_data['EntryMeta'][ $value['entry_type'].'_origin' ] == $value['slug'] || $breaked_data['EntryMeta'][ $value['entry_type'].'_destination' ] == $value['slug'])
+                            if($breaked_data['EntryMeta'][ $value['entry_type'].'_origin' ] == $value['slug'])
                             {
                                 $invalid_storage = false;
                                 break;
@@ -2732,7 +2732,49 @@ class EntriesController extends AppController {
                         if($invalid_storage)
                         {
                             $alert_tail = implode(', ', array_column($this->user['storage'], 'title'));
-                            $this->Session->setFlash('Pembuatan Surat Jalan tidak valid!<br>Akun Anda hanya diperbolehkan untuk menambahkan Surat Jalan dengan tempat asal / destinasi di mana Anda ditugaskan ('.$alert_tail.'). Silahkan cek dan ulangi kembali.','failed');
+                            $this->Session->setFlash('Pembuatan Surat Jalan tidak valid!<br>Akun Anda hanya diperbolehkan untuk menambahkan Surat Jalan dengan tempat asal di mana Anda ditugaskan ('.$alert_tail.'). Silahkan cek dan ulangi kembali.','failed');
+					        return;
+                        }
+                    }
+                    else if(strpos($myType['Type']['slug'], '-invoice') !== false)
+                    {
+                        $invalid_storage = true;
+                        $breaked_data = breakEntryMetas($this->request->data);
+                        
+                        foreach($this->user['storage'] as $key => $value)
+                        {
+                            if($breaked_data['EntryMeta'][ $value['entry_type'] ] == $value['slug'])
+                            {
+                                $invalid_storage = false;
+                                break;
+                            }
+                        }
+                        
+                        if($invalid_storage)
+                        {
+                            $alert_tail = implode(', ', array_column($this->user['storage'], 'title'));
+                            $this->Session->setFlash('Pembuatan Invoice tidak valid!<br>Akun Anda hanya diperbolehkan untuk menambahkan Invoice dengan Warehouse / Pameran tempat di mana Anda ditugaskan ('.$alert_tail.'). Silahkan cek dan ulangi kembali.','failed');
+					        return;
+                        }
+                    }
+                    else if($myType['Type']['slug'] == 'sr-dmd-payment' || $myType['Type']['slug'] == 'sr-cor-payment')
+                    {
+                        $invalid_storage = true;
+                        $breaked_data = breakEntryMetas($this->request->data);
+                        
+                        foreach($this->user['storage'] as $key => $value)
+                        {
+                            if($breaked_data['EntryMeta']['warehouse_payer'] == $value['slug'])
+                            {
+                                $invalid_storage = false;
+                                break;
+                            }
+                        }
+                        
+                        if($invalid_storage)
+                        {
+                            $alert_tail = implode(', ', array_column($this->user['storage'], 'title'));
+                            $this->Session->setFlash('Metode Pembayaran tidak valid!<br>Akun Anda hanya diperbolehkan untuk melakukan pembayaran dengan <a class="underline" href="#warehouse-payer">Warehouse Payer (pihak pembayar)</a> di mana Anda ditugaskan ('.$alert_tail.'). Silahkan cek dan ulangi kembali.','failed');
 					        return;
                         }
                     }

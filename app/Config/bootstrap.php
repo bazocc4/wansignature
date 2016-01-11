@@ -636,3 +636,11 @@ function Zip($source, $destination)
 		return false;
 	} 
 }
+
+/*
+Warehouse Employee is forbidden to add data on these module !!
+*/
+function restrictedModuleCreation()
+{
+    return array('vendor', 'bank', 'usd-rate', 'warehouse', 'product-type', 'product-brand', 'product-color');
+}

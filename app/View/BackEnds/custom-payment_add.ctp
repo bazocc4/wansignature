@@ -571,13 +571,32 @@
 	<!-- SAVE BUTTON -->
 		<div class="control-action">
 			<!-- always use submit button to submit form -->
-			<button id="save-button" type="submit" class="btn btn-primary"><?php echo $saveButton; ?></button>
 			<?php
-				if(empty($myEntry) && !empty($myType))
-				{
-					echo '<button id="save-as-draft" type="button" class="btn btn-inverse">Save as Pending Payment<span class="span-checks hide"> (Cek Titip)</span></button>';
-				}
-
+                // TIDAK BISA EDIT / UPDATE PAYMENT YANG BUKAN DIA BUAT (KHUSUS WH EMPLOYEE)...
+                if(!empty($myEntry) && $user['role_id'] > 2 && $myEntry['Entry']['created_by'] != $user['id'])    
+                {
+                    ?>
+            <script type="text/javascript">
+                $('form').removeClass('notif-change');
+                
+                $(document).ready(function(){
+                    $('form').find('input, textarea').attr('disabled', 'disabled');
+                });
+            </script>        
+                    <?php
+                }
+                else
+                {
+                    ?>
+            <button id="save-button" type="submit" class="btn btn-primary"><?php echo $saveButton; ?></button>        
+                    <?php
+                    
+                    if(empty($myEntry) && !empty($myType))
+                    {
+                        echo '<button id="save-as-draft" type="button" class="btn btn-inverse">Save as Pending Payment<span class="span-checks hide"> (Cek Titip)</span></button>';
+                    }
+                }
+            
                 $langUrlCancel = '';
                 if(!empty($lang))
                 {

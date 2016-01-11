@@ -149,10 +149,15 @@ class AppController extends Controller {
 		$this->set('user',$this->user);
 		// -------------------------------------------------------------------- >>>
 		// view all the Type, but not Child !!
+        $typesConditions = array('Type.parent_id' => 0);
+        
+        if(!empty($this->user['storage'])) // WH Employee role...
+        {
+            $typesConditions['Type.slug NOT LIKE'] = 'product-%';
+        }
+        
 		$myTypes = $this->Type->find('all',array(
-			'conditions' => array(
-				'Type.parent_id' => 0
-			),
+			'conditions' => $typesConditions,
 			'order' => array('Type.id')
 		));
 		$this->set('types',$myTypes);

@@ -250,7 +250,30 @@
 		<!-- myTypeSlug is for media upload settings purpose !! -->
 		<input type="hidden" value="<?php echo (empty($myChildType)?$myType['Type']['slug']:$myChildType['Type']['slug']); ?>" id="myTypeSlug"/>
 	<!-- SAVE BUTTON -->
-		<div class="control-action">
+	    <?php
+            $disable_editing = false;
+            if(!empty($myEntry) && $user['role_id'] > 2)
+            {
+                if(strpos($myEntry['Entry']['entry_type'], 'product-') !== false)
+                {
+                    $disable_editing = true;
+                }
+            }
+        
+            if($disable_editing)
+            {
+                ?>
+            <script type="text/javascript">
+                $(document).ready(function(){
+                    $('form').find('input, textarea, select').attr('disabled', 'disabled');
+                });
+            </script>        
+                    <?php
+            }
+            else
+            {
+                ?>
+        <div class="control-action">
 			<!-- always use submit button to submit form -->
 			<button id="save-button" type="submit" class="btn btn-primary"><?php echo $saveButton; ?></button>
 			<?php
@@ -270,7 +293,10 @@
                 }
 			?>
         	<button type="button" class="btn" onclick="javascript: window.location=site+'admin/entries/<?php echo (empty($myType)?'pages':$myType['Type']['slug']).(empty($myChildType)?'':'/'.$myParentEntry['Entry']['slug']).$myChildTypeLink.$langUrlCancel; ?>'">Cancel</button>
-		</div>
+		</div>        
+                <?php
+            }
+        ?>
 	</fieldset>
 <?php echo $this->Form->end(); ?>
 	<div class="clear"></div>

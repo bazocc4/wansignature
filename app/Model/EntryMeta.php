@@ -155,7 +155,7 @@ class EntryMeta extends AppModel {
                 }
                 else // UPDATE ENTRYMETA ...
                 {
-                    if($qValue['value'] != $obj[$shortkey])
+                    if($qValue['value'] !== $obj[$shortkey])
                     {
                         $this->EntryMeta->id = $qValue['id'];
                         $this->EntryMeta->saveField('value', $obj[$shortkey]);

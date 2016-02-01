@@ -93,7 +93,10 @@ class PhpExcelComponent extends Component {
             $this->_chunkFilter->setRows($startRow,$chunkSize);
         }
 
+        // This comes down to PHPExcel modifying the php.ini precision setting in its calculation engine. You can override this yourself:
+        $savedPrecision = ini_get('precision');
         $this->_xls = ( empty($this->_objReader) ? PHPExcel_IOFactory::load($file) : $this->_objReader->load($file) );
+        ini_set('precision', $savedPrecision);
         
         // general use...
         if(empty($this->_chunkFilter))

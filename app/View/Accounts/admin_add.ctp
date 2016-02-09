@@ -10,8 +10,19 @@
 		}
 		$("select#select-role").change(function(){
 			$.fn.changeRoleAction(this);
-		});		
-		$.fn.changeRoleAction("select#select-role");
+            
+            // toggle field eligible_products ...
+            var role_name = $(this).find('option:selected').text().toLowerCase();
+            if(role_name == 'warehouse employee')
+            {
+                $('div.cgroup-eligible-products').removeClass('hide');
+            }
+            else
+            {
+                $('div.cgroup-eligible-products').addClass('hide');
+                $('div.cgroup-eligible-products input[type=checkbox]').removeAttr('checked');
+            }
+		}).trigger('change');
 	});
 </script>
 
@@ -67,6 +78,18 @@
 				<p class="help-block"></p>
 			</div>
 		</div>
+		
+		<div class="control-group cgroup-eligible-products hide">
+            <label class="control-label">Eligible Products</label>
+            <div class="controls checkbox" style="margin-top: 5px;">
+               
+                <input <?php echo (in_array('diamond', $this->request->data['UserMeta']['eligible_products'])?'CHECKED':''); ?> type="checkbox" name="data[UserMeta][eligible_products][]" id="eligible-diamond" value="diamond"><label for="eligible-diamond">DIAMOND</label>
+                
+                <input <?php echo (in_array('cor-jewelry', $this->request->data['UserMeta']['eligible_products'])?'CHECKED':''); ?> type="checkbox" name="data[UserMeta][eligible_products][]" id="eligible-cor" value="cor-jewelry"><label for="eligible-cor">COR JEWELRY</label>
+               
+                <p style="color:red;" class="help-block">Is this account allowed to add / edit those kind of products?</p>
+            </div>
+        </div>
 		
 		<div class="control-group">            
 			<label style="color: red;" class="control-label">E-mail Login</label>

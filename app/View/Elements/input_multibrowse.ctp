@@ -161,12 +161,20 @@
 	<div class="controls">
 		<a data-storage="" data-content="" data-key="" data-value="" href="javascript:void(0)" class="add-raw underline <?php echo ($view_mode?'hide':''); ?>">Add a <?php echo str_replace('_', ' ', $shortkey); ?></a>
 		<p class="help-block">
-        
-		    <?php if(!$view_mode && !($user['role_id']>2 && ($controller == 'accounts' || in_array($action, restrictedModuleCreation() ) )) ): ?>
-			Want to create new one? Click <?php echo $this->Html->link('here<img alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>$controller,'action'=>$action.'/add'),array("onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;","escape"=>false)); ?>.<br/>
-            <?php endif; ?>
+		    <?php
+                if(!$view_mode && !($user['role_id']>2 && ($controller == 'accounts' || in_array($action, restrictedModuleCreation() ) )) )
+                {
+                    // eligible_products validation for WH Employee ...
+                    if( ! (($action == 'diamond' || $action == 'cor-jewelry') && strtolower($user['Role']['name']) == 'warehouse employee' && strpos($user['UserMeta']['eligible_products'], $action) === false) )
+                    {
+                        ?>
+            Want to create new one? Click <?php echo $this->Html->link('here<img alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>$controller,'action'=>$action.'/add'),array("onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;","escape"=>false)); ?>.<br/>            
+                        <?php
+                    }
+                }
             
-	        <?php echo $p; ?>
+                echo $p;
+            ?>
 	    </p>
 	</div>
 	

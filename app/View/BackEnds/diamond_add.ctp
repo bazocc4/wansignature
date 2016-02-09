@@ -63,7 +63,7 @@
 				});
 			});
 		</script>
-		<p class="notes important" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>
+		<p class="notes important <?php echo ($staticRecordTemplate?'hide':''); ?>" style="color: red;font-weight: bold;">* Red input MUST NOT be empty.</p>
 		<input type="hidden" value="<?php echo (isset($_POST['data']['language'])?$_POST['data']['language']:(empty($lang)?substr($myEntry['Entry']['lang_code'], 0,2):$lang)); ?>" name="data[language]" id="myLanguage"/>
 		<input type="hidden" value="<?php echo (isset($_POST['data']['Entry'][2]['value'])?$_POST['data']['Entry'][2]['value']:(empty($myEntry)?'0':$myEntry['Entry']['main_image'])); ?>" name="data[Entry][2][value]" id="mySelectCoverId"/>
 		<input type='hidden' id="entry_image_type" value="<?php echo $myImageTypeList[isset($_POST['data']['Entry'][2]['value'])?$_POST['data']['Entry'][2]['value']:(empty($myEntry)?'0':$myEntry['Entry']['main_image'])]; ?>" />
@@ -138,6 +138,13 @@
 						default:
 							break;
 					}
+                    
+                    // view mode ...
+                    if($staticRecordTemplate)
+                    {
+                        $value['view_mode'] = true;
+                    }
+                    
 					echo $this->element('input_'.$value['input_type'] , $value);
                     
                     // Input Group Divider !!
@@ -162,6 +169,7 @@
                             echo '<div class="alert alert-info full fl"><strong>HISTORY OF TRANSACTIONS</strong></div>';
                             break;
                     }
+                    echo '<div class="clear"></div>';
 				}
 			}
 			// HIDE THE BROKEN INPUT TYPE !!!!!!!!!!!!!
@@ -198,6 +206,13 @@
 			$value['model'] = 'Entry';
 			$value['counter'] = 1;
 			$value['input_type'] = 'ckeditor';
+        
+            // view mode ...
+            if($staticRecordTemplate)
+            {
+                $value['view_mode'] = true;
+            }
+        
 			$value['value'] = (isset($_POST['data'][$value['model']][$value['counter']]['value'])?$_POST['data'][$value['model']][$value['counter']]['value']:$myEntry[$value['model']]['description']);
 			echo $this->element('input_'.$value['input_type'] , $value);
 
@@ -276,7 +291,7 @@
 	<!-- SAVE BUTTON -->
 		<div class="control-action">
 			<!-- always use submit button to submit form -->
-			<button id="save-button" type="submit" class="btn btn-primary"><?php echo $saveButton; ?></button>
+			<button id="save-button" type="submit" class="btn btn-primary <?php echo ($staticRecordTemplate?'hide':''); ?>"><?php echo $saveButton; ?></button>
 			<?php
 				if(empty($myEntry) && !empty($myType))
 				{

@@ -185,9 +185,13 @@
                 <?php
                     if( !($user['role_id']>2 && in_array($browse_slug, restrictedModuleCreation() ) ) )
                     {
-                        ?>
-                Want to create new one? Click <?php echo $this->Html->link('here<img alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>'entries','action'=>$browse_slug.'/add'),array("onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;","escape"=>false)); ?>.<br/>        
-                        <?php
+                        // eligible_products validation for WH Employee ...
+                        if( ! (($browse_slug == 'diamond' || $browse_slug == 'cor-jewelry') && strtolower($user['Role']['name']) == 'warehouse employee' && strpos($user['UserMeta']['eligible_products'], $browse_slug) === false) )
+                        {
+                            ?>
+                Want to create new one? Click <?php echo $this->Html->link('here<img alt="External Icon" src="'.$imagePath.'img/external-icon.gif">',array('controller'=>'entries','action'=>$browse_slug.'/add'),array("onclick"=>"javascript:openRequestedSinglePopup(this.href); return false;","escape"=>false)); ?>.<br/>            
+                            <?php
+                        }
                     }
                 ?>
                 <?php echo $p; ?>

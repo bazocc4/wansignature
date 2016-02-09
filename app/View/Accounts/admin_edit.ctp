@@ -28,6 +28,26 @@
 			</div>
 		</div>
 		
+		<?php
+            if(strtolower($myData['Role']['name']) == 'warehouse employee' && $user['role_id'] <= 2)
+            {
+                $eligible_haystack = (!empty($this->request->data)?$this->request->data['UserMeta']['eligible_products']:$eligible);
+                ?>
+        <div class="control-group">
+            <label class="control-label">Eligible Products</label>
+            <div class="controls checkbox" style="margin-top: 5px;">
+               
+                <input <?php echo (in_array('diamond', $eligible_haystack )?'CHECKED':''); ?> type="checkbox" name="data[UserMeta][eligible_products][]" id="eligible-diamond" value="diamond"><label for="eligible-diamond">DIAMOND</label>
+                
+                <input <?php echo (in_array('cor-jewelry', $eligible_haystack)?'CHECKED':''); ?> type="checkbox" name="data[UserMeta][eligible_products][]" id="eligible-cor" value="cor-jewelry"><label for="eligible-cor">COR JEWELRY</label>
+               
+                <p style="color:red;" class="help-block">Is this account allowed to add / edit those kind of products?</p>
+            </div>
+        </div>        
+                <?php
+            }
+        ?>
+		
 		<div class="control-group">            
 			<label style="color: red;" class="control-label">E-mail Login</label>
 			<div class="controls">				

@@ -51,9 +51,12 @@
                     <?php
                         if(empty($this->request->query['type-alias']))
                         {
-                            ?>
+                            if( ! $staticRecordTemplate)
+                            {
+                                ?>
                     $('div.inner-header > div:last > div:last').after("<div class='btn-group /*hide*/'><form accept='application/vnd.ms-excel' accept-charset='utf-8' method='post' enctype='multipart/form-data' action='#' style='margin:0 0 10px 0;' class='form-upload-excel'><input REQUIRED type='file' style='width:200px;' accept='.xls,.xlsx' name='data[fileurl]' onchange='checkfile(this);'><button class='btn' type='submit'>Upload</button></form></div>"); // upload Excel ... 
-                            <?php
+                                <?php
+                            }
                         }
                         else
                         {
@@ -90,42 +93,45 @@
                         }
             
                         // DOWNLOAD SETTING VARIABLE !!
-                        $download_query = '';
-                        $submit_func = false;
-                        $download_title = '';
-                        if(!empty($this->request->query['cidm']) && !empty($this->request->query['cidy']))
+                        if( ! $staticRecordTemplate)
                         {
-                            $download_query = '?cidm='.$this->request->query['cidm'].'&cidy='.$this->request->query['cidy'];
-                            $download_title = 'Download Monthly Report';
-                        }
-                        else
-                        {
-                            $submit_func = true;
-                            $download_title = 'Download Excel';
-                        }
-                    ?>
-                    
-                    $('div.inner-header > div:last > div:last').before("<form id='download-excel' action='"+site+"entries/download_jewelry<?php echo $download_query; ?>' method='POST'><input value=',' type='hidden' name='data[record]'><button style='margin-bottom:10px;' class='btn btn-inverse right-btn fr' type='submit'><i class='icon-download-alt icon-white'></i> <?php echo $download_title; ?></button></form>"); // download Excel ...
-                    
-                    <?php
-                        if($submit_func)
-                        {
+                            $download_query = '';
+                            $submit_func = false;
+                            $download_title = '';
+                            if(!empty($this->request->query['cidm']) && !empty($this->request->query['cidy']))
+                            {
+                                $download_query = '?cidm='.$this->request->query['cidm'].'&cidy='.$this->request->query['cidy'];
+                                $download_title = 'Download Monthly Report';
+                            }
+                            else
+                            {
+                                $submit_func = true;
+                                $download_title = 'Download Excel';
+                            }
+                            
                             ?>
-                    $('form#download-excel').submit(function(){
-                        var checked_data = $('#checked-data').val();
-                        var total_checked = checked_data.split(',').length - 2;
-                        if(total_checked > 0)
-                        {
-                            $(this).find('input[name="data[record]"]').val( checked_data.substr(1, checked_data.length - 2 ) );
-                        }
-                        else
-                        {
-                            alert('Please select one or more COR JEWELRY to be downloaded into excel format.');
-                            $('input#check-all').focus();
-                            return false;
-                        }
-                    });            
+                    $('div.inner-header > div:last > div:last').before("<form id='download-excel' action='"+site+"entries/download_jewelry<?php echo $download_query; ?>' method='POST'><input value=',' type='hidden' name='data[record]'><button style='margin-bottom:10px;' class='btn btn-inverse right-btn fr' type='submit'><i class='icon-download-alt icon-white'></i> <?php echo $download_title; ?></button></form>"); // download Excel ...            
                             <?php
+                            
+                            if($submit_func)
+                            {
+                                ?>
+                        $('form#download-excel').submit(function(){
+                            var checked_data = $('#checked-data').val();
+                            var total_checked = checked_data.split(',').length - 2;
+                            if(total_checked > 0)
+                            {
+                                $(this).find('input[name="data[record]"]').val( checked_data.substr(1, checked_data.length - 2 ) );
+                            }
+                            else
+                            {
+                                alert('Please select one or more COR JEWELRY to be downloaded into excel format.');
+                                $('input#check-all').focus();
+                                return false;
+                            }
+                        });            
+                                <?php
+                            }
                         }
                     ?>
                 });
@@ -382,7 +388,7 @@
                 {
                     echo '<h2>No Items Found!</h2>';
                     
-                    echo (!($myType['Type']['slug'] == 'pages' && $user['role_id'] >= 2 || !empty($popup))?$this->Html->link('Get Started',array('action'=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'add','?'=> (!empty($myEntry)&&$myType['Type']['slug']!=$myChildType['Type']['slug']?array('type'=>$myChildType['Type']['slug']):'') ),array('class'=>'btn btn-primary')):'');
+                    echo (!($myType['Type']['slug'] == 'pages' && $user['role_id'] >= 2 || !empty($popup) || $staticRecordTemplate)?$this->Html->link('Get Started',array('action'=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'add','?'=> (!empty($myEntry)&&$myType['Type']['slug']!=$myChildType['Type']['slug']?array('type'=>$myChildType['Type']['slug']):'') ),array('class'=>'btn btn-primary')):'');
                 }
                 else
                 {

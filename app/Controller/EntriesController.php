@@ -1970,6 +1970,12 @@ class EntriesController extends AppController {
             {
                 $_SESSION['order_by'] = 'form-client_invoice_date asc';
             }
+            
+            // check for eligible products access (WH Employee) !!
+            if(strtolower($this->user['Role']['name']) == 'warehouse employee' && strpos($this->user['UserMeta']['eligible_products'], $myType['Type']['slug']) === false )
+            {
+                $this->set('staticRecordTemplate', 1);
+            }
         }
         
         // query diamond product_type ...
@@ -2128,6 +2134,12 @@ class EntriesController extends AppController {
 				$myChildTypeSlug = $myType['Type']['slug'];
 			}
 		}
+        
+        // check for eligible products access (WH Employee) !!
+        if( ($myType['Type']['slug'] == 'diamond' || $myType['Type']['slug'] == 'cor-jewelry') && strtolower($this->user['Role']['name']) == 'warehouse employee' && strpos($this->user['UserMeta']['eligible_products'], $myType['Type']['slug']) === false )
+        {
+            $this->set('staticRecordTemplate', 1);
+        }
 		
 		// main edit function ...
 		$this->_admin_default_edit(($myType['Type']['slug']=='pages'?NULL:$myType) , $myEntry , $myParentEntry , $myChildTypeSlug , strtolower($this->request->query['lang']));

@@ -86,7 +86,7 @@
                 echo '<p id="id-title-description" class="title-description"></p>';
 			}
 		?>
-		<div class="change-pic">
+		<div class="change-pic <?php echo ($staticRecordTemplate?'hide':''); ?>">
 			<i class="icon-cog"></i>			
 			<?php 
 				if( (isset($_POST['data']['Entry'][2]['value'])?$_POST['data']['Entry'][2]['value']:$myEntry['Entry']['main_image']) > 0)

@@ -166,7 +166,7 @@ class AccountsController extends AppController {
 		
 		if (!empty($this->request->data)) 
 		{
-			$this->request->data['Account']['created_by'] = $this->user['id'];
+            $this->request->data['Account']['created_by'] = $this->user['id'];
 			$this->request->data['Account']['modified_by'] = $this->user['id'];
 
 			$this->Account->set($this->request->data);
@@ -176,6 +176,13 @@ class AccountsController extends AppController {
 				{
 					$this->Account->create();
 					$this->Account->save($this->request->data);
+                    
+                    // save eligible products too if any (for WH Employee) !!
+                    if($this->request->data['Account']['role_id'] == 4)
+                    {
+                        $this->_savingEligibleMeta();
+                    }
+                    
 					$this->Session->setFlash((empty($this->request->data['Account']['username'])?$this->request->data['Account']['email']:$this->request->data['Account']['username']).' account has been created.','success');
 					$this->redirect (array('action' => 'index'));
 				}
@@ -213,12 +220,27 @@ class AccountsController extends AppController {
 			$this->redirect(array('action' => 'index'));
         }
         
+        // query eligible_products if appropriate ...
+        if(strtolower($result['Role']['name']) == 'warehouse employee' && $this->user['role_id'] <= 2)
+        {
+            $eligible = $this->UserMeta->findByUserIdAndKey($result['User']['id'], 'eligible_products');
+            if(!empty($eligible['UserMeta']['value']))
+            {
+                $eligible = explode('|', $eligible['UserMeta']['value']);
+            }
+            else
+            {
+                $eligible = array();
+            }
+            $this->set('eligible', $eligible);
+        }
+        
         $this->set('id',$id);
 		$this->set('myData' , $result);
-		
-		if (!empty($this->request->data)) 
-		{	
-			$this->request->data['Account']['modified_by'] = $this->user['id'];
+        
+        if (!empty($this->request->data)) 
+		{
+            $this->request->data['Account']['modified_by'] = $this->user['id'];
 			$ignorePassword = (empty($this->request->data['Account']['confirm']));
 			if($ignorePassword)
 			{
@@ -249,6 +271,13 @@ class AccountsController extends AppController {
 				if($success == 1)
 				{	
 					$this->Account->save($this->request->data);
+                    
+                    // save eligible products too if any (for WH Employee) !!
+                    if(isset($eligible))
+                    {
+                        $this->_savingEligibleMeta($result['User']['id']);
+                    }
+                    
 					$this->Session->setFlash('Update account success.','success');
 					$this->redirect (array('action' => 'index'));
 				}
@@ -463,5 +492,39 @@ class AccountsController extends AppController {
 				echo "1";
 			}
         }		
+    }
+    
+    function _savingEligibleMeta($user_id)
+    {
+        if(empty($user_id))
+        {
+            $user_id = $this->request->data['Account']['user_id'];
+        }
+        
+        $eligible = $this->UserMeta->findByUserIdAndKey($user_id , 'eligible_products');
+        if(empty($eligible))
+        {
+            if(!empty($this->request->data['UserMeta']['eligible_products']))
+            {
+                $this->UserMeta->create();
+                $this->UserMeta->save(array('UserMeta' => array(
+                    'user_id' => $user_id,
+                    'key' => 'eligible_products',
+                    'value' => implode('|', $this->request->data['UserMeta']['eligible_products'] )
+                )));
+            }
+        }
+        else // just update the value ...
+        {
+            if(!empty($this->request->data['UserMeta']['eligible_products']))
+            {
+                $this->UserMeta->id = $eligible['UserMeta']['id'];
+                $this->UserMeta->saveField('value', implode('|', $this->request->data['UserMeta']['eligible_products'] ) );
+            }
+            else
+            {
+                $this->UserMeta->delete($eligible['UserMeta']['id']);
+            }
+        }
     }
 }

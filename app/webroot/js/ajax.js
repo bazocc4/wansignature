@@ -387,6 +387,12 @@ function openRequestedSinglePopup(strUrl , targetName)
 		if(myobj.hasClass('searchMeLink'))
 		{
 			ajax_params['search_by'] = ($('input#searchMe').val().length==0?' ':$('input#searchMe').val());
+            
+            // for diamond / cor-jewelry module !!
+            if($('select#searchMeField').length)
+            {
+                ajax_params['field_by'] = $('select#searchMeField').val();
+            }
 		}
 		else if(myobj.attr('alt') != null && myobj.attr('alt').length>0 && altforurl==null)
 		{

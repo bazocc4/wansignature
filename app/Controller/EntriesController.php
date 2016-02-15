@@ -1976,6 +1976,9 @@ class EntriesController extends AppController {
             {
                 $this->set('staticRecordTemplate', 1);
             }
+            
+            // search mode is "by field" on admin_header.ctp !!
+            $this->set('search_by_field', 1);
         }
         
         // query diamond product_type ...
@@ -2206,7 +2209,11 @@ class EntriesController extends AppController {
 				}
 				else
 				{
-					$_SESSION['searchMe'] = $searchMe;
+					$_SESSION['searchMe'] = array('value' => $searchMe);
+                    if(!empty($this->request->data['field_by']))
+                    {
+                        $_SESSION['searchMe']['key'] = $this->request->data['field_by'];
+                    }
 				}
 			}
 		} 
@@ -2458,15 +2465,31 @@ class EntriesController extends AppController {
         
 		if(!empty($_SESSION['searchMe']))
 		{
-            $options['conditions']['OR'] = array(
-                array('Entry.title LIKE' => '%'.$_SESSION['searchMe'].'%'), 
-                array('Entry.description LIKE' => '%'.$_SESSION['searchMe'].'%'),
-            );
-            
-			if($this->mySetting['table_view']=='complex')
-			{
-                array_push($options['conditions']['OR'] , array('REPLACE(REPLACE(EntryMeta.key_value , "-" , " "),"_"," ") LIKE' => '%'.string_unslug($_SESSION['searchMe']).'%') );
-			}
+            if(!empty($_SESSION['searchMe']['key']))
+            {
+                if(substr($_SESSION['searchMe']['key'], 0, 5) == 'form-')
+                {
+                    $options['conditions'][] = array(
+                        'REPLACE(REPLACE(SUBSTRING_INDEX(SUBSTRING_INDEX(EntryMeta.key_value, "{#}'.$_SESSION['searchMe']['key'].'=", -1), "{#}", 1) , "-" , " "),"_"," ") LIKE' => '%'.string_unslug($_SESSION['searchMe']['value']).'%'
+                    );
+                }
+                else // title / description ...
+                {
+                    $options['conditions'][] = array('Entry.'.$_SESSION['searchMe']['key'].' LIKE' => '%'.$_SESSION['searchMe']['value'].'%');
+                }
+            }
+            else // normal search ...
+            {
+                $options['conditions']['OR'] = array(
+                    array('Entry.title LIKE' => '%'.$_SESSION['searchMe']['value'].'%'), 
+                    array('Entry.description LIKE' => '%'.$_SESSION['searchMe']['value'].'%'),
+                );
+
+                if($this->mySetting['table_view']=='complex')
+                {
+                    array_push($options['conditions']['OR'] , array('REPLACE(REPLACE(EntryMeta.key_value , "-" , " "),"_"," ") LIKE' => '%'.string_unslug($_SESSION['searchMe']['value']).'%') );
+                }
+            }
 		}
         
         // ========================================= >>

@@ -171,12 +171,70 @@
 			}
 		?>
 		<div class="input-prepend" style="margin-right: 5px; margin-left: 5px;">
-			<span class="add-on" style="margin-right: 3px; margin-top : 9px;">
-				<?php
-					echo $this->Html->link("<i class='icon-search'></i>",array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index','1','?'=>$extensionPaging) , array("class"=>"ajax_mypage searchMeLink","escape"=>false));
+		    <span class="add-on" style="margin-right: 3px; margin-top : 9px;">
+		        <?php
+                    echo $this->Html->link("<i class='icon-search'></i>",array("action"=>$myType['Type']['slug'].(empty($myEntry)?'':'/'.$myEntry['Entry']['slug']),'index','1','?'=>$extensionPaging) , array("class"=>"ajax_mypage searchMeLink","escape"=>false));
+                
+                    $searchMe_width = 160;
+                    $searchMe_placeholder = 'search item here ...';
+                    if($search_by_field)
+                    {
+                        $searchMe_width = 120;
+                        $searchMe_placeholder = 'search here ...';
+                        
+                        echo '&nbsp;&nbsp;<select id="searchMeField" class="input-small" style="margin-top:-5px;">';
+                        
+                        echo '<option value="">[all field]</option>';
+                        foreach($myType['TypeMeta'] as $key => $value)
+                        {
+                            if($value['key'] == 'title_key')
+                            {
+                                echo '<option value="title">'.$value['value'].'</option>';
+                            }
+                            else if(substr($value['key'], 0, 5) == 'form-')
+                            {
+                                echo '<option data-input="'.($value['input_type']=='datepicker'?'date':'text').'" value="'.$value['key'].'">'.string_unslug(substr($value['key'], 5)).'</option>';
+                            }
+                        }
+                        echo '<option value="description">Client Outstanding</option>';
+                        
+                        echo '</select>';
+                        
+                        ?>
+            <script>
+                $(document).ready(function(){
+                    $('select#searchMeField').change(function(){
+                        if($(this).find('option:selected').attr('data-input') == 'date')
+                        {
+                            if( ! $('#searchMe').data('datepicker'))
+                            {
+                                $('#searchMe').attr('placeholder', 'search date ...');
+                                $('#searchMe').val('');
+                                $('#searchMe').datepicker({
+                                    changeMonth: true,
+                                    changeYear: true,
+                                    showButtonPanel: true,
+                                    yearRange: "-80:+20",
+                                });
+                            }
+                        }
+                        else // transform to text ...
+                        {
+                            if($('#searchMe').data('datepicker'))
+                            {
+                                $('#searchMe').attr('placeholder', 'search here ...');
+                                $('#searchMe').val('');
+                                $('#searchMe').datepicker("destroy");
+                            }
+                        }
+                    });
+                });
+            </script>            
+                        <?php
+                    }
 				?>
 			</span>
-            <input style="width: 160px;" id="searchMe" class="span2" type="text" placeholder="search item here ...">
+            <input style="width: <?php echo $searchMe_width; ?>px;" id="searchMe" class="span2" type="text" placeholder="<?php echo $searchMe_placeholder; ?>">
 		</div>
 
 		<?php
